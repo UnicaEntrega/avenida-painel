@@ -1,7 +1,7 @@
 <template>
 	<q-page class="q-pa-lg bg-grey-4">
 		<transition mode="out-in" enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
-			<div v-if="indexBool" key="list">
+			<div v-if="isIndexRoute" key="list">
 				<q-table :data="motoboysFilter" :columns="motoboyColumns" align="left">
 					<template v-slot:top>
 						<div class="col-9 text-h5 text-primary">Motoboys</div>
@@ -63,7 +63,7 @@ export default {
 				return val.nome.includes(this.search) || val.email.includes(this.search)
 			})
 		},
-		indexBool() {
+		isIndexRoute() {
 			return this.$route.path == "/motoboys"
 		}
 	},

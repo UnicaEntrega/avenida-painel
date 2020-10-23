@@ -104,6 +104,66 @@ export default function () {
 				placa: "jpa-9302",
 				telefone: "(34) 4233-2434"
 			}
+		],
+		coletas: [
+			{
+				id: "0",
+				cliente: {
+					nome: "Cliente de test 1"
+				},
+				enderecoColeta: {
+					cep: "68486848",
+					rua: "Rua teste",
+					numero: 20,
+					complemento: "",
+					bairro: "Bairro teste",
+					cidade: "Cidade de teste",
+					estado: "PR",
+				},
+				responsavelColeta: {
+					nome: "Nome do responsavel de coleta",
+					telefone: "41987654321"
+				},
+				telefone: "41987654321",
+				enderecosEntrega: [
+					{
+						cep: "68486848",
+						rua: "Rua teste",
+						numero: 20,
+						complemento: "",
+						bairro: "Bairro teste",
+						cidade: "Cidade de teste",
+						estado: "PR",
+						destinatario: {
+							nome: "Nome do destinatário de entrega",
+							telefone: "41987654321"
+						},
+					},
+					{
+						cep: "87654321",
+						rua: "Rua de exemplo",
+						numero: 562,
+						complemento: "",
+						bairro: "Bairro teste",
+						cidade: "Cidade de teste",
+						estado: "PR",
+						destinatario: {
+							nome: "Nome do destinatário de entrega",
+							telefone: "41987654321"
+						},
+					},
+				],
+				comRetorno: "Não",
+				observacoes: "",
+				tipoEntrega: "Expresso",
+				valorEntrega: "300",
+				formaPagamento: "Boleto",
+				numeroBoleto: "234",
+				motoboy: {
+					nome: "Motoboy de test 2",
+				},
+				porcentagemComissao: "10"
+			}
 		]
 	}
 }

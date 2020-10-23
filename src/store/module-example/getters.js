@@ -10,6 +10,9 @@ export function usuarios (state) {
 export function motoboys (state) {
 	return state.motoboys
 }
+export function coletas (state) {
+	return state.coletas
+}
 
 export function selectCliente (state) {
 	return id => state.clientes.filter(val => val.id == id)
@@ -20,4 +23,7 @@ export function selectUsuario (state) {
 }
 export function selectMotoboy (state) {
 	return id => state.motoboys.filter(val => val.id == id)
+}
+export function selectColeta (state) {
+	return id => state.coletas.filter(val => val.id == id)
 }

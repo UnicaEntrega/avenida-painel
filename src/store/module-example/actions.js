@@ -16,6 +16,12 @@ export function adicionarMotoboy(context, data) {
 export function removerMotoboy(context, id) {
 	context.commit("removerMotoboy", id);
 }
+export function adicionarColeta(context, data) {
+	context.commit("adicionarColeta", data);
+}
+export function removerColeta(context, id) {
+	context.commit("removerColeta", id);
+}
 
 export function login (context) {
 	context.commit("login");

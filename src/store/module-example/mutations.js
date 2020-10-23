@@ -25,6 +25,15 @@ export function removerMotoboy(state, id) {
 	state.motoboys.splice(state.motoboys.indexOf(filter), 1);
 }
 
+export function adicionarColeta(state, data) {
+	if(!data.id) data.id = state.coletas.length;
+	state.coletas.push(data);
+}
+export function removerColeta(state, id) {
+	let filter = state.coletas.filter(val => val.id == id);
+	state.coletas.splice(state.coletas.indexOf(filter), 1);
+}
+
 export function login (state) {
 	state.loginBool = true;
 }

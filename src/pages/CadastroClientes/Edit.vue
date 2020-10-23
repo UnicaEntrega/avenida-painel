@@ -11,7 +11,7 @@
 						<q-input v-model="cliente.nome" label="Nome*" :rules="[valRequired]" :readonly="showBool"></q-input>
 					</div>
 					<div class="col-3">
-						<q-input v-model="cliente.cpf" label="CPF/CNPJ*" v-mask="['###.###.###-##', '##.###.###/####-##']" :rules="[valRequired]" :readonly="showBool"></q-input>
+						<q-input v-model="cliente.cpf" label="CPF/CNPJ*" v-mask="['###.###.###-##', '##.###.###/####-##']" :rules="[valRequired, val => (val.length == 14 || val.length == 18) || 'CPF/CNPJ inválido']" :readonly="showBool"></q-input>
 					</div>
 					<div class="col-3">
 						<q-input v-model="cliente.telefone" label="Telefone*" v-mask="['(##) ####-####', '(##) #####-####']" :rules="[valRequired, val => val.length >= 14 || 'Telefone incompleto']" :readonly="showBool"></q-input>
@@ -218,7 +218,7 @@ export default {
 	},
 	created() {
 		if(this.$route.params.id) {
-			let selectedCliente = this.selectCliente(this.$route.params.id)
+			let selectedCliente = JSON.parse(JSON.stringify(this.selectCliente(this.$route.params.id)))
 			if(selectedCliente) this.cliente = {...selectedCliente[0]};
 			else {
 				this.$q.notify({

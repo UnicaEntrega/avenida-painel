@@ -6,13 +6,12 @@
 					<div>ACESSE <b>SUA CONTA</b></div>
 				</q-card-section>
 				<q-card-section class="q-gutter-y-sm">
-					<q-input label="CPF/CNPJ" standout></q-input>
+					<q-input label="Login" standout></q-input>
 					<q-input label="Senha" standout></q-input>
 				</q-card-section>
 				<q-card-section>
 					<q-item>
 						<q-item-section>
-							<q-btn label="Primeiro acesso" align="left" flat no-caps dense></q-btn>
 							<q-btn label="Esqueci minha senha" align="left" flat no-caps dense></q-btn>
 						</q-item-section>
 						<q-item-section side>

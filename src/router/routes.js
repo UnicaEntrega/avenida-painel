@@ -15,6 +15,11 @@ const routes = [
 				{ path: "edit/:id", component: () => import("pages/CadastroUsuarios/Edit.vue")},
 				{ path: "show/:id", component: () => import("pages/CadastroUsuarios/Edit.vue"), meta: { show: true }},
 			] },
+			{ path: "cadastroColetas", component: () => import("pages/CadastroColetas/List.vue"), children: [
+				{ path: "edit", component: () => import("pages/CadastroColetas/Edit.vue")},
+				{ path: "edit/:id", component: () => import("pages/CadastroColetas/Edit.vue")},
+				{ path: "show/:id", component: () => import("pages/CadastroColetas/Edit.vue"), meta: { show: true }},
+			] },
 			{ path: "motoboys", component: () => import("pages/Motoboys/List.vue"), children: [
 				{ path: "edit", component: () => import("pages/Motoboys/Edit.vue")},
 				{ path: "edit/:id", component: () => import("pages/Motoboys/Edit.vue")},

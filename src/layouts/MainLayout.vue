@@ -2,12 +2,13 @@
 	<q-layout view="hHh Lpr lFf">
 		<q-header elevated class="bg-white">
 			<q-toolbar>
-				<q-img src="images/avenida_web_simbolo.png" style="width: 50px"></q-img>
+				<router-link to="/">
+					<q-img src="images/avenida_web_simbolo.png" style="width: 50px"></q-img>
+				</router-link>
 				<q-space></q-space>
 				<q-item>
 					<q-item-section class="text-right">
 						<q-item-label class="text-primary">Olá, Nome do Administrador</q-item-label>
-						<q-item-label caption class="text-grey-9">acessar painel</q-item-label>
 					</q-item-section>
 					<q-item-section side>
 						<q-btn label="sair" icon="exit_to_app" color="primary" flat no-caps stack @click="logout"></q-btn>
@@ -18,14 +19,28 @@
 
 		<q-drawer v-model="leftDrawerOpen" show-if-above bordered content-class="bg-grey-2" elevated>
 			<q-list separator>
-				<q-item v-for="item in links" :key="item.title" clickable @click="item.click">
-					<q-item-section side>
-						<q-icon :name="item.icon" color="primary"></q-icon>
-					</q-item-section>
-					<q-item-section>
-						{{item.title}}
-					</q-item-section>
-				</q-item>
+				<div v-for="categoria in categorias" :key="categoria.name">
+					<q-expansion-item v-if="categoria.name" icon="edit" expand-separator :label="categoria.name" header-class="text-body1 text-primary">
+						<q-list separator class="q-pl-sm">
+							<q-item v-for="item in categoria.links" :key="item.title" clickable @click="item.click">
+								<q-item-section side>
+									<q-icon :name="item.icon" color="primary"></q-icon>
+								</q-item-section>
+								<q-item-section>
+									{{item.title}}
+								</q-item-section>
+							</q-item>
+						</q-list>
+					</q-expansion-item>
+					<q-item v-else clickable @click="categoria.click">
+						<q-item-section side>
+							<q-icon :name="categoria.icon" color="primary"></q-icon>
+						</q-item-section>
+						<q-item-section>
+							{{categoria.title}}
+						</q-item-section>
+					</q-item>
+				</div>
 			</q-list>
 		</q-drawer>
 
@@ -45,21 +60,31 @@ export default {
 	data () {
 		return {
 			leftDrawerOpen: true,
-			links: [
+			categorias: [
 				{
-					icon: "emoji_people",
-					title: "Cadastros de Clientes",
-					click: () => { this.$router.push('/cadastroClientes') }
-				},
-				{
-					icon: "person",
-					title: "Cadastros de Usuarios",
-					click: () => { this.$router.push('/cadastroUsuarios') }
-				},
-				{
-					icon: "moped",
-					title: "Cadastros de Motoboys",
-					click: () => { this.$router.push('/motoboys') }
+					name: "Cadastros",
+					links: [
+						{
+							icon: "emoji_people",
+							title: "Clientes",
+							click: () => { this.$router.push('/cadastroClientes') }
+						},
+						{
+							icon: "person",
+							title: "Usuarios",
+							click: () => { this.$router.push('/cadastroUsuarios') }
+						},
+						{
+							icon: "card_travel",
+							title: "Coletas",
+							click: () => { this.$router.push('/cadastroColetas') }
+						},
+						{
+							icon: "moped",
+							title: "Motoboys",
+							click: () => { this.$router.push('/motoboys') }
+						},
+					]
 				},
 			]
 		}
