@@ -1,6 +1,8 @@
 .DS_Store
 .thumbs.db
 node_modules
+.firebase
+.vscode
 
 # Quasar core related directories
 .quasar
@@ -11,6 +13,7 @@ node_modules
 /src-cordova/platforms
 /src-cordova/plugins
 /src-cordova/www
+package-lock.json
 
 # Capacitor related directories and files
 /src-capacitor/www

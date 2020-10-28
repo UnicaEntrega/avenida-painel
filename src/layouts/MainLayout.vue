@@ -11,7 +11,7 @@
 						<q-item-label class="text-primary">Olá, Nome do Administrador</q-item-label>
 					</q-item-section>
 					<q-item-section side>
-						<q-btn label="sair" icon="exit_to_app" color="primary" flat no-caps stack @click="logout"></q-btn>
+						<q-btn label="sair" icon="exit_to_app" color="primary" flat no-caps stack @click="efetuarLogout"></q-btn>
 					</q-item-section>
 				</q-item>
 			</q-toolbar>
@@ -89,19 +89,8 @@ export default {
 			]
 		}
 	},
-	computed: {
-		...mapGetters({
-			loginBool: "loginBool"
-		})
-	},
-	methods: {
-		logout() {
-			this.$store.dispatch("logout");
-			this.$router.push("/login");
-		}
-	},
 	created() {
-		if(!this.loginBool) this.$router.push('/login');
+		if (this.isBlank(this.getLogin.token)) this.$router.push('/login');
 	}
 }
 </script>

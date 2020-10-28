@@ -7,7 +7,8 @@
 <script>
 export default {
 	name: 'PageIndex',
-	methods: {
-	},
+	created() {
+		if (this.isBlank(this.getLogin.token)) this.$router.push('/login');
+	}
 }
 </script>
