@@ -8,7 +8,7 @@
 				<q-space></q-space>
 				<q-item>
 					<q-item-section class="text-right">
-						<q-item-label class="text-primary">Olá, Nome do Administrador</q-item-label>
+						<q-item-label class="text-primary">Olá, {{getUsuario.nome}}</q-item-label>
 					</q-item-section>
 					<q-item-section side>
 						<q-btn label="sair" icon="exit_to_app" color="primary" flat no-caps stack @click="efetuarLogout"></q-btn>

@@ -7,6 +7,11 @@ export default ({app, Vue}) => {
 				getUsuario: "getUsuario"
 			}),
 			ufOptions() {return ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO']},
+			tipoVeiculoOptions() {return [{label:'Moto',value:'moto'},{label:'Carro',value:'carro'}]},
+			coletaStatusOptions() {return ['Aberto','Encaminhado','Em Coleta','Em Entrega','Finalizado','Cancelado']},
+			tipoEntregaOptions() {return ['Expresso','Convencional']},
+			formaPagamentoOptions() {return ['Dinheiro','Boleto','Crédito','Débito','Depósito']},
+			simNaoOptions() {return [{label:'Sim',value:'1'},{label:'Não',value:'0'}]}
 		},
 		methods: {
 			async executeMethod(data) {
@@ -38,6 +43,19 @@ export default ({app, Vue}) => {
 						else if (item==='testarCpfCnpj') return 'CPF/CNPJ informado esta inválido'
 					}
 				}
+			},
+			async buscarCep(cep) {
+				cep = !this.isBlank(cep) ? cep.replace(/\D/g,'') : ''
+				if (this.isBlank(cep)) return null
+				try {
+					let response = await this.$axios.request({url:`https://viacep.com.br/ws/${cep}/json/`,method:'get'})
+					if (response.status===200) {
+						console.log(response)
+						return response.data
+					}
+				}
+				catch(e) {}
+				return null
 			},
 			formatarDataHora(d,f1,f2) {
 				return f2 ? Vue.moment(d,f1).format(f2) : Vue.moment(d).format(f1)
@@ -102,6 +120,13 @@ export default ({app, Vue}) => {
 					if (this.isBlank(obj)) return s
 				}
 				return obj
+			},
+			validatorEmail(val) {
+				let index = val.indexOf("@");
+				return (index > 0 && val.includes(".", index)) || "Este email é inválido."
+			},
+			validatorRequired(val) {
+				return val !== null && val !== "" || "Este campo é obrigatório."
 			}
 		}
 	})

@@ -1,12 +1,22 @@
 <template>
 	<q-page class="q-pa-lg bg-grey-4">
 		<transition mode="out-in" enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
-			<div v-if="indexBool" key="list">
-				<q-table :data="coletasFilter" :columns="coletaColumns" align="left">
+			<div v-if="$route.path == '/cadastroColetas'" key="list">
+				<q-table :data="coletas" :columns="coletaColumns" align="left" row-key="id" :pagination.sync="pagination" @update:pagination="v=>buscar()" :loading="loading" @request="buscar" :rows-per-page-options="[10,20,50,100]" :pagination-label="paginationLabel" binary-state-sort>
 					<template v-slot:top>
-						<div class="col-9 text-h5 text-primary">Coletas</div>
-						<div class="col-3">
-							<q-input v-model="search" placeholder="Pesquisar">
+						<div class="col-4 text-h5 text-primary">Coletas</div>
+						<div class="col-2 q-px-xs">
+							<q-input v-model="search" placeholder="Pesquisar id" @input="buscar()" :debounce="400">
+								<q-icon slot="append" name="search" color="primary"></q-icon>
+							</q-input>
+						</div>
+						<div class="col-3 q-px-xs">
+							<q-input v-model="cliente" placeholder="Pesquisar cliente" @input="buscar()" :debounce="400">
+								<q-icon slot="append" name="search" color="primary"></q-icon>
+							</q-input>
+						</div>
+						<div class="col-3 q-px-xs">
+							<q-input v-model="motoboy" placeholder="Pesquisar motoboy" @input="buscar()" :debounce="400">
 								<q-icon slot="append" name="search" color="primary"></q-icon>
 							</q-input>
 						</div>
@@ -48,55 +58,72 @@
 		</transition>
 	</q-page>
 </template>
-
 <script>
-import { mapGetters } from "vuex"
-
 export default {
-	data: () => ({
-		// editBool: false,
-		search: "",
-		coletaColumns: [
-			{ name: "actions", label: "Ações", field: "actions", align: "left" },
-			{ name: "id", label: "ID", field: "id", align: "left" },
-			{ name: "status", label: "Status", field: "status", align: "left" },
-			{ name: "cliente", label: "Cliente", field: "cliente", align: "left" },
-			{ name: "motoboy", label: "Motoboy", field: "motoboy", align: "left" },
-		]
-	}),
-	computed: {
-		...mapGetters({
-			coletas: "coletas"
-		}),
-		coletasFilter() {
-			return this.coletas.filter(val => {
-				return val.id.includes(this.search) || val.cliente.nome.includes(this.search) || val.motoboy.nome.includes(this.search)
-			})
-		},
-		indexBool() {
-			return this.$route.path == "/cadastroColetas"
+	data () {
+		return {
+			search: "",
+			cliente: '',
+			motoboy: '',
+			coletas: [],
+			coletaColumns: [
+				{ name: "actions", label: "Ações", field: "actions", align: "left" },
+				{ name: "id", label: "ID", field: "id", align: "left" },
+				{ name: "status", label: "Status", field: "status", align: "left" },
+				{ name: "cliente", label: "Cliente", field: "cliente", align: "left" },
+				{ name: "motoboy", label: "Motoboy", field: "motoboy", align: "left" },
+			],
+      loading: false,
+      pagination: {
+        sortBy: 'status',
+        descending: false,
+        page: 1,
+        rowsPerPage: 10,
+        rowsNumber: 0
+      }
 		}
 	},
 	methods: {
+    paginationLabel(first,end,total) {
+      return 'Registros '+first+' até '+end+' de '+total
+    },
+    async buscar(props) {
+      this.loading = true
+      if (props) {
+        this.pagination.page = props.pagination.page
+        this.pagination.rowsPerPage = props.pagination.rowsPerPage
+        this.pagination.sortBy = props.pagination.sortBy
+        this.pagination.descending = props.pagination.descending
+      }
+      let data = {
+				filter: this.search,
+				cliente: this.cliente,
+				motoboy: this.motoboy,
+        ...this.pagination
+      }
+      var response = await this.executeMethod({url:'api/Coletas',method:'get',params:data})
+      if (response.status===200) {
+        this.pagination.rowsNumber = parseInt(response.data.total)
+				this.coletas = response.data.data
+      }
+      this.loading = false
+    },
 		adicionarColeta() {
-			// this.editBool = true;
 			this.$router.push("cadastroColetas/edit")
 		},
 		editarColeta(id) {
 			this.$router.push("cadastroColetas/edit/"+id);
 		},
 		removerColeta(id) {
-			this.$q.dialog({
-				title: "Confirmação",
-				message: "Tem certeza que deseja remover este usuário? Esta ação é irreversível.",
-				ok: "Sim",
-				cancel: "Não"
-			}).onOk(() => {
-				this.$store.dispatch("removerColeta", id);
-				this.$q.notify({
-					message: "Coleta removido com sucesso",
-					type: "positive"
-				})
+      this.$q.dialog({title:'Confirmação',message:'Tem certeza que deseja remover esta coleta? Esta ação é irreversível.',ok:'Sim',cancel:'Não'}).onOk(async ()=>{
+        var response = await this.executeMethod({url:'api/Coletas/'+id,method:'delete'})
+				if (response.status===200) {
+					this.$q.notify({
+						message: "Coleta removido com sucesso",
+						type: "positive"
+					})
+					this.buscar()
+				}
 			})
 		},
 		showColeta(id) {
@@ -105,7 +132,3 @@ export default {
 	}
 }
 </script>
-
-<style>
-
-</style>

@@ -9,20 +9,20 @@
 				<q-form @submit="onSubmit" @reset="onReset" class="q-gutter-y-md">
 					<q-card-section class="row q-col-gutter-sm">
 						<div class="col-3">
-							<q-input v-model="cliente.nome" label="Nome*" :rules="[valRequired]"></q-input>
+							<q-input v-model="cliente.nome" label="Nome*" :rules="[validatorRequired]"></q-input>
 						</div>
 						<div class="col-3">
-							<q-input v-model="cliente.cpf" label="CPF/CNPJ*" v-mask="['###.###.###-##', '##.###.###/####-##']" :rules="[valRequired, val => (val.length == 14 || val.length == 18) || 'CPF/CNPJ inválido']"></q-input>
+							<q-input v-model="cliente.cpf_cnpj" label="CPF/CNPJ*" v-mask="['###.###.###-##', '##.###.###/####-##']" :rules="[validatorRequired, val => ((val.length == 14 && testarCpf(val)) || (val.length == 18 && testarCnpj(val))) || 'CPF/CNPJ inválido']"></q-input>
 						</div>
 						<div class="col-3">
-							<q-input v-model="cliente.telefone" label="Telefone*" v-mask="['(##) ####-####', '(##) #####-####']" :rules="[valRequired, val => val.length >= 14 || 'Telefone incompleto']"></q-input>
+							<q-input v-model="cliente.telefone" label="Telefone*" v-mask="['(##) ####-####', '(##) #####-####']" :rules="[validatorRequired, val => val.length >= 14 || 'Telefone incompleto']"></q-input>
 						</div>
 						<div class="col-3">
-							<q-input v-model="cliente.email" label="E-mail*" :rules="[valRequired, valEmail]"></q-input>
+							<q-input v-model="cliente.email" label="E-mail*" :rules="[validatorRequired, validatorEmail]"></q-input>
 						</div>
 
 						<div class="col-12">
-							<q-input v-model="cliente.observacoes" type="textarea" label="Observações"></q-input>
+							<q-input v-model="cliente.observacao" type="textarea" label="Observações"></q-input>
 						</div>
 					</q-card-section>
 					<q-card-section class="row q-col-gutter-sm">
@@ -30,25 +30,25 @@
 								Endereço
 							</q-item-label>
 							<div class="col-xl-1 col-xs-3">
-								<q-input v-model="cliente.cep" label="CEP*" :loading="cepLoading" v-mask="'##.###-###'" :rules="[valRequired, val => val.length >= 10 || 'CEP inválido']" @blur="pesquisarCep"></q-input>
+								<q-input v-model="cliente.cep" label="CEP*" :loading="cepLoading" v-mask="'##.###-###'" :rules="[validatorRequired, val => val.length >= 10 || 'CEP inválido']" @blur="pesquisarCep"></q-input>
 							</div>
 							<div class="col-xl-3 col-xs-3">
-								<q-input v-model="cliente.rua" label="Rua*" :loading="cepLoading" :rules="[valRequired]"></q-input>
+								<q-input v-model="cliente.endereco" label="Rua*" :loading="cepLoading" :rules="[validatorRequired]"></q-input>
 							</div>
 							<div class="col-xl-1 col-xs-3">
-								<q-input v-model="cliente.numero" label="Número" :loading="cepLoading"></q-input>
+								<q-input v-model="cliente.endereco_numero" label="Número" :loading="cepLoading" ref="endereco_numero"></q-input>
 							</div>
 							<div class="col-xl-2 col-xs-3">
 								<q-input v-model="cliente.complemento" label="Complemento" :loading="cepLoading"></q-input>
 							</div>
 							<div class="col-xl-2 col-xs-3">
-								<q-input v-model="cliente.bairro" label="Bairro*" :loading="cepLoading" :rules="[valRequired]"></q-input>
+								<q-input v-model="cliente.bairro" label="Bairro*" :loading="cepLoading" :rules="[validatorRequired]"></q-input>
 							</div>
 							<div class="col-xl-2 col-xs-3">
-								<q-input v-model="cliente.cidade" label="Cidade*" :loading="cepLoading" :rules="[valRequired]"></q-input>
+								<q-input v-model="cliente.cidade" label="Cidade*" :loading="cepLoading" :rules="[validatorRequired]"></q-input>
 							</div>
 							<div class="col-xl-1 col-xs-3">
-								<q-select v-model="cliente.estado" label="Estado*" :options="estadosOptions" :loading="cepLoading" :rules="[valRequired]"></q-select>
+								<q-select v-model="cliente.estado" label="Estado*" :options="ufOptions" :loading="cepLoading" :rules="[validatorRequired]"></q-select>
 							</div>
 					</q-card-section>
 					<q-card-section class="q-col-gutter-md row items-center">
@@ -56,7 +56,6 @@
 							*Campos obrigatórios
 						</div>
 						<div class="col-6 row justify-end">
-
 							<q-btn label="Cancelar" icon="close" type="reset" color="negative" flat></q-btn>
 							<q-btn label="Salvar" icon="save" type="submit" color="primary"></q-btn>
 						</div>
@@ -66,104 +65,63 @@
 		</q-dialog>
 	</div>
 </template>
-
 <script>
 export default {
-	data: () => ({
-		modalAberto: false,
-		cepLoading: false,
-		estadosOptions: ["AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO"],
-		cliente: {
-			nome: "",
-			cpf: "",
-			telefone: "",
-			email: "",
-			cep: "",
-			rua: "",
-			número: "",
-			complemento: "",
-			bairro: "",
-			cidade: "",
-			estado: "",
-			observações: "",
-		},
-	}),
+	data () {
+		return {
+			modalAberto: false,
+			cepLoading: false,
+			cliente: this.clienteDefault()
+		}
+	},
 	methods: {
+		clienteDefault() {
+			return {
+				nome: "",
+				cpf_cnpj: "",
+				telefone: "",
+				email: "",
+				cep: "",
+				endereco: "",
+				endereco_numero: "",
+				complemento: "",
+				bairro: "",
+				cidade: "",
+				estado: "",
+				observacao: ""
+			}
+		},
 		abrirModal() {
 			this.modalAberto = true;
 		},
-		onSubmit() {
-			this.$store.dispatch("adicionarCliente", this.cliente);
-			this.$emit("clienteCadastrado", this.cliente);
-			this.modalAberto = false;
-			this.cliente = {
-				nome: "",
-				cpf: "",
-				telefone: "",
-				email: "",
-				cep: "",
-				rua: "",
-				número: "",
-				complemento: "",
-				bairro: "",
-				cidade: "",
-				estado: "",
-				observações: "",
+		async onSubmit() {
+			var response = await this.executeMethod({url:'api/Clientes',method:'post',data:this.cliente})
+			if (response.status===200) {
+				this.$emit("clienteCadastrado", response.data);
+				this.modalAberto = false;
+				this.$q.notify({
+					message: "Cliente cadastrado com sucesso.",
+					type: "positive"
+				})
+				this.cliente = this.clienteDefault()
 			}
-			this.$q.notify({
-				message: "Cliente cadastrado com sucesso.",
-				type: "positive"
-			})
 		},
 		onReset() {
 			this.modalAberto = false;
-			this.cliente =  {
-				nome: "",
-				cpf: "",
-				telefone: "",
-				email: "",
-				cep: "",
-				rua: "",
-				número: "",
-				complemento: "",
-				bairro: "",
-				cidade: "",
-				estado: "",
-				observações: "",
-			}
+			this.cliente = this.clienteDefault()
 		},
-		pesquisarCep() {
-			let cep = this.cliente.cep.replace(/[^0-9]/g, "");
-			if(cep.length != 8) {
-				return false;
-			}
+		async pesquisarCep() {
 			this.cepLoading = true;
-
-			this.$axios.request({
-				method: "get",
-				url: "https://viacep.com.br/ws/" + cep + "/json/"
-			}).then(response => {
-				this.cepLoading = false;
-				this.cliente.rua = response.data.logradouro;
-				this.cliente.bairro = response.data.bairro;
-				this.cliente.cidade = response.data.localidade;
-				this.cliente.estado = response.data.uf;
-				this.$refs.rua.focus();
-			}).catch(error => {
-				console.log("ERROR", error);
-			})
-		},
-		valEmail(val) {
-			let index = val.indexOf("@");
-			return (index > 0 && val.includes(".", index)) || "Este email é inválido."
-		},
-		valRequired(val) {
-			return val !== null && val !== "" || "Este campo é obrigatório."
+			let r = await this.buscarCep(this.cliente.cep)
+			if (r) {
+				this.cliente.endereco = r.logradouro
+				this.cliente.bairro = r.bairro
+				this.cliente.cidade = r.localidade
+				this.cliente.estado = r.uf
+				this.$refs.endereco_numero.focus()
+			}
+			this.cepLoading = false;
 		}
 	}
 }
 </script>
-
-<style>
-
-</style>

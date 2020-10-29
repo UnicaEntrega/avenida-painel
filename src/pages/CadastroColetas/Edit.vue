@@ -8,12 +8,12 @@
 			<q-form @submit="onSubmit" @reset="onReset" class="q-gutter-y-md">
 				<q-card-section class="row q-col-gutter-sm">
 					<div class="col-8">
-						<q-select v-model="coleta.cliente" :options="clientesFiltrados" option-label="nome" label="Nome*" :rules="[valRequired]" :readonly="isShowRoute" use-input filled @filter="filterFn">
-							<q-btn slot="after" icon="add" color="primary" @click="abrirModalCliente"></q-btn>
+						<q-select v-model="coleta.cliente_id" :options="clienteOptions" option-label="nome" option-value="id" map-options emit-value label="Cliente*" :rules="[validatorRequired]" :readonly="showBool" use-input filled @filter="buscarCliente">
+							<q-btn slot="after" icon="add" color="primary" @click="abrirModalCliente" v-if="!showBool"></q-btn>
 						</q-select>
 					</div>
 					<div class="col-3 offset-1">
-						<q-select v-model="coleta.status" :options="['Aberto', 'Encaminhado', 'Em Coleta', 'Em Entrega', 'Finalizado', 'Cancelado']"  label="Status*" :rules="[valRequired]" :readonly="isShowRoute"></q-select>
+						<q-select v-model="coleta.status" :options="coletaStatusOptions"  label="Status*" :rules="[validatorRequired]" :readonly="showBool"></q-select>
 					</div>
 				</q-card-section>
 
@@ -22,33 +22,32 @@
 						Endereço de Coleta
 					</q-item-label>
 					<div class="col-3">
-						<q-input v-model="coleta.responsavelColeta.nome" label="Com Quem Coleta" :rules="[valRequired]" :readonly="isShowRoute"></q-input>
+						<q-input v-model="coleta.quem" label="Com Quem Coleta" :rules="[validatorRequired]" :readonly="showBool"></q-input>
 					</div>
 					<div class="col-3">
-						<q-input v-model="coleta.responsavelColeta.telefone" label="Telefone" v-mask="['(##) ####-####', '(##) #####-####']" :rules="[valRequired, val => val.length >= 14 || 'Telefone incompleto']" :readonly="isShowRoute"></q-input>
+						<q-input v-model="coleta.telefone" label="Telefone" v-mask="['(##) ####-####', '(##) #####-####']" :rules="[validatorRequired, val => val.length >= 14 || 'Telefone incompleto']" :readonly="showBool"></q-input>
 					</div>
 					<div class="col-xl-6"></div>
-
 					<div class="col-xl-1 col-xs-3">
-						<q-input v-model="coleta.enderecoColeta.cep" label="CEP*" :loading="cepLoading" v-mask="'##.###-###'" :rules="[valRequired, val => val.length >= 10 || 'CEP inválido']" @blur="pesquisarCep(coleta.enderecoColeta)" :readonly="isShowRoute"></q-input>
+						<q-input v-model="coleta.cep" label="CEP*" :loading="cepLoading" v-mask="'##.###-###'" :rules="[validatorRequired, val => val.length >= 10 || 'CEP inválido']" @blur="pesquisarCep(coleta)" :readonly="showBool"></q-input>
 					</div>
 					<div class="col-xl-3 col-xs-3">
-						<q-input v-model="coleta.enderecoColeta.rua" label="Rua*" :loading="cepLoading" :rules="[valRequired]" :readonly="isShowRoute"></q-input>
+						<q-input v-model="coleta.endereco" label="Rua*" :loading="cepLoading" :rules="[validatorRequired]" :readonly="showBool"></q-input>
 					</div>
 					<div class="col-xl-1 col-xs-3">
-						<q-input v-model="coleta.enderecoColeta.numero" label="Número" :loading="cepLoading" :readonly="isShowRoute"></q-input>
+						<q-input v-model="coleta.endereco_numero" label="Número" :loading="cepLoading" :readonly="showBool" ref="endereco_numero"></q-input>
 					</div>
 					<div class="col-xl-2 col-xs-3">
-						<q-input v-model="coleta.enderecoColeta.complemento" label="Complemento" :loading="cepLoading" :readonly="isShowRoute"></q-input>
+						<q-input v-model="coleta.complemento" label="Complemento" :loading="cepLoading" :readonly="showBool"></q-input>
 					</div>
 					<div class="col-xl-2 col-xs-3">
-						<q-input v-model="coleta.enderecoColeta.bairro" label="Bairro*" :loading="cepLoading" :rules="[valRequired]" :readonly="isShowRoute"></q-input>
+						<q-input v-model="coleta.bairro" label="Bairro*" :loading="cepLoading" :rules="[validatorRequired]" :readonly="showBool"></q-input>
 					</div>
 					<div class="col-xl-2 col-xs-3">
-						<q-input v-model="coleta.enderecoColeta.cidade" label="Cidade*" :loading="cepLoading" :rules="[valRequired]" :readonly="isShowRoute"></q-input>
+						<q-input v-model="coleta.cidade" label="Cidade*" :loading="cepLoading" :rules="[validatorRequired]" :readonly="showBool"></q-input>
 					</div>
 					<div class="col-xl-1 col-xs-3">
-						<q-select v-model="coleta.enderecoColeta.estado" label="Estado*" :options="estadosOptions" :loading="cepLoading" :rules="[valRequired]"></q-select>
+						<q-select v-model="coleta.estado" label="Estado*" :options="ufOptions" :loading="cepLoading" :rules="[validatorRequired]"></q-select>
 					</div>
 				</q-card-section>
 
@@ -58,40 +57,39 @@
 						<q-btn icon="add" color="primary" flat @click="adicionarEnderecoEntrega"></q-btn>
 					</q-item-label>
 					<q-list class="q-gutter-y-md" separator>
-						<q-item v-for="(endereco, index) in coleta.enderecosEntrega" :key="'endereco-'+index">
-							<q-item-section side class="text-h5 text-primary text-bold">
-								{{index}} -
-							</q-item-section>
+						<q-item v-for="(endereco, index) in coleta.enderecosEntregas" :key="'endereco-'+index">
 							<q-item-section>
 								<div class="row q-col-gutter-sm">
 									<div class="col-3">
-										<q-input v-model="endereco.destinatario.nome" label="Pra Quem Entrega" :rules="[valRequired]" :readonly="isShowRoute"></q-input>
+										<q-input v-model="endereco.quem" label="Pra Quem Entrega" :rules="[validatorRequired]" :readonly="showBool"></q-input>
 									</div>
 									<div class="col-3">
-										<q-input v-model="endereco.destinatario.telefone" label="Telefone" v-mask="['(##) ####-####', '(##) #####-####']" :rules="[valRequired, val => val.length >= 14 || 'Telefone incompleto']" :readonly="isShowRoute"></q-input>
+										<q-input v-model="endereco.telefone" label="Telefone" v-mask="['(##) ####-####', '(##) #####-####']" :rules="[validatorRequired, val => val.length >= 14 || 'Telefone incompleto']" :readonly="showBool"></q-input>
 									</div>
-									<div class="col-xl-6"></div>
-
+									<div class="col-3">
+										<q-select v-model="endereco.retorno" :options="simNaoOptions" map-options emit-value label="Com Retorno" :rules="[validatorRequired]" :readonly="showBool"></q-select>
+									</div>
+									<div class="col-xl-3"></div>
 									<div class="col-xl-1 col-xs-3">
-										<q-input v-model="endereco.cep" label="CEP*" :loading="cepLoading" v-mask="'##.###-###'" :rules="[valRequired, val => val.length >= 10 || 'CEP inválido']" @blur="pesquisarCep(endereco)" :readonly="isShowRoute"></q-input>
+										<q-input v-model="endereco.cep" label="CEP*" :loading="cepLoading" v-mask="'##.###-###'" :rules="[validatorRequired, val => val.length >= 10 || 'CEP inválido']" @blur="pesquisarCep(endereco,index)" :readonly="showBool"></q-input>
 									</div>
 									<div class="col-xl-3 col-xs-3">
-										<q-input v-model="endereco.rua" label="Rua*" :loading="cepLoading" :rules="[valRequired]" :readonly="isShowRoute"></q-input>
+										<q-input v-model="endereco.endereco" label="Rua*" :loading="cepLoading" :rules="[validatorRequired]" :readonly="showBool"></q-input>
 									</div>
 									<div class="col-xl-1 col-xs-3">
-										<q-input v-model="endereco.numero" label="Número" :loading="cepLoading" :readonly="isShowRoute"></q-input>
+										<q-input v-model="endereco.endereco_numero" label="Número" :loading="cepLoading" :readonly="showBool" :ref="'endereco_numero'+index"></q-input>
 									</div>
 									<div class="col-xl-2 col-xs-3">
-										<q-input v-model="endereco.complemento" label="Complemento" :loading="cepLoading" :readonly="isShowRoute"></q-input>
+										<q-input v-model="endereco.complemento" label="Complemento" :loading="cepLoading" :readonly="showBool"></q-input>
 									</div>
 									<div class="col-xl-2 col-xs-3">
-										<q-input v-model="endereco.bairro" label="Bairro*" :loading="cepLoading" :rules="[valRequired]" :readonly="isShowRoute"></q-input>
+										<q-input v-model="endereco.bairro" label="Bairro*" :loading="cepLoading" :rules="[validatorRequired]" :readonly="showBool"></q-input>
 									</div>
 									<div class="col-xl-2 col-xs-3">
-										<q-input v-model="endereco.cidade" label="Cidade*" :loading="cepLoading" :rules="[valRequired]" :readonly="isShowRoute"></q-input>
+										<q-input v-model="endereco.cidade" label="Cidade*" :loading="cepLoading" :rules="[validatorRequired]" :readonly="showBool"></q-input>
 									</div>
 									<div class="col-xl-1 col-xs-3">
-										<q-select v-model="endereco.estado" label="Estado*" :options="estadosOptions" :loading="cepLoading" :rules="[valRequired]"></q-select>
+										<q-select v-model="endereco.estado" label="Estado*" :options="ufOptions" :loading="cepLoading" :rules="[validatorRequired]"></q-select>
 									</div>
 								</div>
 							</q-item-section>
@@ -99,39 +97,30 @@
 								<q-btn icon="close" color="negative" flat @click="removerEnderecoEntrega(index)"></q-btn>
 							</q-item-section>
 						</q-item>
-
 					</q-list>
 				</q-card-section>
 
 				<q-card-section class="row q-col-gutter-sm">
-					<div class="col-3">
-						<q-input v-model="coleta.telefone" label="Telefone" :rules="[valRequired, val => val.length >= 14 || 'Telefone incompleto']" v-mask="['(##) ####-####', '(##) #####-####']" :readonly="isShowRoute"></q-input>
-					</div>
-					<div class="col-3">
-						<q-select v-model="coleta.comRetorno" :options="['Sim', 'Não']" label="Com Retorno" :rules="[valRequired]" :readonly="isShowRoute"></q-select>
-					</div>
-
 					<div class="col-12 q-pb-md">
-						<q-input v-model="coleta.observacoes" type="textarea" label="Observações" :readonly="isShowRoute"></q-input>
-					</div>
-					
+						<q-input v-model="coleta.observacao" type="textarea" label="Observações" :readonly="showBool"></q-input>
+					</div>					
 					<div class="col-3">
-						<q-select v-model="coleta.tipoEntrega" :options="['Expresso', 'Convencional']" label="Tipo da Entrega" :rules="[valRequired]" :readonly="isShowRoute"></q-select>
-					</div>
-					<div class="col-3">
-						<q-input v-model="coleta.valorEntrega" label="Valor da Entrega" :rules="[valRequired]" :readonly="isShowRoute"></q-input>
+						<q-select v-model="coleta.tipo_entrega" :options="tipoEntregaOptions" label="Tipo da Entrega" :rules="[validatorRequired]" :readonly="showBool"></q-select>
 					</div>
 					<div class="col-3">
-						<q-select v-model="coleta.formaPagamento" :options="['Dinheiro', 'Boleto', 'Crédito', 'Débito', 'Depósito']" label="Tipo da Entrega" :rules="[valRequired]" :readonly="isShowRoute"></q-select>
+						<q-input v-model="coleta.valor_entrega" label="Valor da Entrega" :rules="[validatorRequired]" :readonly="showBool" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 					</div>
 					<div class="col-3">
-						<q-input v-model="coleta.numeroBoleto" label="Número do Boleto" :rules="[valRequired]" :readonly="isShowRoute"></q-input>
+						<q-select v-model="coleta.forma_pagamento" :options="formaPagamentoOptions" label="Forma de Pagamento" :rules="[validatorRequired]" :readonly="showBool"></q-select>
+					</div>
+					<div class="col-3" v-if="coleta.forma_pagamento==='Boleto'">
+						<q-input v-model="coleta.numero_boleto" label="Número do Boleto" :rules="[validatorRequired]" :readonly="showBool"></q-input>
 					</div>
 					<div class="col-3">
-						<q-select v-model="coleta.motoboy" :options="motoboys" option-label="nome" label="Nome*" :rules="[valRequired]" :readonly="isShowRoute"></q-select>
+						<q-select v-model="coleta.motoboy_id" :options="motoboyOptions" option-label="nome" option-value="id" map-options emit-value label="Motoboy*" :rules="[validatorRequired]" :readonly="showBool" use-input filled @filter="buscarMotoboy"/>
 					</div>
 					<div class="col-3">
-						<q-input v-model="coleta.porcentagemComissao" label="Porcentagem de Comissão" :rules="[valRequired]" :readonly="isShowRoute"></q-input>
+						<q-input v-model="coleta.comissao" label="Porcentagem de Comissão" :rules="[validatorRequired]" :readonly="showBool" mask="#,##" fill-mask="0" reverse-fill-mask suffix="%"></q-input>
 					</div>
 				</q-card-section>
 
@@ -140,12 +129,11 @@
 						*Campos obrigatórios
 					</div>
 					<div class="col-6 row justify-end">
-						<q-btn v-if="isShowRoute" label="Voltar" icon="keyboard_arrow_left" type="reset" color="primary" flat></q-btn>
-						<q-btn v-if="isShowRoute" label="Remover" icon="delete" color="negative" flat @click="removerColeta"></q-btn>
-						<q-btn v-if="isShowRoute" label="Editar" icon="edit" color="primary" @click="isShowRoute = false"></q-btn>
-
-						<q-btn v-if="!isShowRoute" label="Cancelar" icon="close" type="reset" color="negative" flat></q-btn>
-						<q-btn v-if="!isShowRoute" label="Salvar" icon="save" type="submit" color="primary"></q-btn>
+						<q-btn v-if="showBool" label="Voltar" icon="keyboard_arrow_left" type="reset" color="primary" flat></q-btn>
+						<q-btn v-if="showBool" label="Remover" icon="delete" color="negative" flat @click="removerColeta"></q-btn>
+						<q-btn v-if="showBool" label="Editar" icon="edit" color="primary" @click="showBool = false"></q-btn>
+						<q-btn v-if="!showBool" label="Cancelar" icon="close" type="reset" color="negative" flat></q-btn>
+						<q-btn v-if="!showBool" label="Salvar" icon="save" type="submit" color="primary"></q-btn>
 					</div>
 				</q-card-section>
 			</q-form>
@@ -153,142 +141,120 @@
 		<modal-cliente ref="modalCliente" @clienteCadastrado="clienteCadastrado"></modal-cliente>
 	</div>
 </template>
-
 <script>
-import { mapGetters } from "vuex"
 import ModalCliente from "../../components/ModalCliente.vue"
-
 export default {
 	components: {
 		ModalCliente
 	},
-	data: () => ({
-		cepLoading: false,
-		estadosOptions: ["AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO"],
-		isShowRoute: false,
-		clientesFiltrados: [],
-		coleta: {
-			id: "",
-			cliente: {
-				nome: "",
+	data () {
+		return {
+			coleta: {
+				cliente_id: '',
+				cep: '',
+				endereco: '',
+				endereco_numero: '',
+				complemento: '',
+				bairro: '',
+				cidade: '',
+				estado: '',
+				quem: '',
+				telefone: '',
+				observacao: '',
+				tipo_entrega: '',
+				valor_entrega: 0,
+				forma_pagamento: '',
+				numero_boleto: '',
+				motoboy_id: '',
+				comissao: 0,
+				status: '',
+				enderecosEntregas: []
 			},
-			enderecoColeta: {
-				cep: "",
-				rua: "",
-				numero: "",
-				complemento: "",
-				bairro: "",
-				cidade: "",
-				estado: "",
-			},
-			responsavelColeta: {
-				nome: "",
-				telefone: "",
-			},
-			telefone: "",
-			enderecosEntrega: [
-				{
-					cep: "",
-					rua: "",
-					numero: "",
-					complemento: "",
-					bairro: "",
-					cidade: "",
-					estado: "",
-					destinatario: {
-						nome: "",
-						telefone: "",
-					},
-				},
-			],
-			comRetorno: "",
-			observacoes: "",
-			tipoEntrega: "",
-			valorEntrega: "",
-			formaPagamento: "",
-			numeroBoleto: "",
-			motoboy: {
-				nome: "",
-			},
-			porcentagemComissao: "",
-		},
-	}),
-	computed: {
-		...mapGetters({
-			selectColeta: "selectColeta",
-			clientes: "clientes",
-			motoboys: "motoboys"
-		}),
+			cepLoading: false,
+			showBool: false,
+			clienteOptions: [],
+			motoboyOptions: []
+		}
 	},
 	methods: {
+		async buscarCliente(val,update,abort) {
+			let data = {url: 'api/Clientes', method: 'get', params: {
+					page: 1,
+					rowsPerPage: 20,
+					sortBy: 'nome',
+					descending: false,
+					filter: val
+				}
+			}
+			var response = await this.executeMethod(data)
+			if (response.status===200) this.clienteOptions = response.data.data
+			update()
+		},
+		async buscarMotoboy(val,update,abort) {
+			let data = {url: 'api/Motoboys', method: 'get', params: {
+					page: 1,
+					rowsPerPage: 20,
+					sortBy: 'nome',
+					descending: false,
+					filter: val
+				}
+			}
+			var response = await this.executeMethod(data)
+			if (response.status===200) this.motoboyOptions = response.data.data
+			update()
+		},
 		adicionarEnderecoEntrega() {
-			this.coleta.enderecosEntrega.push({
+			this.coleta.enderecosEntregas.push({
 				cep: "",
-				rua: "",
-				numero: "",
+				endereco: "",
+				endereco_numero: "",
 				complemento: "",
 				bairro: "",
 				cidade: "",
 				estado: "",
-				destinatario: {
-					nome: "",
-					telefone: "",
-				},
+				retorno: '',
+				quem: '',
+				telefone: ''
 			})
 		},
 		abrirModalCliente() {
 			this.$refs.modalCliente.abrirModal();
 		},
 		clienteCadastrado(cliente) {
-			console.log("IHSDAPDIHP", cliente);
-			this.coleta.cliente = cliente;
+			this.coleta.cliente_id = cliente.id
+			this.clienteOptions = [cliente]
 		},
-		filterFn(val, update) {
-			if(val == "") {
-				update(() => {
-					this.clientesFiltrados = this.clientes;
-				})
-			} else {
-				update(() => {
-					this.clientesFiltrados = this.clientes.filter(v => v.nome.toLowerCase().includes(val.toLowerCase()));
+		async onSubmit() {
+			var response = await this.executeMethod({url:'api/Coletas'+(this.coleta.id ? '/'+this.coleta.id : ''),method:this.coleta.id ? 'put' : 'post',data:this.coleta})
+			if (response.status===200) {
+				this.$router.push("/cadastroColetas");
+				this.$q.notify({
+					message: "Coleta cadastrado com sucesso.",
+					type: "positive"
 				})
 			}
 		},
-		onSubmit() {
-			this.$store.dispatch("adicionarColeta", this.coleta);
-			this.$router.push("/cadastroColetas");
-			this.$q.notify({
-				message: "Coleta cadastrado com sucesso.",
-				type: "positive"
-			})
-		},
 		onReset() {
-			if(!this.isShowRoute && this.coleta.id) {
-				this.isShowRoute = true;
+			if(!this.showBool && this.coleta.id) {
+				this.showBool = true;
 			} else {
 				this.$router.push("/cadastroColetas");
 			}
 		},
-		pesquisarCep(endereco) {
-			let cep = endereco.cep.replace(/[^0-9]/g, "");
-			if(cep.length != 8) {
-				return false;
-			}
+		async pesquisarCep(endereco,idx) {
 			this.cepLoading = true;
-
-			this.$axios.request({
-				method: "get",
-				url: "https://viacep.com.br/ws/" + cep + "/json/"
-			}).then(response => {
-				this.cepLoading = false;
-				endereco.rua = response.data.logradouro;
-				endereco.bairro = response.data.bairro;
-				endereco.cidade = response.data.localidade;
-				endereco.estado = response.data.uf;
-				this.$refs.rua.focus();
-			}).catch(error => {
-				console.log("ERROR", error);
-			})
+			let r = await this.buscarCep(endereco.cep)
+			if (r) {
+				endereco.endereco = r.logradouro
+				endereco.bairro = r.bairro
+				endereco.cidade = r.localidade
+				endereco.estado = r.uf
+				if (idx) {
+					if (this.$refs['endereco_numero'+idx]) this.$refs['endereco_numero'+idx][0].focus()
+				}
+				else this.$refs.endereco_numero.focus()
+			}
+			this.cepLoading = false;
 		},
 		removerEnderecoEntrega(index) {
 			this.$q.dialog({
@@ -297,7 +263,7 @@ export default {
 				ok: "Sim",
 				cancel: "Não"
 			}).onOk(() => {
-				this.coleta.enderecosEntrega.splice(index, 1);
+				this.coleta.enderecosEntregas.splice(index, 1);
 				this.$q.notify({
 					message: "Endereço de entrega removido com sucesso",
 					type: "positive"
@@ -305,32 +271,26 @@ export default {
 			})
 		},
 		removerColeta() {
-			this.$q.dialog({
-				title: "Confirmação",
-				message: "Tem certeza que deseja remover este usuário? Esta ação é irreversível.",
-				ok: "Sim",
-				cancel: "Não"
-			}).onOk(() => {
-				this.$store.dispatch("removerColeta", this.coleta.id);
-				this.$q.notify({
-					message: "Coleta removido com sucesso",
-					type: "positive"
-				})
-				this.$router.push("/cadastroColetas")
+			this.$q.dialog({title:'Confirmação',message:'Tem certeza que deseja remover esta coleta? Esta ação é irreversível.',ok:'Sim',cancel:'Não'}).onOk(async ()=>{
+        var response = await this.executeMethod({url:'api/Coletas/'+this.usuario.id,method:'delete'})
+				if (response.status===200) {
+					this.$q.notify({
+						message: "Coleta removido com sucesso",
+						type: "positive"
+					})
+					this.$router.push("/cadastroColetas")
+				}
 			})
-		},
-		valEmail(val) {
-			let index = val.indexOf("@");
-			return (index > 0 && val.includes(".", index)) || "Este email é inválido."
-		},
-		valRequired(val) {
-			return val !== null && val !== "" || "Este campo é obrigatório."
 		}
 	},
-	created() {
-		if(this.$route.params.id) {
-			let selectedColeta = JSON.parse(JSON.stringify(this.selectColeta(this.$route.params.id)))
-			if(selectedColeta) this.coleta = {...selectedColeta[0]};
+	async created() {
+		if (this.$route.params.id) {
+			let response = await this.executeMethod({url:`api/Coletas/show/${this.$route.params.id}`,method:'get'})
+			if (response.status===200) {
+				if (response.data.cliente) this.clienteOptions = [response.data.cliente]
+				if (response.data.motoboy) this.motoboyOptions = [response.data.motoboy]
+				this.coleta = response.data
+			}
 			else {
 				this.$q.notify({
 					message: "Coleta não encontrado",
@@ -338,12 +298,9 @@ export default {
 				})
 				this.$router.push("/cadastroColetas")
 			}
-
-			this.isShowRoute = this.$route.meta.show
+			this.showBool = this.$route.meta.show
 		}
+		if (this.coleta.enderecosEntregas.length===0) this.adicionarEnderecoEntrega()
 	}
 }
 </script>
-
-<style lang="sass">
-</style>

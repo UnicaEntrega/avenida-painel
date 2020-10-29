@@ -1,12 +1,12 @@
 <template>
 	<q-page class="q-pa-lg bg-grey-4">
 		<transition mode="out-in" enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
-			<div v-if="indexBool" key="list">
-				<q-table :data="clientesFilter" :columns="clienteColumns" align="left">
+			<div v-if="$route.path == '/cadastroClientes'" key="list">
+				<q-table :data="clientes" :columns="clienteColumns" align="left" row-key="id" :pagination.sync="pagination" @update:pagination="v=>buscar()" :loading="loading" @request="buscar" :rows-per-page-options="[10,20,50,100]" :pagination-label="paginationLabel" binary-state-sort>
 					<template v-slot:top>
 						<div class="col-9 text-h5 text-primary">Clientes</div>
 						<div class="col-3">
-							<q-input v-model="search" placeholder="Pesquisar">
+							<q-input v-model="search" placeholder="Pesquisar" @input="buscar()" :debounce="400">
 								<q-icon slot="append" name="search" color="primary"></q-icon>
 							</q-input>
 						</div>
@@ -35,56 +35,69 @@
 		</transition>
 	</q-page>
 </template>
-
 <script>
-import { mapGetters } from "vuex"
-
 export default {
-	data: () => ({
-		// editBool: false,
-		search: "",
-		clienteColumns: [
-			{ name: "actions", label: "Ações", field: "actions", align: "left" },
-			{ name: "nome", label: "Nome", field: "nome", align: "left" },
-			{ name: "cpf", label: "CPF", field: "cpf", align: "left" },
-			{ name: "telefone", label: "Telefone", field: "telefone", align: "left" },
-			{ name: "email", label: "E-mail", field: "email", align: "left" },
-		]
-	}),
-	computed: {
-		...mapGetters({
-			clientes: "clientes"
-		}),
-		clientesFilter() {
-			return this.clientes.filter(val => {
-				return val.nome.includes(this.search) || val.cpf.includes(this.search) || val.telefone.includes(this.search) || val.email.includes(this.search)
-			})
-		},
-		indexBool() {
-			return this.$route.path == "/cadastroClientes"
+	data () {
+		return {
+			search: "",
+			clientes: [],
+			clienteColumns: [
+				{ name: "actions", label: "Ações", field: "actions", align: "left" },
+				{ name: "nome", label: "Nome", field: "nome", align: "left" },
+				{ name: "cpf_cnpj", label: "CPF/CNPJ", field: "cpf_cnpj", align: "left" },
+				{ name: "telefone", label: "Telefone", field: "telefone", align: "left" },
+				{ name: "email", label: "E-mail", field: "email", align: "left" },
+			],
+      loading: false,
+      pagination: {
+        sortBy: 'nome',
+        descending: false,
+        page: 1,
+        rowsPerPage: 10,
+        rowsNumber: 0
+			}
 		}
 	},
 	methods: {
+    paginationLabel(first,end,total) {
+      return 'Registros '+first+' até '+end+' de '+total
+    },
+    async buscar(props) {
+      this.loading = true
+      if (props) {
+        this.pagination.page = props.pagination.page
+        this.pagination.rowsPerPage = props.pagination.rowsPerPage
+        this.pagination.sortBy = props.pagination.sortBy
+        this.pagination.descending = props.pagination.descending
+      }
+      let data = {
+				filter: this.search,
+        ...this.pagination
+      }
+      var response = await this.executeMethod({url:'api/Clientes',method:'get',params:data})
+      if (response.status===200) {
+        this.pagination.rowsNumber = parseInt(response.data.total)
+				this.clientes = response.data.data
+      }
+      this.loading = false
+    },
 		adicionarCliente() {
-			// this.editBool = true;
 			this.$router.push("cadastroClientes/edit")
 		},
 		editarCliente(id) {
 			this.$router.push("cadastroClientes/edit/"+id);
 		},
 		removerCliente(id) {
-			this.$q.dialog({
-				title: "Confirmação",
-				message: "Tem certeza que deseja remover este usuário? Esta ação é irreversível.",
-				ok: "Sim",
-				cancel: "Não"
-			}).onOk(() => {
-				this.$store.dispatch("removerCliente", id);
-				this.$q.notify({
-					message: "Cliente removido com sucesso",
-					type: "positive"
-				})
-			})
+      this.$q.dialog({title:'Confirmação',message:'Tem certeza que deseja remover este cliente? Esta ação é irreversível.',ok:'Sim',cancel:'Não'}).onOk(async ()=>{
+        var response = await this.executeMethod({url:'api/Clientes/'+id,method:'delete'})
+				if (response.status===200) {
+					this.$q.notify({
+						message: "Cliente removido com sucesso",
+						type: "positive"
+					})
+					this.buscar()
+				}
+      })
 		},
 		showCliente(id) {
 			this.$router.push("cadastroClientes/show/"+id)
@@ -92,7 +105,3 @@ export default {
 	}
 }
 </script>
-
-<style>
-
-</style>
