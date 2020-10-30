@@ -46,7 +46,7 @@ module.exports = function (ctx) {
       env: ctx.dev ? {
         API_URL: "http://localhost:3333/"
       } : {
-        API_URL: "http://localhost:3333/"
+        API_URL: "http://dev.lpt4.com.br:3340/"
       },
       vueRouterMode: 'history', // available values: 'hash', 'history'
 
