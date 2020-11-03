@@ -11,3 +11,56 @@ $grey4: #545454
 
 .grey-gradient
 	background: linear-gradient(to top, black, $grey4)
+	
+.chat-bot-bubble,.chat-user-bubble
+	display: flex
+	padding: 12px 0
+
+.chat-user-bubble
+	justify-content: flex-end
+
+.chat-icon
+	padding: 12px
+
+.chat-bot-content,.chat-user-content
+	padding: 12px
+	border-radius: 12px
+
+.chat-bot-content
+	background-color: $grey-2
+	position: relative
+
+	&::before
+		content: ""
+		width: 14px
+		height: 14px
+		background-color: $grey-2
+		position: absolute
+		top: 24px
+		left: -7px
+		transform: rotate(45deg)
+
+.chat-user-content
+	background-color: $secondary
+	color: white
+	position: relative
+
+	&::before
+		content: ""
+		width: 14px
+		height: 14px
+		background-color: $secondary
+		position: absolute
+		top: 16px
+		right: -7px
+		transform: rotate(45deg)
+
+.chat-time
+	display: flex
+	align-items: flex-end
+	width: 60px
+	padding: 0 12px
+	font-size: 12px
+
+a
+	text-decoration: none !important

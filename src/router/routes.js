@@ -25,6 +25,7 @@ const routes = [
 				{ path: "edit/:id", component: () => import("pages/Motoboys/Edit.vue")},
 				{ path: "show/:id", component: () => import("pages/Motoboys/Edit.vue"), meta: { show: true }},
 			] },
+			{ path: 'chat', component: () => import('pages/Chat.vue') },
 		]
 	},
 	{
