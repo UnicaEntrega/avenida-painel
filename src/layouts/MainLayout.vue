@@ -22,24 +22,28 @@
 				<div v-for="categoria in categorias" :key="categoria.name">
 					<q-expansion-item v-if="categoria.name" icon="edit" expand-separator :label="categoria.name" header-class="text-body1 text-primary">
 						<q-list separator class="q-pl-sm">
-							<q-item v-for="item in categoria.links" :key="item.title" clickable @click="item.click">
-								<q-item-section side>
-									<q-icon :name="item.icon" color="primary"></q-icon>
-								</q-item-section>
-								<q-item-section>
-									{{item.title}}
-								</q-item-section>
+							<q-item v-for="item in categoria.links" :key="item.title" clickable>
+								<router-link :to="item.path">
+									<q-item-section side>
+										<q-icon :name="item.icon" color="primary"></q-icon>
+									</q-item-section>
+									<q-item-section>
+										{{item.title}}
+									</q-item-section>
+								</router-link>
 							</q-item>
 						</q-list>
 					</q-expansion-item>
-					<q-item v-else clickable @click="categoria.click">
-						<q-item-section side>
-							<q-icon :name="categoria.icon" color="primary"></q-icon>
-						</q-item-section>
-						<q-item-section>
-							{{categoria.title}}
-						</q-item-section>
-					</q-item>
+					<router-link :to="categoria.path" v-else>
+						<q-item class="text-body1 text-primary" clickable>
+							<q-item-section avatar>
+								<q-icon :name="categoria.icon" color="primary"></q-icon>
+							</q-item-section>
+							<q-item-section>
+								{{categoria.title}}
+							</q-item-section>
+						</q-item>
+					</router-link>
 				</div>
 			</q-list>
 		</q-drawer>
@@ -67,25 +71,31 @@ export default {
 						{
 							icon: "emoji_people",
 							title: "Clientes",
-							click: () => { this.$router.push('/cadastroClientes') }
+							path: "/cadastroClientes",
 						},
 						{
 							icon: "person",
 							title: "Usuarios",
-							click: () => { this.$router.push('/cadastroUsuarios') }
+							path: "/cadastroUsuarios",
 						},
 						{
 							icon: "card_travel",
 							title: "Coletas",
-							click: () => { this.$router.push('/cadastroColetas') }
+							path: "/cadastroColetas",
 						},
 						{
 							icon: "moped",
 							title: "Motoboys",
-							click: () => { this.$router.push('/motoboys') }
+							path: "/motoboys",
 						},
 					]
 				},
+				{
+					icon: "chat",
+					title: "Chat",
+					path: '/chat',
+					click: () => { this.$router.push('/chat') },
+				}
 			]
 		}
 	},
