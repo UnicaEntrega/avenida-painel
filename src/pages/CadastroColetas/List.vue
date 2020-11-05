@@ -4,21 +4,14 @@
 			<div v-if="$route.path == '/cadastroColetas'" key="list">
 				<q-table :data="coletas" :columns="coletaColumns" align="left" row-key="id" :pagination.sync="pagination" @update:pagination="v=>buscar()" :loading="loading" @request="buscar" :rows-per-page-options="[10,20,50,100]" :pagination-label="paginationLabel" binary-state-sort>
 					<template v-slot:top>
-						<div class="col-4 text-h5 text-primary">Coletas</div>
-						<div class="col-2 q-px-xs">
-							<q-input v-model="search" placeholder="Pesquisar id" @input="buscar()" :debounce="400">
+						<div class="col-6 text-h5 text-primary">Coletas</div>
+						<div class="col-4 q-px-xs">
+							<q-input v-model="search" placeholder="Pesquisar id, cliente ou motoboy" @input="buscar()" :debounce="400">
 								<q-icon slot="append" name="search" color="primary"></q-icon>
 							</q-input>
 						</div>
-						<div class="col-3 q-px-xs">
-							<q-input v-model="cliente" placeholder="Pesquisar cliente" @input="buscar()" :debounce="400">
-								<q-icon slot="append" name="search" color="primary"></q-icon>
-							</q-input>
-						</div>
-						<div class="col-3 q-px-xs">
-							<q-input v-model="motoboy" placeholder="Pesquisar motoboy" @input="buscar()" :debounce="400">
-								<q-icon slot="append" name="search" color="primary"></q-icon>
-							</q-input>
+						<div class="col-2">
+							<q-select v-model="status" :options="coletaStatusOptions"  label="Status*" @input="buscar()" multiple></q-select>
 						</div>
 					</template>
 
@@ -63,8 +56,7 @@ export default {
 	data () {
 		return {
 			search: "",
-			cliente: '',
-			motoboy: '',
+			status: [],
 			coletas: [],
 			coletaColumns: [
 				{ name: "actions", label: "Ações", field: "actions", align: "left" },
@@ -97,8 +89,9 @@ export default {
       }
       let data = {
 				filter: this.search,
-				cliente: this.cliente,
-				motoboy: this.motoboy,
+				cliente: this.search,
+				motoboy: this.search,
+				status: this.status,
         ...this.pagination
       }
       var response = await this.executeMethod({url:'api/Coletas',method:'get',params:data})
