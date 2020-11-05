@@ -129,7 +129,8 @@
 						*Campos obrigatórios
 					</div>
 					<div class="col-6 row justify-end">
-						<q-btn label="Status" icon="refresh" color="primary" flat @click="abrirModalStatus"></q-btn>
+						<q-btn v-if="showBool" label="Status" icon="refresh" color="primary" flat @click="abrirModalStatus"></q-btn>
+						<q-btn v-if="showBool" label="Motoboy" icon="refresh" color="primary" flat @click="abrirModalMotoboy"></q-btn>
 						<q-btn v-if="showBool" label="Voltar" icon="keyboard_arrow_left" type="reset" color="primary" flat></q-btn>
 						<q-btn v-if="showBool" label="Remover" icon="delete" color="negative" flat @click="removerColeta"></q-btn>
 						<q-btn v-if="showBool" label="Editar" icon="edit" color="primary" @click="showBool = false"></q-btn>
@@ -155,6 +156,23 @@
 							</q-item-section>
 						</q-item>
 					</q-list>
+				</q-card-section>
+				<q-separator></q-separator>
+				<q-card-section class="row justify-end">
+					<q-btn label="Cancelar" color="negative" no-caps flat v-close-popup></q-btn>
+					<q-btn label="Confirmar" color="positive" no-caps v-close-popup></q-btn>
+				</q-card-section>
+			</q-card>
+		</q-dialog>
+
+		<q-dialog v-model="modalMotoboy">
+			<q-card style="min-width: 500px">
+				<q-card-section class="text-body1 text-primary text-bold">
+					Mudar o motoboy encarregado
+				</q-card-section>
+				<q-separator></q-separator>
+				<q-card-section>
+					<q-select v-model="coleta.motoboy_id" :options="motoboyOptions" option-label="nome" option-value="id" map-options emit-value label="Motoboy*" :rules="[validatorRequired]" use-input filled @filter="buscarMotoboy"/>
 				</q-card-section>
 				<q-separator></q-separator>
 				<q-card-section class="row justify-end">
@@ -199,6 +217,7 @@ export default {
 			clienteOptions: [],
 			motoboyOptions: [],
 			modalStatus: false,
+			modalMotoboy: false,
 		}
 	},
 	computed: {
@@ -214,6 +233,12 @@ export default {
 		},
 		selecionarStatus(status) {
 			this.coleta.status = status;
+		},
+		abrirModalMotoboy() {
+			this.modalMotoboy = true;
+		},
+		selecionarMotoboy(motoboy) {
+			this.coleta.motoboy = motoboy;
 		},
 		async buscarCliente(val,update,abort) {
 			let data = {url: 'api/Clientes', method: 'get', params: {
