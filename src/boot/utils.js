@@ -1,4 +1,5 @@
 import { mapGetters } from "vuex"
+import jsonpAdapter from 'axios-jsonp'
 export default ({app, Vue}) => {
 	Vue.mixin({
 		computed: {
@@ -48,7 +49,7 @@ export default ({app, Vue}) => {
 				cep = !this.isBlank(cep) ? cep.replace(/\D/g,'') : ''
 				if (this.isBlank(cep)) return null
 				try {
-					let response = await this.$axios.request({url:`https://viacep.com.br/ws/${cep}/json/`,method:'get'})
+					let response = await this.$axios.request({url:`https://viacep.com.br/ws/${cep}/json/`,adapter: jsonpAdapter,method:'get'})
 					if (response.status===200) {
 						console.log(response)
 						return response.data
