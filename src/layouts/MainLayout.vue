@@ -18,20 +18,20 @@
 		</q-header>
 
 		<q-drawer v-model="leftDrawerOpen" show-if-above bordered content-class="bg-grey-2" elevated>
-			<q-list separator>
-				<div v-for="categoria in categorias" :key="categoria.name">
-					<q-expansion-item v-if="categoria.name" icon="edit" expand-separator :label="categoria.name" header-class="text-body1 text-primary">
+			<q-list>
+				<div v-for="categoria in categorias" :key="categoria.name" v-show="mostrarItemMenu(categoria)">
+					<q-expansion-item v-if="categoria.name" :icon="categoria.icon" expand-separator :label="categoria.name" header-class="text-body1 text-primary">
 						<q-list separator class="q-pl-sm">
-							<q-item v-for="item in categoria.links" :key="item.title" clickable>
-								<router-link :to="item.path">
+							<router-link :to="item.path" v-for="item in categoria.links" :key="item.title" v-show="mostrarItemMenu(item)">
+								<q-item class="text-body1 text-primary" clickable>
 									<q-item-section side>
-										<q-icon :name="item.icon" color="primary"></q-icon>
+										<q-icon :name="item.icon" color="primary" size="20px"></q-icon>
 									</q-item-section>
 									<q-item-section>
 										{{item.title}}
 									</q-item-section>
-								</router-link>
-							</q-item>
+								</q-item>
+							</router-link>
 						</q-list>
 					</q-expansion-item>
 					<router-link :to="categoria.path" v-else>
@@ -44,6 +44,7 @@
 							</q-item-section>
 						</q-item>
 					</router-link>
+					<q-separator></q-separator>
 				</div>
 			</q-list>
 		</q-drawer>
@@ -63,40 +64,90 @@ export default {
 	name: 'MainLayout',
 	data () {
 		return {
+			usuario: {
+				tipo: "Cliente"
+			},
 			leftDrawerOpen: true,
 			categorias: [
 				{
-					name: "Cadastros",
+					icon: "emoji_people",
+					title: "Clientes",
+					path: "/cadastroClientes",
+					tipo: "Admin",
+				},
+				{
+					icon: "person",
+					title: "Usuarios",
+					path: "/cadastroUsuarios",
+					tipo: "Admin",
+				},
+				{
+					icon: "card_travel",
+					title: "Coletas",
+					path: "/cadastroColetas",
+					tipo: "Admin",
+				},
+				{
+					icon: "moped",
+					title: "Motoboys",
+					path: "/motoboys",
+					tipo: "Admin",
+				},
+				{
+					icon: "img:images/avenida_web_chat.png",
+					title: "Chat",
+					path: '/chat',
+					tipo: "Ambos",
+				},
+				{
+					icon: "person",
+					title: "Meus Dados",
+					path: '/',
+					tipo: "Cliente",
+				},
+				{
+					icon: "img:images/avenida_web_relatorios.png",
+					title: "Minhas Coletas",
+					path: '/',
+					tipo: "Cliente",
+				},
+				{
+					icon: "img:images/avenida_web_relatorios.png",
+					title: "Nova Coleta",
+					path: '/',
+					tipo: "Cliente",
+				},
+				{
+					icon: "img:images/avenida_web_motoboysOnline.png",
+					name: "Coletas em Andamento",
+					tipo: "Cliente",
 					links: [
 						{
-							icon: "emoji_people",
-							title: "Clientes",
-							path: "/cadastroClientes",
+							icon: "img:images/avenida_web_motoboysOnline.png",
+							title: "3165 - 10/12/2020",
+							path: '/coleta',
+							tipo: "Cliente",
 						},
 						{
-							icon: "person",
-							title: "Usuarios",
-							path: "/cadastroUsuarios",
+							icon: "img:images/avenida_web_motoboysOnline.png",
+							title: "2125 - 10/12/2020",
+							path: '/coleta',
+							tipo: "Cliente",
 						},
 						{
-							icon: "card_travel",
-							title: "Coletas",
-							path: "/cadastroColetas",
-						},
-						{
-							icon: "moped",
-							title: "Motoboys",
-							path: "/motoboys",
+							icon: "img:images/avenida_web_motoboysOnline.png",
+							title: "7076 - 10/12/2020",
+							path: '/coleta',
+							tipo: "Cliente",
 						},
 					]
 				},
-				{
-					icon: "chat",
-					title: "Chat",
-					path: '/chat',
-					click: () => { this.$router.push('/chat') },
-				}
 			]
+		}
+	},
+	methods: {
+		mostrarItemMenu(categoria) {
+			return (this.usuario.tipo == categoria.tipo) || categoria.tipo == "Ambos"
 		}
 	},
 	created() {
