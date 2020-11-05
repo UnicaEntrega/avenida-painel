@@ -65,7 +65,7 @@ export default {
 	data () {
 		return {
 			usuario: {
-				tipo: "Cliente"
+				tipo: "Admin"
 			},
 			leftDrawerOpen: true,
 			categorias: [
