@@ -65,7 +65,7 @@ export default {
 	data () {
 		return {
 			usuario: {
-				tipo: "Cliente"
+				tipo: "Admin"
 			},
 			leftDrawerOpen: true,
 			categorias: [
@@ -82,13 +82,13 @@ export default {
 					tipo: "Admin",
 				},
 				{
-					icon: "card_travel",
+					icon: "topic",
 					title: "Coletas",
 					path: "/cadastroColetas",
 					tipo: "Admin",
 				},
 				{
-					icon: "moped",
+					icon: "img:images/avenida_web_motoboysOnline.png",
 					title: "Motoboys",
 					path: "/motoboys",
 					tipo: "Admin",
@@ -106,13 +106,13 @@ export default {
 					tipo: "Cliente",
 				},
 				{
-					icon: "img:images/avenida_web_relatorios.png",
+					icon: "topic",
 					title: "Minhas Coletas",
 					path: '/',
 					tipo: "Cliente",
 				},
 				{
-					icon: "img:images/avenida_web_relatorios.png",
+					icon: "create_new_folder",
 					title: "Nova Coleta",
 					path: '/',
 					tipo: "Cliente",

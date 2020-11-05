@@ -6,8 +6,8 @@
 					<div>ACESSE <b>SUA CONTA</b></div>
 				</q-card-section>
 				<q-card-section class="q-gutter-y-sm">
-					<q-input label="Login" v-model="form.email" type="email" standout ref="email" bottom-slots :error-message="mostrarMsgErro($v.form.email)" @blur="$v.form.email.$touch" :error="$v.form.email.$error"></q-input>
-					<q-input label="Senha" v-model="form.password" type="password" standout v-on:keyup.enter="doLogin()" bottom-slots :error-message="mostrarMsgErro($v.form.password)" @blur="$v.form.password.$touch" :error="$v.form.password.$error"></q-input>
+					<q-input label="Login" v-model="form.email" type="email" ref="email" bottom-slots :error-message="mostrarMsgErro($v.form.email)" @blur="$v.form.email.$touch" :error="$v.form.email.$error"></q-input>
+					<q-input label="Senha" v-model="form.password" type="password" v-on:keyup.enter="doLogin()" bottom-slots :error-message="mostrarMsgErro($v.form.password)" @blur="$v.form.password.$touch" :error="$v.form.password.$error"></q-input>
 				</q-card-section>
 				<q-card-section>
 					<q-item>

@@ -1,5 +1,5 @@
 <template>
-	<q-page class="q-py-md">
+	<q-page class="q-pt-md">
 		<div class="row q-col-gutter-y-sm q-mb-md q-px-xl">
 			<div class="col-12 text-h6 text-primary q-px-md">Informações sobre a sua coleta</div>
 			
@@ -108,16 +108,33 @@
 					<q-btn class="full-width" label="Mais informações" icon="add" color="primary" no-caps @click="toggleVerMais"></q-btn>
 				</div>
 				<div class="col-4">
-					<q-btn class="full-width" label="Cancelar coleta" icon="close" color="negative" no-caps flat></q-btn>
+					<q-btn class="full-width" label="Cancelar coleta" icon="close" color="negative" no-caps flat @click="confirmarCancelamento"></q-btn>
 				</div>
 				<div class="col-4">
 					<q-btn to="/chat" class="full-width" label="Chat" icon="chat" color="positive" no-caps></q-btn>
 				</div>
 			</div>
 		</div>
+
 		<div>
-			<iframe frameborder="0" style="border:0; width: 100%; height: 52vh" src="https://www.google.com/maps/embed/v1/place?q=place_id:ChIJ5VtrTX_m3JQRO23oqkx9i_s&key=AIzaSyCWTvPGIC5ZBhjuhpkKavofii0mkTQwZIo" allowfullscreen></iframe>
+			<iframe frameborder="0" style="border:0; width: 100%; height: 100vh" src="https://www.google.com/maps/embed/v1/place?q=place_id:ChIJ5VtrTX_m3JQRO23oqkx9i_s&key=AIzaSyCWTvPGIC5ZBhjuhpkKavofii0mkTQwZIo" allowfullscreen></iframe>
 		</div>
+
+		<q-dialog v-model="cancelamentoModal">
+			<q-card style="min-width: 700px">
+				<q-card-section class="text-body1 text-primary text-bold">
+					Confirmação
+				</q-card-section>
+				<q-separator></q-separator>
+				<q-card-section>
+					<q-input v-model="motivoCancelamento" type="textarea" label="Motivo"></q-input>
+				</q-card-section>
+				<q-card-section class="row justify-end">
+					<q-btn label="Cancelar" color="negative" flat no-caps v-close-popup></q-btn>
+					<q-btn label="Confirmar" color="positive" no-caps v-close-popup></q-btn>
+				</q-card-section>
+			</q-card>
+		</q-dialog>
 	</q-page>
 </template>
 
@@ -163,6 +180,8 @@ export default {
 			]
 		},
 		verMais: false,
+		motivoCancelamento: "",
+		cancelamentoModal: false,
 	}),
 	computed: {
 		c_enderecoColeta() {
@@ -176,6 +195,10 @@ export default {
 		}
 	},
 	methods: {
+		confirmarCancelamento() {
+			this.motivoCancelamento = "";
+			this.cancelamentoModal = true;
+		},
 		formatEndereco(coleta) {
 			return coleta.endereco + ", " + coleta.endereco_numero + ", " + coleta.complemento + " - " + coleta.bairro + ", " + coleta.cidade + " - " + coleta.estado
 		},

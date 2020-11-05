@@ -129,6 +129,7 @@
 						*Campos obrigatórios
 					</div>
 					<div class="col-6 row justify-end">
+						<q-btn label="Status" icon="refresh" color="primary" flat @click="abrirModalStatus"></q-btn>
 						<q-btn v-if="showBool" label="Voltar" icon="keyboard_arrow_left" type="reset" color="primary" flat></q-btn>
 						<q-btn v-if="showBool" label="Remover" icon="delete" color="negative" flat @click="removerColeta"></q-btn>
 						<q-btn v-if="showBool" label="Editar" icon="edit" color="primary" @click="showBool = false"></q-btn>
@@ -139,6 +140,29 @@
 			</q-form>
 		</q-card>
 		<modal-cliente ref="modalCliente" @clienteCadastrado="clienteCadastrado"></modal-cliente>
+
+		<q-dialog v-model="modalStatus">
+			<q-card style="min-width: 300px">
+				<q-card-section class="text-body1 text-primary text-bold">
+					Mudar o status da coleta
+				</q-card-section>
+				<q-separator></q-separator>
+				<q-card-section>
+					<q-list separator>
+						<q-item v-for="status in coletaStatusOptions" :key="status" :class="c_statusItem(status)" clickable @click="selecionarStatus(status)">
+							<q-item-section>
+								{{status}}
+							</q-item-section>
+						</q-item>
+					</q-list>
+				</q-card-section>
+				<q-separator></q-separator>
+				<q-card-section class="row justify-end">
+					<q-btn label="Cancelar" color="negative" no-caps flat v-close-popup></q-btn>
+					<q-btn label="Confirmar" color="positive" no-caps v-close-popup></q-btn>
+				</q-card-section>
+			</q-card>
+		</q-dialog>
 	</div>
 </template>
 <script>
@@ -173,10 +197,24 @@ export default {
 			cepLoading: false,
 			showBool: false,
 			clienteOptions: [],
-			motoboyOptions: []
+			motoboyOptions: [],
+			modalStatus: false,
+		}
+	},
+	computed: {
+		c_statusItem() {
+			return (status) => {
+				return status == this.coleta.status ? "bg-primary shadow-2 rounded-borders text-white" : ""
+			}
 		}
 	},
 	methods: {
+		abrirModalStatus() {
+			this.modalStatus = true;
+		},
+		selecionarStatus(status) {
+			this.coleta.status = status;
+		},
 		async buscarCliente(val,update,abort) {
 			let data = {url: 'api/Clientes', method: 'get', params: {
 					page: 1,
