@@ -44,10 +44,9 @@ module.exports = function (ctx) {
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
       env: ctx.dev ? {
-        // API_URL: "http://dev.lpt4.com.br:3340/"
         API_URL: "http://localhost:3333/"
       } : {
-        API_URL: "http://dev.lpt4.com.br:3340/"
+        API_URL: "https://avenida.dev.lpt4.com.br/"
       },
       vueRouterMode: 'history', // available values: 'hash', 'history'
 
