@@ -7,12 +7,12 @@
 			<q-separator></q-separator>
 			<q-form @submit="onSubmit" @reset="onReset" class="q-gutter-y-md">
 				<q-card-section class="row q-col-gutter-sm">
-					<div class="col-8">
+					<div class="col-8" v-if="usuarioPerfil!=='Cliente'">
 						<q-select v-model="coleta.cliente_id" :options="clienteOptions" option-label="nome" option-value="id" map-options emit-value label="Cliente*" :rules="[validatorRequired]" :readonly="showBool" use-input filled @filter="buscarCliente">
 							<q-btn slot="after" icon="add" color="primary" @click="abrirModalCliente" v-if="!showBool"></q-btn>
 						</q-select>
 					</div>
-					<div class="col-3 offset-1">
+					<div class="col-3" :class="usuarioPerfil==='Cliente' ? '' : 'offset-1'">
 						<q-select v-model="coleta.status" :options="coletaStatusOptions"  label="Status*" :rules="[validatorRequired]" :readonly="showBool"></q-select>
 					</div>
 				</q-card-section>
@@ -54,7 +54,7 @@
 				<q-card-section>
 					<q-item-label class="col-12 text-h6 text-primary">
 						Endereços de Entrega
-						<q-btn icon="add" color="primary" flat @click="adicionarEnderecoEntrega"></q-btn>
+						<q-btn icon="add" color="primary" flat @click="adicionarEnderecoEntrega" v-if="!showBool"></q-btn>
 					</q-item-label>
 					<q-list class="q-gutter-y-md" separator>
 						<q-item v-for="(endereco, index) in coleta.enderecosEntregas" :key="'endereco-'+index">
@@ -94,7 +94,7 @@
 								</div>
 							</q-item-section>
 							<q-item-section side>
-								<q-btn icon="close" color="negative" flat @click="removerEnderecoEntrega(index)"></q-btn>
+								<q-btn icon="close" color="negative" flat @click="removerEnderecoEntrega(index)" v-if="!showBool"></q-btn>
 							</q-item-section>
 						</q-item>
 					</q-list>
@@ -122,6 +122,9 @@
 					<div class="col-3">
 						<q-input v-model="coleta.comissao" label="Porcentagem de Comissão" :rules="[validatorRequired]" :readonly="showBool" mask="#,##" fill-mask="0" reverse-fill-mask suffix="%"></q-input>
 					</div>
+					<div class="col-12 q-pb-md" v-if="showBool && !isBlank(coleta.observacao_cancelamento)">
+						<q-input v-model="coleta.observacao_cancelamento" type="textarea" label="Observações de cancelamento" :readonly="showBool"></q-input>
+					</div>	
 				</q-card-section>
 
 				<q-card-section class="q-col-gutter-md row items-center">
@@ -210,6 +213,7 @@ export default {
 				motoboy_id: '',
 				comissao: 0,
 				status: '',
+				observacao_cancelamento: '',
 				enderecosEntregas: []
 			},
 			cepLoading: false,
@@ -290,19 +294,24 @@ export default {
 		async onSubmit() {
 			var response = await this.executeMethod({url:'api/Coletas'+(this.coleta.id ? '/'+this.coleta.id : ''),method:this.coleta.id ? 'put' : 'post',data:this.coleta})
 			if (response.status===200) {
-				this.$router.push("/cadastroColetas");
+				if (this.usuarioPerfil==='Cliente') this.$router.push("/");
+				else this.$router.push("/cadastroColetas");
 				this.$q.notify({
 					message: "Coleta cadastrado com sucesso.",
 					type: "positive"
 				})
 			}
+			else {
+				this.$q.notify({
+					message: response.data.error.message,
+					type: "negative"
+				})
+			}
 		},
 		onReset() {
-			if(!this.showBool && this.coleta.id) {
-				this.showBool = true;
-			} else {
-				this.$router.push("/cadastroColetas");
-			}
+			if (this.usuarioPerfil==='Cliente') this.$router.push("/");
+			else if (!this.showBool && this.coleta.id) this.showBool = true;
+			else this.$router.push("/cadastroColetas");
 		},
 		async pesquisarCep(endereco,idx) {
 			this.cepLoading = true;

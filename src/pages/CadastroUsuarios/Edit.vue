@@ -91,7 +91,7 @@ export default {
 		if (this.$route.params.id) {
 			response = await this.executeMethod({url:`api/Usuarios/show/${this.$route.params.id}`,method:'get'})
 			if (response.status===200) {
-				if (response.data.perfis && response.data.perfis.length>0) response.data.perfil = response.data.perfis[0]
+				if (response.data.perfis && response.data.perfis.length>0) response.data.perfil = response.data.perfis[0].id
 				delete response.data.perfis
 				this.usuario = response.data
 			}

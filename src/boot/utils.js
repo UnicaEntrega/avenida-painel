@@ -12,7 +12,8 @@ export default ({app, Vue}) => {
 			coletaStatusOptions() {return ['Aberto','Encaminhado','Em Coleta','Em Entrega','Finalizado','Cancelado']},
 			tipoEntregaOptions() {return ['Expresso','Convencional']},
 			formaPagamentoOptions() {return ['Dinheiro','Boleto','Crédito','Débito','Depósito']},
-			simNaoOptions() {return [{label:'Sim',value:'1'},{label:'Não',value:'0'}]}
+			simNaoOptions() {return [{label:'Sim',value:'1'},{label:'Não',value:'0'}]},
+			usuarioPerfil() {return this.getUsuario.perfis && this.getUsuario.perfis.length>0 ? this.getUsuario.perfis[0].name : ''}
 		},
 		methods: {
 			async executeMethod(data) {
@@ -49,7 +50,7 @@ export default ({app, Vue}) => {
 				cep = !this.isBlank(cep) ? cep.replace(/\D/g,'') : ''
 				if (this.isBlank(cep)) return null
 				try {
-					let response = await this.$axios.request({url:`https://viacep.com.br/ws/${cep}/json/`,adapter: jsonpAdapter,method:'get'})
+					let response = await this.$axios.request({url:`https://viacep.com.br/ws/${cep}/json/`,adapter:jsonpAdapter,method:'get'})
 					if (response.status===200) {
 						console.log(response)
 						return response.data

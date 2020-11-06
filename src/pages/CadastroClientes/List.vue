@@ -102,6 +102,9 @@ export default {
 		showCliente(id) {
 			this.$router.push("cadastroClientes/show/"+id)
 		}
+	},
+	created() {
+		if (this.usuarioPerfil==='Cliente' && this.$route.path.indexOf('cadastroClientes')>-1) this.$router.push('/')
 	}
 }
 </script>

@@ -130,19 +130,24 @@ export default {
 		async onSubmit() {
 			var response = await this.executeMethod({url:'api/Clientes'+(this.cliente.id ? '/'+this.cliente.id : ''),method:this.cliente.id ? 'put' : 'post',data:this.cliente})
 			if (response.status===200) {
-				this.$router.push("/cadastroClientes");
+				if (this.usuarioPerfil==='Cliente') this.$router.push("/");
+				else this.$router.push("/cadastroClientes");
 				this.$q.notify({
 					message: "Cliente cadastrado com sucesso.",
 					type: "positive"
 				})
 			}
+			else {
+				this.$q.notify({
+					message: response.data.error.message,
+					type: "negative"
+				})
+			}
 		},
 		onReset() {
-			if(!this.showBool && this.cliente.id) {
-				this.showBool = true;
-			} else {
-				this.$router.push("/cadastroClientes");
-			}
+			if (this.usuarioPerfil==='Cliente') this.$router.push("/");
+			else if (!this.showBool && this.cliente.id) this.showBool = true;
+			else this.$router.push("/cadastroClientes");
 		},
 		async pesquisarCep() {
 			this.cepLoading = true;
@@ -179,7 +184,22 @@ export default {
 		}
 	},
 	async created() {
-		if (this.$route.params.id) {
+		if (this.usuarioPerfil==='Cliente') {
+			let response = await this.executeMethod({url:'api/Clientes/meusDados',method:'get'})
+			if (response.status===200) {
+				this.cliente = response.data
+				this.cliente.contatos.sort(function(a,b){return a.id-b.id})
+			}
+			else {
+				this.$q.notify({
+					message: "Cliente não encontrado",
+					type: "negative"
+				})
+				this.$router.push("/")
+			}
+			this.showBool = false
+		}
+		else if (this.$route.params.id) {
 			let response = await this.executeMethod({url:`api/Clientes/show/${this.$route.params.id}`,method:'get'})
 			if (response.status===200) {
 				this.cliente = response.data

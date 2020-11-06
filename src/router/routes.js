@@ -26,7 +26,11 @@ const routes = [
 				{ path: "show/:id", component: () => import("pages/Motoboys/Edit.vue"), meta: { show: true }},
 			] },
 			{ path: 'chat', component: () => import('pages/Chat.vue') },
-			{ path: 'coleta', component: () => import('pages/Coleta.vue') },
+			{ path: 'coleta/:id', component: () => import('pages/Coleta.vue') },
+			{ path: "meusDados", component: () => import("pages/CadastroClientes/List.vue"), children: [
+				{ path: "/", component: () => import("pages/CadastroClientes/Edit.vue")}
+			] },
+			{ path: "minhasColetas", component: () => import("pages/CadastroColetas/Minhas.vue") }
 		]
 	},
 	{

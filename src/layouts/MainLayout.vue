@@ -56,17 +56,11 @@
 		</q-page-container>
 	</q-layout>
 </template>
-
 <script>
-import { mapGetters } from "vuex"
-
 export default {
 	name: 'MainLayout',
 	data () {
 		return {
-			usuario: {
-				tipo: "Admin"
-			},
 			leftDrawerOpen: true,
 			categorias: [
 				{
@@ -102,56 +96,54 @@ export default {
 				{
 					icon: "person",
 					title: "Meus Dados",
-					path: '/',
+					path: '/meusDados',
 					tipo: "Cliente",
 				},
 				{
 					icon: "topic",
 					title: "Minhas Coletas",
-					path: '/',
+					path: '/minhasColetas',
 					tipo: "Cliente",
 				},
 				{
 					icon: "create_new_folder",
 					title: "Nova Coleta",
-					path: '/',
+					path: '/cadastroColetas/edit',
 					tipo: "Cliente",
-				},
-				{
-					icon: "img:images/avenida_web_motoboysOnline.png",
-					name: "Coletas em Andamento",
-					tipo: "Cliente",
-					links: [
-						{
-							icon: "img:images/avenida_web_motoboysOnline.png",
-							title: "3165 - 10/12/2020",
-							path: '/coleta',
-							tipo: "Cliente",
-						},
-						{
-							icon: "img:images/avenida_web_motoboysOnline.png",
-							title: "2125 - 10/12/2020",
-							path: '/coleta',
-							tipo: "Cliente",
-						},
-						{
-							icon: "img:images/avenida_web_motoboysOnline.png",
-							title: "7076 - 10/12/2020",
-							path: '/coleta',
-							tipo: "Cliente",
-						},
-					]
-				},
+				}
 			]
 		}
 	},
 	methods: {
 		mostrarItemMenu(categoria) {
-			return (this.usuario.tipo == categoria.tipo) || categoria.tipo == "Ambos"
+			return (this.usuarioPerfil == categoria.tipo) || categoria.tipo == "Ambos"
+		},
+		async carregarColetas() {
+      var response = await this.executeMethod({url:'api/Coletas/minhas',method:'get'})
+      if (response.status===200) {
+				if (response.data.length>0) {
+					let coletas = {
+						icon: "img:images/avenida_web_motoboysOnline.png",
+						name: "Coletas em Andamento",
+						tipo: "Cliente",
+						links: []
+					}
+					for (let item of response.data) {
+						coletas.links.push({
+							icon: "img:images/avenida_web_motoboysOnline.png",
+							title: `${item.id} - ${this.formatarDataHora(item.created_at,'DD/MM/YYYY')}`,
+							path: `/coleta/${item.id}`,
+							tipo: "Cliente",
+						})
+					}
+					this.categorias.push(coletas)
+				}
+			}
 		}
 	},
 	created() {
 		if (this.isBlank(this.getLogin.token)) this.$router.push('/login');
+		if (this.usuarioPerfil==='Cliente') this.carregarColetas()
 	}
 }
 </script>
