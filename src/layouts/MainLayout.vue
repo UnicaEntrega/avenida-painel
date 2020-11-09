@@ -67,25 +67,25 @@ export default {
 					icon: "emoji_people",
 					title: "Clientes",
 					path: "/cadastroClientes",
-					tipo: "Admin",
+					tipo: "admin",
 				},
 				{
 					icon: "person",
 					title: "Usuarios",
 					path: "/cadastroUsuarios",
-					tipo: "Admin",
+					tipo: "admin",
 				},
 				{
 					icon: "topic",
 					title: "Coletas",
 					path: "/cadastroColetas",
-					tipo: "Admin",
+					tipo: "admin",
 				},
 				{
 					icon: "img:images/avenida_web_motoboysOnline.png",
 					title: "Motoboys",
 					path: "/motoboys",
-					tipo: "Admin",
+					tipo: "admin",
 				},
 				{
 					icon: "img:images/avenida_web_chat.png",
@@ -97,19 +97,19 @@ export default {
 					icon: "person",
 					title: "Meus Dados",
 					path: '/meusDados',
-					tipo: "Cliente",
+					tipo: "cliente",
 				},
 				{
 					icon: "topic",
 					title: "Minhas Coletas",
 					path: '/minhasColetas',
-					tipo: "Cliente",
+					tipo: "cliente",
 				},
 				{
 					icon: "create_new_folder",
 					title: "Nova Coleta",
 					path: '/cadastroColetas/edit',
-					tipo: "Cliente",
+					tipo: "cliente",
 				}
 			]
 		}
@@ -125,7 +125,7 @@ export default {
 					let coletas = {
 						icon: "img:images/avenida_web_motoboysOnline.png",
 						name: "Coletas em Andamento",
-						tipo: "Cliente",
+						tipo: "cliente",
 						links: []
 					}
 					for (let item of response.data) {
@@ -133,7 +133,7 @@ export default {
 							icon: "img:images/avenida_web_motoboysOnline.png",
 							title: `${item.id} - ${this.formatarDataHora(item.created_at,'DD/MM/YYYY')}`,
 							path: `/coleta/${item.id}`,
-							tipo: "Cliente",
+							tipo: "cliente",
 						})
 					}
 					this.categorias.push(coletas)
@@ -143,7 +143,7 @@ export default {
 	},
 	created() {
 		if (this.isBlank(this.getLogin.token)) this.$router.push('/login');
-		if (this.usuarioPerfil==='Cliente') this.carregarColetas()
+		if (this.usuarioPerfil==='cliente') this.carregarColetas()
 	}
 }
 </script>

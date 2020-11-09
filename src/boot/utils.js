@@ -13,7 +13,7 @@ export default ({app, Vue}) => {
 			tipoEntregaOptions() {return ['Expresso','Convencional']},
 			formaPagamentoOptions() {return ['Dinheiro','Boleto','Crédito','Débito','Depósito']},
 			simNaoOptions() {return [{label:'Sim',value:'1'},{label:'Não',value:'0'}]},
-			usuarioPerfil() {return this.getUsuario.perfis && this.getUsuario.perfis.length>0 ? this.getUsuario.perfis[0].name : ''}
+			usuarioPerfil() {return this.getUsuario.perfis && this.getUsuario.perfis.length>0 ? this.getUsuario.perfis[0].slug : ''}
 		},
 		methods: {
 			async executeMethod(data) {
