@@ -59,6 +59,28 @@ export default ({app, Vue}) => {
 				catch(e) {}
 				return null
 			},
+			async buscarGeocode(address) {
+				function resolver(address) {
+					return new Promise(resolve=>{
+						Vue.$geocoder.send({address_line_1:address},response=>resolve(response))
+					})
+				}
+				let pos = {lat:0,lng:0}
+				let response = await resolver(address)
+				if (!response.error_message) {
+					console.log(response)
+				}
+				
+				/*try {
+					let response = await this.$axios.request({url:'https://maps.googleapis.com/maps/api/geocode/json?address='+address+'&key=AIzaSyCWTvPGIC5ZBhjuhpkKavofii0mkTQwZIo',adapter:jsonpAdapter,method:'get'})
+					if (response.status===200 && response.data.status==='OK' && response.data.results.length>0) {
+						pos.lat = response.data.results[0].geometry.location.lat
+						pos.lng = response.data.results[0].geometry.location.lng
+					}
+				}
+				catch(e) {console.log(e)}*/
+				return pos
+			},
 			formatarDataHora(d,f1,f2) {
 				return f2 ? Vue.moment(d,f1).format(f2) : Vue.moment(d).format(f1)
 			},

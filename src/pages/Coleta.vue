@@ -31,7 +31,7 @@
 			</div>
 
 			<div class="col-12 row q-col-gutter-x-sm">
-				<div :class="c_enderecoColeta">
+				<div :class="verMais ? 'col-6' : 'col-12'">
 					<q-item class="full-height bg-grey-2 rounded-borders">
 						<q-item-section>
 							<q-item-label class="text-primary" caption>Endereço - Coleta</q-item-label>
@@ -58,7 +58,7 @@
 			</div>
 
 			<div class="col-12 row q-col-gutter-sm" v-for="(endereco,index) in coleta.enderecosEntregas" :key="'endereco'+index">
-				<div :class="c_enderecoEntrega" v-if="verMaisEnderecoEntrega(index)">
+				<div :class="verMais ? 'col-lg-5 col-xs-12' : 'col-12'" v-if="verMais ? true : index == 0">
 					<q-item class="full-height bg-grey-2 rounded-borders">
 						<q-item-section>
 							<q-item-label class="text-primary" caption>Endereço - Entrega {{index+1}}</q-item-label>
@@ -116,9 +116,17 @@
 			</div>
 		</div>
 
-		<div>
-			<iframe frameborder="0" style="border:0; width: 100%; height: 100vh" src="https://www.google.com/maps/embed/v1/place?q=place_id:ChIJ5VtrTX_m3JQRO23oqkx9i_s&key=AIzaSyCWTvPGIC5ZBhjuhpkKavofii0mkTQwZIo" allowfullscreen></iframe>
-		</div>
+		<gmap-map :center="coordsCenter" :zoom="12" style="width:100%;height:100vh;">
+			<gmap-marker v-for="(item,index) in pontos" :key="index" :position="item.coords" :clickable="true" @click="clickMarker(item)"/>
+		</gmap-map>
+    <q-dialog v-model="modalMarker">
+      <q-card>
+        <q-card-section>
+          <div class="col-12 text-center">{{itemMarker.idx===0 ? 'Coleta' : 'Entrega '+itemMarker.idx}}</div>
+          <div class="col-12 q-pb-sm">{{itemMarker.endereco}}</div>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
 
 		<q-dialog v-model="cancelamentoModal">
 			<q-card style="min-width: 700px">
@@ -147,20 +155,17 @@ export default {
 			verMais: false,
 			motivoCancelamento: "",
 			cancelamentoModal: false,
-		}
-	},
-	computed: {
-		c_enderecoColeta() {
-			return this.verMais ? "col-6" : "col-12"
-		},
-		c_enderecoEntrega() {
-			return this.verMais ? "col-lg-5 col-xs-12" : "col-12"
-		},
-		verMaisEnderecoEntrega() {
-			return (index) => this.verMais ? true : index == 0;
+			modalMarker: false,
+			itemMarker: {},
+			coordsCenter: {lat:-25.4284,lng:-49.2733},
+			pontos: []
 		}
 	},
 	methods: {
+		clickMarker(item) {
+      this.itemMarker = item
+      this.modalMarker = true
+    },
 		confirmarCancelamento() {
 			this.motivoCancelamento = "";
 			this.cancelamentoModal = true;
@@ -178,8 +183,18 @@ export default {
 			this.verMais = !this.verMais;
 		},
 		async carregar() {
+			this.pontos = []
+			let address
 			var response = await this.executeMethod({url:`api/Coletas/show/${this.$route.params.id}`,method:'get'})
-			if (response.status===200) this.coleta = response.data
+			if (response.status===200) {
+				address = this.formatarEndereco(response.data)
+				this.pontos.push({idx:0,endereco:address,coords:await this.buscarGeocode(address)})
+				for (let idx in response.data.enderecosEntregas) {
+					address = this.formatarEndereco(response.data.enderecosEntregas[idx])
+					this.pontos.push({idx:parseInt(idx)+1,endereco:address,coords:await this.buscarGeocode(address)})
+				}
+				this.coleta = response.data
+			}
 		}
 	},
 	created() {
