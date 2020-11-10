@@ -46,6 +46,7 @@ module.exports = function (ctx) {
       env: ctx.dev ? {
         API_URL: "http://localhost:3333/"
         //API_URL: "https://avenida.dev.lpt4.com.br/"
+        //API_URL: "https://611bc1be82f7.ngrok.io/"
       } : {
         API_URL: "https://avenida.dev.lpt4.com.br/"
       },

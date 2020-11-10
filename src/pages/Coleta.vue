@@ -117,7 +117,7 @@
 		</div>
 
 		<gmap-map :center="coordsCenter" :zoom="12" style="width:100%;height:100vh;">
-			<gmap-marker v-for="(item,index) in pontos" :key="index" :position="item.coords" :clickable="true" @click="clickMarker(item)"/>
+			<gmap-marker v-for="(item,index) in pontos" :key="index" :position="item.coords" :label="item.label" :icon="item.icon" :clickable="true" @click="clickMarker(item)"/>
 		</gmap-map>
     <q-dialog v-model="modalMarker">
       <q-card>
@@ -157,7 +157,7 @@ export default {
 			cancelamentoModal: false,
 			modalMarker: false,
 			itemMarker: {},
-			coordsCenter: {lat:-25.4284,lng:-49.2733},
+			coordsCenter: {lat:0,lng:0},
 			pontos: []
 		}
 	},
@@ -176,22 +176,36 @@ export default {
 				if (response.status===200) this.$router.push('/')
 			}
 		},
-		formatarEndereco(item) {
-			return item.endereco+', '+(item.endereco_numero || '')+(this.isBlank(item.complemento) ? '' : ', '+item.complemento)+' - '+item.bairro+' - '+item.cidade+' - '+item.estado
-		},
 		toggleVerMais() {
 			this.verMais = !this.verMais;
 		},
 		async carregar() {
 			this.pontos = []
-			let address
 			var response = await this.executeMethod({url:`api/Coletas/show/${this.$route.params.id}`,method:'get'})
 			if (response.status===200) {
-				address = this.formatarEndereco(response.data)
-				this.pontos.push({idx:0,endereco:address,coords:await this.buscarGeocode(address)})
+				this.pontos.push({
+					idx: 0,
+					endereco: this.formatarEndereco(response.data),
+					coords: {lat:parseFloat(response.data.latitude),lng:parseFloat(response.data.longitude)},
+					label: 'Coleta',
+					icon: {
+						url: 'http://maps.gstatic.com/mapfiles/markers2/icon_green.png',
+						size: {width:27,height:43,f:'px',b:'px'}
+					}
+				})
+				this.coordsCenter = this.pontos[0].coords
 				for (let idx in response.data.enderecosEntregas) {
-					address = this.formatarEndereco(response.data.enderecosEntregas[idx])
-					this.pontos.push({idx:parseInt(idx)+1,endereco:address,coords:await this.buscarGeocode(address)})
+					let item = response.data.enderecosEntregas[idx]
+					this.pontos.push({
+						idx: parseInt(idx)+1,
+						endereco: this.formatarEndereco(item),
+						coords: {lat:parseFloat(item.latitude),lng:parseFloat(item.longitude)},
+						label: 'Entrega '+(parseInt(idx)+1),
+						icon: {
+							url: 'https://maps.gstatic.com/mapfiles/api-3/images/spotlight-poi2.png',
+							size: {width:27,height:43,f:'px',b:'px'}
+						}
+					})
 				}
 				this.coleta = response.data
 			}

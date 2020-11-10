@@ -214,6 +214,8 @@ export default {
 				comissao: 0,
 				status: '',
 				observacao_cancelamento: '',
+				latitude: 0,
+				longitude: 0,
 				enderecosEntregas: []
 			},
 			cepLoading: false,
@@ -281,7 +283,9 @@ export default {
 				estado: "",
 				retorno: '',
 				quem: '',
-				telefone: ''
+				telefone: '',
+				latitude: 0,
+				longitude: 0
 			})
 		},
 		abrirModalCliente() {
@@ -292,6 +296,14 @@ export default {
 			this.clienteOptions = [cliente]
 		},
 		async onSubmit() {
+			let pos = await this.buscarGeocode(this.formatarEndereco(this.coleta))
+			this.coleta.latitude = pos.lat
+			this.coleta.longitude = pos.lng
+			for (let item of this.coleta.enderecosEntregas) {
+				pos = await this.buscarGeocode(this.formatarEndereco(item))
+				item.latitude = pos.lat
+				item.longitude = pos.lng
+			}
 			var response = await this.executeMethod({url:'api/Coletas'+(this.coleta.id ? '/'+this.coleta.id : ''),method:this.coleta.id ? 'put' : 'post',data:this.coleta})
 			if (response.status===200) {
 				if (this.usuarioPerfil==='Cliente') this.$router.push("/");

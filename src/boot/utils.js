@@ -67,18 +67,10 @@ export default ({app, Vue}) => {
 				}
 				let pos = {lat:0,lng:0}
 				let response = await resolver(address)
-				if (!response.error_message) {
-					console.log(response)
+				if (response.status==='OK' && response.results.length>0) {
+					pos.lat = response.results[0].geometry.location.lat
+					pos.lng = response.results[0].geometry.location.lng
 				}
-				
-				/*try {
-					let response = await this.$axios.request({url:'https://maps.googleapis.com/maps/api/geocode/json?address='+address+'&key=AIzaSyCWTvPGIC5ZBhjuhpkKavofii0mkTQwZIo',adapter:jsonpAdapter,method:'get'})
-					if (response.status===200 && response.data.status==='OK' && response.data.results.length>0) {
-						pos.lat = response.data.results[0].geometry.location.lat
-						pos.lng = response.data.results[0].geometry.location.lng
-					}
-				}
-				catch(e) {console.log(e)}*/
 				return pos
 			},
 			formatarDataHora(d,f1,f2) {
@@ -89,6 +81,9 @@ export default ({app, Vue}) => {
 			},
 			isBlank(o) {
 				return o===undefined || o===null || o===''
+			},
+			formatarEndereco(item) {
+				return item.endereco+', '+(item.endereco_numero || '')+(this.isBlank(item.complemento) ? '' : ', '+item.complemento)+' - '+item.bairro+' - '+item.cidade+' - '+item.estado
 			},
 			testarCpf(cpf) {
 				cpf = (cpf || '').replace(/[^\d]+/g,'')
