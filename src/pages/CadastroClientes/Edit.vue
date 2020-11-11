@@ -214,7 +214,6 @@ export default {
 			}
 			this.showBool = this.$route.meta.show
 		}
-		if (this.cliente.contatos.length===0) this.adicionarContato()
 	}
 }
 </script>
