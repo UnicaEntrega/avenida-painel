@@ -42,6 +42,9 @@
 							<q-item-section>
 								{{categoria.title}}
 							</q-item-section>
+							<q-item-section v-if="categoria.path=='/chat'" side>
+								<q-chip color="negative" text-color="white">22</q-chip>
+							</q-item-section>
 						</q-item>
 					</router-link>
 					<q-separator></q-separator>

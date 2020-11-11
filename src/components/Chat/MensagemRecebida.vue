@@ -4,9 +4,10 @@
 			<div class="chat-icon">
 				<q-icon name="person" color="primary" size="24px"></q-icon>
 			</div>
-			<div class="chat-bot-content q-gutter-y-sm">
+			<div class="chat-bot-content">
 				<div>
-					Mensagem recebida 1
+					<div class="text-caption">Nome do usuario 1</div>
+					<div>Mensagem recebida 1</div>
 				</div>
 			</div>
 			<div class="chat-time">{{formatarDataHora(dateTest,'HH:mm')}}</div>

@@ -14,7 +14,8 @@
 								</q-item-label>
 							</q-item-section>
 							<q-item-section side>
-								<q-icon name="keyboard_arrow_right" color="primary"></q-icon>
+								<!-- <q-icon name="keyboard_arrow_right" color="primary"></q-icon> -->
+								<q-chip v-if="n % 2 == 0" color="negative" text-color="white">22</q-chip>
 							</q-item-section>
 						</q-item>
 					</q-list>
