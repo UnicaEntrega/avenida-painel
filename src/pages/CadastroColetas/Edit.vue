@@ -7,16 +7,15 @@
 			<q-separator></q-separator>
 			<q-form @submit="onSubmit" @reset="onReset" class="q-gutter-y-md">
 				<q-card-section class="row q-col-gutter-sm">
-					<div class="col-8" v-if="usuarioPerfil!=='Cliente'">
+					<div class="col-8" v-if="usuarioPerfil!=='cliente'">
 						<q-select v-model="coleta.cliente_id" :options="clienteOptions" option-label="nome" option-value="id" map-options emit-value label="Cliente*" :rules="[validatorRequired]" :readonly="showBool" use-input filled @filter="buscarCliente">
 							<q-btn slot="after" icon="add" color="primary" @click="abrirModalCliente" v-if="!showBool"></q-btn>
 						</q-select>
 					</div>
-					<div class="col-3" :class="usuarioPerfil==='Cliente' ? '' : 'offset-1'">
+					<div class="col-3" :class="usuarioPerfil==='cliente' ? '' : 'offset-1'">
 						<q-select v-model="coleta.status" :options="coletaStatusOptions"  label="Status*" :rules="[validatorRequired]" :readonly="showBool"></q-select>
 					</div>
 				</q-card-section>
-
 				<q-card-section class="row q-col-gutter-sm">
 					<q-item-label class="col-12 text-h6 text-primary">
 						Endereço de Coleta
@@ -126,7 +125,6 @@
 						<q-input v-model="coleta.observacao_cancelamento" type="textarea" label="Observações de cancelamento" :readonly="showBool"></q-input>
 					</div>	
 				</q-card-section>
-
 				<q-card-section class="q-col-gutter-md row items-center">
 					<div class="col-6 text-grey-6">
 						*Campos obrigatórios
@@ -144,7 +142,6 @@
 			</q-form>
 		</q-card>
 		<modal-cliente ref="modalCliente" @clienteCadastrado="clienteCadastrado"></modal-cliente>
-
 		<q-dialog v-model="modalStatus">
 			<q-card style="min-width: 300px">
 				<q-card-section class="text-body1 text-primary text-bold">
@@ -153,21 +150,18 @@
 				<q-separator></q-separator>
 				<q-card-section>
 					<q-list separator>
-						<q-item v-for="status in coletaStatusOptions" :key="status" :class="c_statusItem(status)" clickable @click="selecionarStatus(status)">
-							<q-item-section>
-								{{status}}
-							</q-item-section>
+						<q-item v-for="status in coletaStatusOptions" :key="status" :class="c_statusItem(status)" clickable @click="status=status">
+							<q-item-section>{{status}}</q-item-section>
 						</q-item>
 					</q-list>
 				</q-card-section>
 				<q-separator></q-separator>
 				<q-card-section class="row justify-end">
 					<q-btn label="Cancelar" color="negative" no-caps flat v-close-popup></q-btn>
-					<q-btn label="Confirmar" color="positive" no-caps v-close-popup></q-btn>
+					<q-btn label="Confirmar" color="positive" no-caps @click="atualizar({status:status})"></q-btn>
 				</q-card-section>
 			</q-card>
 		</q-dialog>
-
 		<q-dialog v-model="modalMotoboy">
 			<q-card style="min-width: 500px">
 				<q-card-section class="text-body1 text-primary text-bold">
@@ -175,12 +169,12 @@
 				</q-card-section>
 				<q-separator></q-separator>
 				<q-card-section>
-					<q-select v-model="coleta.motoboy_id" :options="motoboyOptions" option-label="nome" option-value="id" map-options emit-value label="Motoboy*" :rules="[validatorRequired]" use-input filled @filter="buscarMotoboy"/>
+					<q-select v-model="motoboy_id" :options="motoboyOptions2" option-label="nome" option-value="id" map-options emit-value label="Motoboy*" :rules="[validatorRequired]" use-input filled @filter="buscarMotoboy2"/>
 				</q-card-section>
 				<q-separator></q-separator>
 				<q-card-section class="row justify-end">
 					<q-btn label="Cancelar" color="negative" no-caps flat v-close-popup></q-btn>
-					<q-btn label="Confirmar" color="positive" no-caps v-close-popup></q-btn>
+					<q-btn label="Confirmar" color="positive" no-caps @click="atualizar({motoboy_id:motoboy_id,status:'Encaminhado'})"></q-btn>
 				</q-card-section>
 			</q-card>
 		</q-dialog>
@@ -222,29 +216,37 @@ export default {
 			showBool: false,
 			clienteOptions: [],
 			motoboyOptions: [],
+			motoboyOptions2: [],
 			modalStatus: false,
+			status: '',
 			modalMotoboy: false,
+			motoboy_id: ''
 		}
 	},
 	computed: {
 		c_statusItem() {
 			return (status) => {
-				return status == this.coleta.status ? "bg-primary shadow-2 rounded-borders text-white" : ""
+				return status == this.status ? "bg-primary shadow-2 rounded-borders text-white" : ""
 			}
 		}
 	},
 	methods: {
 		abrirModalStatus() {
-			this.modalStatus = true;
-		},
-		selecionarStatus(status) {
-			this.coleta.status = status;
+			this.status = this.coleta.status
+			this.modalStatus = true
 		},
 		abrirModalMotoboy() {
-			this.modalMotoboy = true;
+			this.motoboy_id = this.coleta.motoboy_id
+			if (this.coleta.motoboy) this.motoboyOptions2.push(this.coleta.motoboy)
+			this.modalMotoboy = true
 		},
-		selecionarMotoboy(motoboy) {
-			this.coleta.motoboy = motoboy;
+		async atualizar(d) {
+			var response = await this.executeMethod({url:`api/Coletas/${this.coleta.id}`,method:'put',data:d})
+			if (response.status===200) {
+				this.modalStatus = false
+				this.modalMotoboy = false
+				this.buscar()
+			}
 		},
 		async buscarCliente(val,update,abort) {
 			let data = {url: 'api/Clientes', method: 'get', params: {
@@ -270,6 +272,19 @@ export default {
 			}
 			var response = await this.executeMethod(data)
 			if (response.status===200) this.motoboyOptions = response.data.data
+			update()
+		},
+		async buscarMotoboy2(val,update,abort) {
+			let data = {url: 'api/Motoboys', method: 'get', params: {
+					page: 1,
+					rowsPerPage: 20,
+					sortBy: 'nome',
+					descending: false,
+					filter: val
+				}
+			}
+			var response = await this.executeMethod(data)
+			if (response.status===200) this.motoboyOptions2 = response.data.data
 			update()
 		},
 		adicionarEnderecoEntrega() {
@@ -306,7 +321,7 @@ export default {
 			}
 			var response = await this.executeMethod({url:'api/Coletas'+(this.coleta.id ? '/'+this.coleta.id : ''),method:this.coleta.id ? 'put' : 'post',data:this.coleta})
 			if (response.status===200) {
-				if (this.usuarioPerfil==='Cliente') this.$router.push("/");
+				if (this.usuarioPerfil==='cliente') this.$router.push("/");
 				else this.$router.push("/cadastroColetas");
 				this.$q.notify({
 					message: "Coleta cadastrado com sucesso.",
@@ -321,7 +336,7 @@ export default {
 			}
 		},
 		onReset() {
-			if (this.usuarioPerfil==='Cliente') this.$router.push("/");
+			if (this.usuarioPerfil==='cliente') this.$router.push("/");
 			else if (!this.showBool && this.coleta.id) this.showBool = true;
 			else this.$router.push("/cadastroColetas");
 		},
@@ -365,26 +380,29 @@ export default {
 					this.$router.push("/cadastroColetas")
 				}
 			})
+		},
+		async buscar() {
+			if (this.$route.params.id) {
+				let response = await this.executeMethod({url:`api/Coletas/show/${this.$route.params.id}`,method:'get'})
+				if (response.status===200) {
+					if (response.data.cliente) this.clienteOptions = [response.data.cliente]
+					if (response.data.motoboy) this.motoboyOptions = [response.data.motoboy]
+					this.coleta = response.data
+				}
+				else {
+					this.$q.notify({
+						message: "Coleta não encontrado",
+						type: "negative"
+					})
+					this.$router.push("/cadastroColetas")
+				}
+				this.showBool = this.$route.meta.show
+			}
+			if (this.coleta.enderecosEntregas.length===0) this.adicionarEnderecoEntrega()
 		}
 	},
 	async created() {
-		if (this.$route.params.id) {
-			let response = await this.executeMethod({url:`api/Coletas/show/${this.$route.params.id}`,method:'get'})
-			if (response.status===200) {
-				if (response.data.cliente) this.clienteOptions = [response.data.cliente]
-				if (response.data.motoboy) this.motoboyOptions = [response.data.motoboy]
-				this.coleta = response.data
-			}
-			else {
-				this.$q.notify({
-					message: "Coleta não encontrado",
-					type: "negative"
-				})
-				this.$router.push("/cadastroColetas")
-			}
-			this.showBool = this.$route.meta.show
-		}
-		if (this.coleta.enderecosEntregas.length===0) this.adicionarEnderecoEntrega()
+		this.buscar()
 	}
 }
 </script>

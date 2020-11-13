@@ -130,7 +130,7 @@ export default {
 		async onSubmit() {
 			var response = await this.executeMethod({url:'api/Clientes'+(this.cliente.id ? '/'+this.cliente.id : ''),method:this.cliente.id ? 'put' : 'post',data:this.cliente})
 			if (response.status===200) {
-				if (this.usuarioPerfil==='Cliente') this.$router.push("/");
+				if (this.usuarioPerfil==='cliente') this.$router.push("/");
 				else this.$router.push("/cadastroClientes");
 				this.$q.notify({
 					message: "Cliente cadastrado com sucesso.",
@@ -145,7 +145,7 @@ export default {
 			}
 		},
 		onReset() {
-			if (this.usuarioPerfil==='Cliente') this.$router.push("/");
+			if (this.usuarioPerfil==='cliente') this.$router.push("/");
 			else if (!this.showBool && this.cliente.id) this.showBool = true;
 			else this.$router.push("/cadastroClientes");
 		},
@@ -184,7 +184,7 @@ export default {
 		}
 	},
 	async created() {
-		if (this.usuarioPerfil==='Cliente') {
+		if (this.usuarioPerfil==='cliente') {
 			let response = await this.executeMethod({url:'api/Clientes/meusDados',method:'get'})
 			if (response.status===200) {
 				this.cliente = response.data

@@ -104,7 +104,7 @@ export default {
 		}
 	},
 	created() {
-		if (this.usuarioPerfil==='Cliente' && this.$route.path.indexOf('cadastroClientes')>-1) this.$router.push('/')
+		if (this.usuarioPerfil==='cliente' && this.$route.path.indexOf('cadastroClientes')>-1) this.$router.push('/')
 	}
 }
 </script>
