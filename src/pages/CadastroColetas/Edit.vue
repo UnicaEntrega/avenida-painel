@@ -127,14 +127,14 @@
 				</q-card-section>
 				<q-card-section class="q-col-gutter-md row items-center">
 					<div class="col-6 text-grey-6">
-						*Campos obrigatórios
+						{{showBool ? '' : '*Campos obrigatórios'}}
 					</div>
 					<div class="col-6 row justify-end">
-						<q-btn v-if="showBool" label="Status" icon="refresh" color="primary" flat @click="abrirModalStatus"></q-btn>
-						<q-btn v-if="showBool" label="Motoboy" icon="refresh" color="primary" flat @click="abrirModalMotoboy"></q-btn>
+						<q-btn v-if="showBool && usuarioPerfil!=='cliente'" label="Status" icon="refresh" color="primary" flat @click="abrirModalStatus"></q-btn>
+						<q-btn v-if="showBool && usuarioPerfil!=='cliente'" label="Motoboy" icon="refresh" color="primary" flat @click="abrirModalMotoboy"></q-btn>
 						<q-btn v-if="showBool" label="Voltar" icon="keyboard_arrow_left" type="reset" color="primary" flat></q-btn>
-						<q-btn v-if="showBool" label="Remover" icon="delete" color="negative" flat @click="removerColeta"></q-btn>
-						<q-btn v-if="showBool" label="Editar" icon="edit" color="primary" @click="showBool = false"></q-btn>
+						<q-btn v-if="showBool && usuarioPerfil!=='cliente'" label="Remover" icon="delete" color="negative" flat @click="removerColeta"></q-btn>
+						<q-btn v-if="showBool && usuarioPerfil!=='cliente'" label="Editar" icon="edit" color="primary" @click="showBool = false"></q-btn>
 						<q-btn v-if="!showBool" label="Cancelar" icon="close" type="reset" color="negative" flat></q-btn>
 						<q-btn v-if="!showBool" label="Salvar" icon="save" type="submit" color="primary"></q-btn>
 					</div>

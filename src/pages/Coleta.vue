@@ -111,12 +111,12 @@
 					<q-btn class="full-width" label="Cancelar coleta" icon="close" color="negative" no-caps flat @click="confirmarCancelamento" v-if="['Aberto','Encaminhado'].indexOf(coleta.status)>-1"></q-btn>
 				</div>
 				<div class="col-4">
-					<q-btn to="/chat" class="full-width" label="Chat" icon="chat" color="positive" no-caps></q-btn>
+					<q-btn class="full-width" label="Chat" icon="chat" color="positive" no-caps @click="$router.push('/chat/'+coleta.id)"></q-btn>
 				</div>
 			</div>
 		</div>
 
-		<gmap-map :center="coordsCenter" :zoom="12" style="width:100%;height:100vh;">
+		<gmap-map :center="coordsCenter" :zoom="15" style="width:100%;height:100vh;">
 			<gmap-marker v-for="(item,index) in pontos" :key="index" :position="item.coords" :label="item.label" :icon="item.icon" :clickable="true" @click="clickMarker(item)"/>
 		</gmap-map>
     <q-dialog v-model="modalMarker">
@@ -188,10 +188,7 @@ export default {
 					endereco: this.formatarEndereco(response.data),
 					coords: {lat:parseFloat(response.data.latitude),lng:parseFloat(response.data.longitude)},
 					label: 'Coleta',
-					icon: {
-						url: 'http://maps.gstatic.com/mapfiles/markers2/icon_green.png',
-						size: {width:27,height:43,f:'px',b:'px'}
-					}
+					icon: {url:'http://maps.gstatic.com/mapfiles/markers2/icon_green.png',size:{width:27,height:43,f:'px',b:'px'}}
 				})
 				this.coordsCenter = this.pontos[0].coords
 				for (let idx in response.data.enderecosEntregas) {
@@ -201,10 +198,7 @@ export default {
 						endereco: this.formatarEndereco(item),
 						coords: {lat:parseFloat(item.latitude),lng:parseFloat(item.longitude)},
 						label: 'Entrega '+(parseInt(idx)+1),
-						icon: {
-							url: 'https://maps.gstatic.com/mapfiles/api-3/images/spotlight-poi2.png',
-							size: {width:27,height:43,f:'px',b:'px'}
-						}
+						icon: {url:'https://maps.gstatic.com/mapfiles/api-3/images/spotlight-poi2.png',size:{width:27,height:43,f:'px',b:'px'}}
 					})
 				}
 				this.coleta = response.data

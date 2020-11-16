@@ -10,6 +10,14 @@
 						</div>
 					</template>
 
+					<template v-slot:body-cell-actions="props">
+						<q-td>
+							<q-btn icon="visibility" color="primary" flat dense @click="$router.push('cadastroColetas/show/'+props.row.id)">
+								<q-tooltip>Mostrar {{props.row.nome}}</q-tooltip>
+							</q-btn>
+						</q-td>
+					</template>
+
 					<template v-slot:body-cell-motoboy="props">
 						<q-td>
 							{{props.row.motoboy.nome}}
@@ -32,6 +40,7 @@ export default {
 			status: [],
 			coletas: [],
 			coletaColumns: [
+				{ name: "actions", label: "Ações", field: "actions", align: "left" },
 				{ name: "id", label: "ID", field: "id", align: "left" },
 				{ name: "status", label: "Status", field: "status", align: "left" },
 				{ name: "motoboy", label: "Motoboy", field: "motoboy", align: "left" },

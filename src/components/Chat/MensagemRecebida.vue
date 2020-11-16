@@ -6,25 +6,20 @@
 			</div>
 			<div class="chat-bot-content">
 				<div>
-					<div class="text-caption">Nome do usuario 1</div>
-					<div>Mensagem recebida 1</div>
+					<div class="text-caption">{{item.usuario ? item.usuario.nome : ''}}</div>
+					<div>{{item.mensagem}}</div>
 				</div>
 			</div>
-			<div class="chat-time">{{formatarDataHora(dateTest,'HH:mm')}}</div>
+			<div class="chat-time">{{formatarDataHora(item.created_at,'HH:mm')}}</div>
 		</div>
 	</div>
 </template>
-
 <script>
 export default {
-	data: () => ({
-		dateTest: new Date()
-	}),
-	methods: {
+	props: ['item'],
+	data () {
+		return {
+		}
 	}
 }
 </script>
-
-<style>
-
-</style>

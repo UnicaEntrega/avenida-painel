@@ -4,18 +4,17 @@
 			<div class="lista-conversas shadow-3">
 				<q-scroll-area class="full-height">
 					<q-list separator>
-						<q-item v-for="n in 50" :key="'conversa'+n" clickable>
-							<q-item-section>
+						<q-item v-for="(item,index) in conversas" :key="index" clickable>
+							<q-item-section @click="abrirMensagem(item)">
 								<q-item-label>
-									Conversa {{n}}
+									Conversa {{index++}}
 								</q-item-label>
 								<q-item-label caption>
 									Resumo da mensagem
 								</q-item-label>
 							</q-item-section>
 							<q-item-section side>
-								<!-- <q-icon name="keyboard_arrow_right" color="primary"></q-icon> -->
-								<q-chip v-if="n % 2 == 0" color="negative" text-color="white">22</q-chip>
+								<q-chip v-if="index % 2 == 0" color="negative" text-color="white">22</q-chip>
 							</q-item-section>
 						</q-item>
 					</q-list>
@@ -23,9 +22,9 @@
 			</div>
 			<div class="q-pa-md">
 				<q-scroll-area class="full-height">
-					<div v-for="n in 50" :key="'test'+n">
-						<mensagem-recebida></mensagem-recebida>
-						<mensagem-enviada></mensagem-enviada>
+					<div v-for="(item,index) in conversa.mensagens" :key="index">
+						<mensagem-enviada :item="item" v-if="item.usuario_id===getUsuario.id"/>
+						<mensagem-recebida :item="item" v-else/>
 					</div>
 					<div ref="input" style="height: 48px"></div>
 				</q-scroll-area>
@@ -35,8 +34,8 @@
 		<q-page-sticky position="bottom" :offset="[10, 18]" expand>
 			<div class="q-px-lg full-width grid-input">
 				<div></div>
-				<q-input class="round-input" v-model="chatbox" placeholder="Inserir mensagem" bg-color="grey-2" rounded borderless dense>
-					<q-btn class="shadow-2" slot="after" icon="send" dense round color="primary" @click="responderPergunta"></q-btn>
+				<q-input class="round-input" v-model="mensagem" placeholder="Inserir mensagem" bg-color="grey-2" rounded borderless dense v-on:keyup.enter="enviarMensagem()">
+					<q-btn class="shadow-2" slot="after" icon="send" dense round color="primary" @click="enviarMensagem()"></q-btn>
 				</q-input>
 			</div>
 		</q-page-sticky>
@@ -49,20 +48,22 @@
 		<q-scroll-observer @scroll="fabScroll"></q-scroll-observer>
 	</q-page>
 </template>
-
 <script>
 import MensagemRecebida from "../components/Chat/MensagemRecebida.vue"
 import MensagemEnviada from "../components/Chat/MensagemEnviada.vue"
 import { scroll } from 'quasar'
-
 export default {
 	components: {
 		MensagemRecebida, MensagemEnviada
 	},
-	data: () => ({
-		chatbox: "",
-		fabBool: false,
-	}),
+	data() {
+		return {
+			mensagem: "",
+			conversas: [],
+			conversa: {mensagens:[]},
+			fabBool: false
+		}
+	},
 	methods: {
 		fabScroll(info) {
 			this.fabBool = info.position + screen.height < this.$refs.input.offsetTop;
@@ -72,10 +73,45 @@ export default {
 			let offset = this.$refs.input.offsetTop;
 			let duration = 500;
 			scroll.setScrollPosition(target, offset, duration);
+		},
+		async abrirMensagem(item) {
+			/*var response = await this.executeMethod({url:`api/Conversas/mensagens/${item.id}`,method:'get',data:{}})
+			if (response.status===200) console.log(response.data)*/
+			this.conversa = item
+		},
+		async enviarMensagem() {
+			let d = {
+				coleta_id: this.conversa.coleta_id,
+				usuario_id: this.getUsuario.id,
+				mensagem: this.mensagem
+			}
+			var response = await this.executeMethod({url:'api/Conversas',method:'post',data:d})
+			if (response.status===200) this.conversa.mensagens.push(response.data)
+			this.mensagem = ""
+		},
+		async buscar() {
+			let c = null
+			var response = await this.executeMethod({url:'api/Conversas',method:'get'})
+			if (response.status===200) {
+				for (let item of response.data) {
+					if (item.coleta_id.toString()===(this.$route.params.id || '')) c = item
+					this.conversas.push(item)
+				}
+			}
+			if (this.$route.params.id) {
+				if (!c) {
+					c = {coleta_id:this.$route.params.id,mensagens:[]}
+					this.conversas.unshift(c)
+				}
+				this.abrirMensagem(c)
+			}
 		}
 	},
 	mounted() {
 		this.scrollDown();
+	},
+	created() {
+		this.buscar()
 	}
 }
 </script>
