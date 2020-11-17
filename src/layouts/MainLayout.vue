@@ -60,6 +60,7 @@
 	</q-layout>
 </template>
 <script>
+import Ws from '@adonisjs/websocket-client/index'
 export default {
 	name: 'MainLayout',
 	data () {
@@ -151,8 +152,24 @@ export default {
 		}
 	},
 	created() {
-		if (this.isBlank(this.getLogin.token)) this.$router.push('/login');
-		if (this.usuarioPerfil==='cliente') this.carregarColetas()
+		if (this.isBlank(this.getLogin.token)) this.$router.push('/login')
+		else {
+			if (this.usuarioPerfil==='cliente') this.carregarColetas()
+			let ws = Ws(`${process.env.WS_URL}`).withJwtToken(this.getLogin.token).connect()
+
+			this.$root.chat = ws.subscribe(`chat:${this.usuarioPerfil==='cliente' ? 'cliente:'+this.getUsuario.id : 'admin'}`)
+			this.$root.chat_connect = false
+			this.$root.chat.on('message', (r) => {
+				console.log('8888',r)
+			})
+			this.$root.chat.on('ready', () => {
+				console.log('99')
+			})
+
+			ws.on('open', () => {this.$root.chat_connect = true})
+			ws.on('error', (error) => {})
+			ws.on('close', () => {this.$root.chat_connect = false})
+		}
 	}
 }
 </script>
