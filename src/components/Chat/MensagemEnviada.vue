@@ -8,7 +8,7 @@
 			<div class="chat-user-content">
 				<div>
 					<div class="text-caption">{{item.usuario ? item.usuario.nome : ''}}</div>
-					<div>{{item.mensagem}}</div>
+					<div v-html="mensagem"></div>
 				</div>
 			</div>
 			<div class="chat-icon">
@@ -23,6 +23,9 @@ export default {
 	data () {
 		return {
 		}
+	},
+	computed: {
+		mensagem() {return this.isBlank(this.item.mensagem) ? '' : this.item.mensagem.replace(/\n/g,'<br>').trim()}
 	}
 }
 </script>

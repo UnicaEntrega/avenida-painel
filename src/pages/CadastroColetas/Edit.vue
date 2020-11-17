@@ -135,6 +135,7 @@
 						<q-btn v-if="showBool" label="Voltar" icon="keyboard_arrow_left" type="reset" color="primary" flat></q-btn>
 						<q-btn v-if="showBool && usuarioPerfil!=='cliente'" label="Remover" icon="delete" color="negative" flat @click="removerColeta"></q-btn>
 						<q-btn v-if="showBool && usuarioPerfil!=='cliente'" label="Editar" icon="edit" color="primary" @click="showBool = false"></q-btn>
+						<q-btn v-if="showBool && usuarioPerfil==='cliente' && coleta.status==='Finalizado' && dataRelatarProblema" label="Relatar Problema" icon="edit" color="primary" @click="abrirModalProblema"></q-btn>
 						<q-btn v-if="!showBool" label="Cancelar" icon="close" type="reset" color="negative" flat></q-btn>
 						<q-btn v-if="!showBool" label="Salvar" icon="save" type="submit" color="primary"></q-btn>
 					</div>
@@ -175,6 +176,21 @@
 				<q-card-section class="row justify-end">
 					<q-btn label="Cancelar" color="negative" no-caps flat v-close-popup></q-btn>
 					<q-btn label="Confirmar" color="positive" no-caps @click="atualizar({motoboy_id:motoboy_id,status:'Encaminhado'})"></q-btn>
+				</q-card-section>
+			</q-card>
+		</q-dialog>
+		<q-dialog v-model="modalProblema">
+			<q-card style="min-width: 700px">
+				<q-card-section class="text-body1 text-primary text-bold">
+					Informe qual foi o problema
+				</q-card-section>
+				<q-separator></q-separator>
+				<q-card-section>
+					<q-input v-model="problema" type="textarea" label="Descreva o problema" :rules="[validatorRequired]"></q-input>
+				</q-card-section>
+				<q-card-section class="row justify-end">
+					<q-btn label="Cancelar" color="negative" flat no-caps v-close-popup></q-btn>
+					<q-btn label="Confirmar" color="positive" no-caps @click="enviarProblema()"></q-btn>
 				</q-card-section>
 			</q-card>
 		</q-dialog>
@@ -220,7 +236,9 @@ export default {
 			modalStatus: false,
 			status: '',
 			modalMotoboy: false,
-			motoboy_id: ''
+			motoboy_id: '',
+			modalProblema: false,
+			problema: ''
 		}
 	},
 	computed: {
@@ -228,9 +246,22 @@ export default {
 			return (status) => {
 				return status == this.status ? "bg-primary shadow-2 rounded-borders text-white" : ""
 			}
+		},
+		dataRelatarProblema() {
+			if (!this.coleta.data_finalizado) return false
+			let m = this.getMoment()
+			return m(this.coleta.data_finalizado,'YYYY-MM-DD').add(7,'days').format('YYYYMMDD')>=m().format('YYYYMMDD')
 		}
 	},
 	methods: {
+		abrirModalProblema() {
+			this.problema = ''
+			this.modalProblema = true
+		},
+		async enviarProblema() {
+			var response = await this.executeMethod({url:`api/Coletas/problema/${this.coleta.id}`,method:'post',data:{problema:this.problema}})
+			if (response.status===200) this.modalProblema = false
+		},
 		abrirModalStatus() {
 			this.status = this.coleta.status
 			this.modalStatus = true

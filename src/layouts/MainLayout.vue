@@ -97,6 +97,12 @@ export default {
 					tipo: "Ambos",
 				},
 				{
+					icon: "emoji_people",
+					title: "Relatórios",
+					path: "/relatorios",
+					tipo: "admin",
+				},
+				{
 					icon: "person",
 					title: "Meus Dados",
 					path: '/meusDados',

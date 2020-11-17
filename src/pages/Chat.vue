@@ -26,12 +26,13 @@
 						<mensagem-enviada :item="item" v-if="item.usuario_id===getUsuario.id"/>
 						<mensagem-recebida :item="item" v-else/>
 					</div>
-					<div ref="input" style="height: 48px"></div>
+					<div v-if="!conversa.coleta_id" class="text-center">Não foi selecionada nenhuma conversa.</div>
+					<div ref="input" style="height:48px;"></div>
 				</q-scroll-area>
 			</div>
 		</div>
 				
-		<q-page-sticky position="bottom" :offset="[10, 18]" expand>
+		<q-page-sticky position="bottom" :offset="[10, 18]" expand v-if="conversa.coleta_id">
 			<div class="q-px-lg full-width grid-input">
 				<div></div>
 				<q-input class="round-input" v-model="mensagem" placeholder="Inserir mensagem" bg-color="grey-2" rounded borderless dense v-on:keyup.enter="enviarMensagem()">
@@ -43,6 +44,12 @@
 		<q-page-sticky position="top-right" :offset="[30, 18]" expand>
 			<transition enter-active-class="animated zoomIn" leave-active-class="animated zoomOut">
 				<q-btn v-if="fabBool" icon="keyboard_arrow_down" color="primary" fab-mini @click="scrollDown"></q-btn>
+			</transition>
+		</q-page-sticky>
+
+		<q-page-sticky position="top" :offset="[30, 18]" expand>
+			<transition enter-active-class="animated zoomIn" leave-active-class="animated zoomOut">
+				<q-btn v-if="usuarioPerfil!=='cliente' && conversa.problema===true && conversa.resolvido===false" icon="check" color="primary" label="Resolvido" @click="enviarResolvido"></q-btn>
 			</transition>
 		</q-page-sticky>
 		<q-scroll-observer @scroll="fabScroll"></q-scroll-observer>
@@ -74,6 +81,16 @@ export default {
 			let duration = 500;
 			scroll.setScrollPosition(target, offset, duration);
 		},
+		enviarResolvido() {
+			this.$q.dialog({title:'Confirmação',message:'Tem certeza que deseja marcar como resolvido?',ok:'Sim',cancel:'Não'}).onOk(async ()=>{
+        var response = await this.executeMethod({url:`api/Conversas/resolvido/${this.conversa.id}`,method:'post'})
+				if (response.status===200) {
+					for (let index in this.conversas)
+						if (this.conversas[index].id===this.conversa.id)
+							this.conversas.splice(index,1)
+				}
+			})
+		},
 		async abrirMensagem(item) {
 			/*var response = await this.executeMethod({url:`api/Conversas/mensagens/${item.id}`,method:'get',data:{}})
 			if (response.status===200) console.log(response.data)*/
@@ -90,10 +107,12 @@ export default {
 			this.mensagem = ""
 		},
 		async buscar() {
+			let m = this.getMoment()
 			let c = null
 			var response = await this.executeMethod({url:'api/Conversas',method:'get'})
 			if (response.status===200) {
 				for (let item of response.data) {
+					item.mensagens.sort(function(a,b){return m(a.updated_at).valueOf()-m(b.updated_at).valueOf()})
 					if (item.coleta_id.toString()===(this.$route.params.id || '')) c = item
 					this.conversas.push(item)
 				}
@@ -101,14 +120,14 @@ export default {
 			if (this.$route.params.id) {
 				if (!c) {
 					c = {coleta_id:this.$route.params.id,mensagens:[]}
-					this.conversas.unshift(c)
+					this.conversas.push(c)
 				}
 				this.abrirMensagem(c)
 			}
 		}
 	},
 	mounted() {
-		this.scrollDown();
+		this.scrollDown()
 	},
 	created() {
 		this.buscar()

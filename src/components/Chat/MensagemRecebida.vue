@@ -7,7 +7,7 @@
 			<div class="chat-bot-content">
 				<div>
 					<div class="text-caption">{{item.usuario ? item.usuario.nome : ''}}</div>
-					<div>{{item.mensagem}}</div>
+					<div v-html="mensagem"></div>
 				</div>
 			</div>
 			<div class="chat-time">{{formatarDataHora(item.created_at,'HH:mm')}}</div>
@@ -20,6 +20,9 @@ export default {
 	data () {
 		return {
 		}
+	},
+	computed: {
+		mensagem() {return this.isBlank(this.item.mensagem) ? '' : this.item.mensagem.replace(/\n/g,'<br>').trim()}
 	}
 }
 </script>
