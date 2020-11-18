@@ -5,7 +5,8 @@ export default ({app, Vue}) => {
 		computed: {
 			...mapGetters({
 				getLogin: "getLogin",
-				getUsuario: "getUsuario"
+				getUsuario: "getUsuario",
+				getChats: "getChats"
 			}),
 			ufOptions() {return ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO']},
 			tipoVeiculoOptions() {return [{label:'Moto',value:'moto'},{label:'Carro',value:'carro'}]},
@@ -146,6 +147,16 @@ export default ({app, Vue}) => {
 			},
 			validatorRequired(val) {
 				return val !== null && val !== "" || "Este campo é obrigatório."
+			},
+			async carregarChats() {
+				var response = await this.executeMethod({url:'api/Conversas',method:'get'})
+				if (response.status===200) {
+					let c = {}
+					for (let item of response.data)
+						c['coleta'+item.coleta_id] = item
+					await this.$store.commit('setDados',{key:'chats',value:c})
+				}
+				this.$root.$emit('carregarTelaChat')
 			}
 		}
 	})

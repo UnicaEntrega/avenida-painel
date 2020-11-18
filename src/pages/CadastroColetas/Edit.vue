@@ -258,9 +258,14 @@ export default {
 			this.problema = ''
 			this.modalProblema = true
 		},
-		async enviarProblema() {
-			var response = await this.executeMethod({url:`api/Coletas/problema/${this.coleta.id}`,method:'post',data:{problema:this.problema}})
-			if (response.status===200) this.modalProblema = false
+		enviarProblema() {
+			if (this.$root.chat_connect) {
+				this.$root.chat.emit('problema',{
+					coleta_id: this.coleta.id,
+					problema: this.problema
+				})
+				this.modalProblema = false
+			}
 		},
 		abrirModalStatus() {
 			this.status = this.coleta.status

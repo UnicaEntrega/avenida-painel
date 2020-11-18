@@ -151,24 +151,22 @@ export default {
 			}
 		}
 	},
-	created() {
+	async created() {
 		if (this.isBlank(this.getLogin.token)) this.$router.push('/login')
 		else {
 			if (this.usuarioPerfil==='cliente') this.carregarColetas()
-			let ws = Ws(`${process.env.WS_URL}`).withJwtToken(this.getLogin.token).connect()
-
-			this.$root.chat = ws.subscribe(`chat:${this.usuarioPerfil==='cliente' ? 'cliente:'+this.getUsuario.id : 'admin'}`)
+			await this.carregarChats()
 			this.$root.chat_connect = false
-			this.$root.chat.on('message', (r) => {
-				console.log('8888',r)
+			let ws = Ws(`${process.env.WS_URL}`).withJwtToken(this.getLogin.token).connect()
+			ws.on('open',()=>{
+				this.$root.chat = ws.subscribe(`chat:${this.usuarioPerfil==='cliente' ? 'usuario:'+this.getUsuario.id : 'admin'}`)
+				this.$root.chat.on('ready',()=>{this.$root.chat_connect = true})
+				this.$root.chat.on('message',(m)=>{
+					this.$store.dispatch('mensagemChat',m)
+					this.$root.$emit('atualizarScroll',m.coleta_id)
+				})
 			})
-			this.$root.chat.on('ready', () => {
-				console.log('99')
-			})
-
-			ws.on('open', () => {this.$root.chat_connect = true})
-			ws.on('error', (error) => {})
-			ws.on('close', () => {this.$root.chat_connect = false})
+			ws.on('close',()=>{this.$root.chat_connect = false})
 		}
 	}
 }

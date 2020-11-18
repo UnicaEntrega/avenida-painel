@@ -4,10 +4,10 @@
 			<div class="lista-conversas shadow-3">
 				<q-scroll-area class="full-height">
 					<q-list separator>
-						<q-item v-for="(item,index) in conversas" :key="index" clickable>
+						<q-item v-for="(item,index) in getChats" :key="index" clickable>
 							<q-item-section @click="abrirMensagem(item)">
 								<q-item-label>
-									Conversa {{index++}}
+									Coleta {{item.coleta_id}}
 								</q-item-label>
 								<q-item-label caption>
 									Resumo da mensagem
@@ -22,7 +22,7 @@
 			</div>
 			<div class="q-pa-md">
 				<q-scroll-area class="full-height">
-					<div v-for="(item,index) in conversa.mensagens" :key="index">
+					<div v-for="(item,index) in (getChats['coleta'+conversa.coleta_id] || {}).mensagens" :key="index">
 						<mensagem-enviada :item="item" v-if="item.usuario_id===getUsuario.id"/>
 						<mensagem-recebida :item="item" v-else/>
 					</div>
@@ -35,7 +35,7 @@
 		<q-page-sticky position="bottom" :offset="[10, 18]" expand v-if="conversa.coleta_id">
 			<div class="q-px-lg full-width grid-input">
 				<div></div>
-				<q-input class="round-input" v-model="mensagem" placeholder="Inserir mensagem" bg-color="grey-2" rounded borderless dense v-on:keyup.enter="enviarMensagem()">
+				<q-input ref="mensagem" class="round-input" v-model="mensagem" placeholder="Inserir mensagem" bg-color="grey-2" rounded borderless dense v-on:keyup.enter="enviarMensagem()">
 					<q-btn class="shadow-2" slot="after" icon="send" dense round color="primary" @click="enviarMensagem()"></q-btn>
 				</q-input>
 			</div>
@@ -66,8 +66,7 @@ export default {
 	data() {
 		return {
 			mensagem: "",
-			conversas: [],
-			conversa: {mensagens:[]},
+			conversa: {},
 			fabBool: false
 		}
 	},
@@ -84,53 +83,50 @@ export default {
 		enviarResolvido() {
 			this.$q.dialog({title:'Confirmação',message:'Tem certeza que deseja marcar como resolvido?',ok:'Sim',cancel:'Não'}).onOk(async ()=>{
         var response = await this.executeMethod({url:`api/Conversas/resolvido/${this.conversa.id}`,method:'post'})
-				if (response.status===200) {
+				if (response.status===200)
 					for (let index in this.conversas)
 						if (this.conversas[index].id===this.conversa.id)
 							this.conversas.splice(index,1)
-				}
 			})
 		},
-		async abrirMensagem(item) {
-			/*var response = await this.executeMethod({url:`api/Conversas/mensagens/${item.id}`,method:'get',data:{}})
-			if (response.status===200) console.log(response.data)*/
+		abrirMensagem(item) {
 			this.conversa = item
+			setTimeout(()=>{
+				if (this.$refs.mensagem) this.$refs.mensagem.focus()
+				this.scrollDown()
+			},200)
 		},
 		async enviarMensagem() {
-			let d = {
-				coleta_id: this.conversa.coleta_id,
-				usuario_id: this.getUsuario.id,
-				mensagem: this.mensagem
+			if (this.$root.chat_connect) {
+				this.$root.chat.emit('message',{
+					coleta_id: this.conversa.coleta_id,
+					mensagem: this.mensagem
+				})
+				this.mensagem = ""
 			}
-			var response = await this.executeMethod({url:'api/Conversas',method:'post',data:d})
-			if (response.status===200) this.conversa.mensagens.push(response.data)
-			this.mensagem = ""
 		},
-		async buscar() {
-			let m = this.getMoment()
-			let c = null
-			var response = await this.executeMethod({url:'api/Conversas',method:'get'})
-			if (response.status===200) {
-				for (let item of response.data) {
-					item.mensagens.sort(function(a,b){return m(a.updated_at).valueOf()-m(b.updated_at).valueOf()})
-					if (item.coleta_id.toString()===(this.$route.params.id || '')) c = item
-					this.conversas.push(item)
-				}
-			}
+		atualizarScroll(coleta_id) {
+			if (this.conversa.coleta_id===coleta_id) this.scrollDown()
+		},
+		async carregarTelaChat() {
 			if (this.$route.params.id) {
+				let c = this.getChats['coleta'+this.$route.params.id]
 				if (!c) {
-					c = {coleta_id:this.$route.params.id,mensagens:[]}
-					this.conversas.push(c)
+					await this.$store.commit('abrirChat',{coleta_id:this.$route.params.id,updated_at:this.formatarDataHora(new Date(),'YYYY-MM-DD HH:mm:ss'),mensagens:[]})
+					c = this.getChats['coleta'+this.$route.params.id]
 				}
-				this.abrirMensagem(c)
+				if (c) this.abrirMensagem(c)
 			}
 		}
 	},
-	mounted() {
-		this.scrollDown()
-	},
 	created() {
-		this.buscar()
+		this.carregarTelaChat()
+		this.$root.$on('atualizarScroll',this.atualizarScroll)
+		this.$root.$on('carregarTelaChat',this.carregarTelaChat)
+	},
+	destroyed() {
+		this.$root.$off('atualizarScroll',this.atualizarScroll)
+		this.$root.$off('carregarTelaChat',this.carregarTelaChat)
 	}
 }
 </script>
