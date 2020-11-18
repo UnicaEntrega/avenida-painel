@@ -19,11 +19,11 @@ const mutations = {
     state.chats['coleta'+obj.coleta_id] = obj
   },
   mensagemChat: (state, obj) => {
-    console.log(obj,state)
     if (!obj.error) {
       if (!state.chats['coleta'+obj.coleta_id])
         state.chats['coleta'+obj.coleta_id] = {coleta_id:obj.coleta_id,updated_at:obj.updated_at,mensagens:[]}
       state.chats['coleta'+obj.coleta_id].mensagens.push(obj.mensagem)
+      state.chats = JSON.parse(JSON.stringify(state.chats))
     }
   }
 }
