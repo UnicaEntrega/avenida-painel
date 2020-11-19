@@ -43,7 +43,7 @@
 								{{categoria.title}}
 							</q-item-section>
 							<q-item-section v-if="categoria.path=='/chat'" side>
-								<q-chip color="negative" text-color="white">22</q-chip>
+								<q-chip color="negative" text-color="white" v-if="getTotalNaoLidas>0">{{getTotalNaoLidas}}</q-chip>
 							</q-item-section>
 						</q-item>
 					</router-link>
@@ -162,7 +162,7 @@ export default {
 				this.$root.chat = ws.subscribe(`chat:${this.usuarioPerfil==='cliente' ? 'usuario:'+this.getUsuario.id : 'admin'}`)
 				this.$root.chat.on('ready',()=>{this.$root.chat_connect = true})
 				this.$root.chat.on('message',(m)=>{
-					this.$store.dispatch('mensagemChat',m)
+					this.$store.commit('mensagemChat',m)
 					this.$root.$emit('atualizarScroll',m.coleta_id)
 				})
 			})

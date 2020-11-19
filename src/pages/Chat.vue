@@ -14,7 +14,7 @@
 								</q-item-label>
 							</q-item-section>
 							<q-item-section side>
-								<q-chip v-if="index % 2 == 0" color="negative" text-color="white">22</q-chip>
+								<q-chip v-if="item.naoLida>0" color="negative" text-color="white">{{item.naoLida}}</q-chip>
 							</q-item-section>
 						</q-item>
 					</q-list>
@@ -83,14 +83,17 @@ export default {
 		enviarResolvido() {
 			this.$q.dialog({title:'Confirmação',message:'Tem certeza que deseja marcar como resolvido?',ok:'Sim',cancel:'Não'}).onOk(async ()=>{
         var response = await this.executeMethod({url:`api/Conversas/resolvido/${this.conversa.id}`,method:'post'})
-				if (response.status===200)
-					for (let index in this.conversas)
-						if (this.conversas[index].id===this.conversa.id)
-							this.conversas.splice(index,1)
+				if (response.status===200) {
+					this.$store.commit('removerChat',this.conversa.coleta_id)
+					this.conversa = {}
+				}
 			})
 		},
 		abrirMensagem(item) {
 			this.conversa = item
+			this.executeMethod({url:`api/Conversas/lida/${this.conversa.id}`,method:'get'}).then(r=>{
+				this.$store.commit('lidaChat',{coleta_id:this.conversa.coleta_id,usuario_id:this.getUsuario.id,cliente_id:this.conversa.cliente_id,isCliente:this.usuarioPerfil==='admin'})
+			})
 			setTimeout(()=>{
 				if (this.$refs.mensagem) this.$refs.mensagem.focus()
 				this.scrollDown()
@@ -112,7 +115,7 @@ export default {
 			if (this.$route.params.id) {
 				let c = this.getChats['coleta'+this.$route.params.id]
 				if (!c) {
-					await this.$store.commit('abrirChat',{coleta_id:this.$route.params.id,updated_at:this.formatarDataHora(new Date(),'YYYY-MM-DD HH:mm:ss'),mensagens:[]})
+					await this.$store.commit('abrirChat',{coleta_id:this.$route.params.id,naoLida:0,mensagens:[]})
 					c = this.getChats['coleta'+this.$route.params.id]
 				}
 				if (c) this.abrirMensagem(c)
