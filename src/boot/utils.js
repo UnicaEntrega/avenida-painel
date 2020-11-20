@@ -153,8 +153,10 @@ export default ({app, Vue}) => {
 				var response = await this.executeMethod({url:'api/Conversas',method:'get'})
 				if (response.status===200) {
 					let c = {}
-					for (let item of response.data)
-						c['coleta'+item.coleta_id] = item
+					for (let item of response.data) {
+						if (item.coleta_id) c['coleta'+item.coleta_id] = item
+						else c['motoboy'+item.motoboy_id] = item
+					}
 					await this.$store.commit('setDados',{key:'chats',value:c})
 				}
 				this.$root.$emit('carregarTelaChat')

@@ -23,23 +23,43 @@ const mutations = {
     state.chats = JSON.parse(JSON.stringify(state.chats))
   },
   lidaChat: (state,obj) => {
-    let chat = state.chats['coleta'+obj.coleta_id]
-    if (chat) {
-      for (let item of chat.mensagens)
-        if ((obj.isCliente && item.usuario_id!==obj.usuario_id) || (!obj.isCliente && item.usuario_id!==obj.cliente_id))
-          item.lida = true
-        chat.naoLida = 0
-      state.chats = JSON.parse(JSON.stringify(state.chats))
+    if (obj.coleta_id) {
+      let chat = state.chats['coleta'+obj.coleta_id]
+      if (chat) {
+        for (let item of chat.mensagens)
+          if ((obj.isCliente && item.usuario_id!==obj.usuario_id) || (!obj.isCliente && item.usuario_id!==obj.cliente_id))
+            item.lida = true
+          chat.naoLida = 0
+      }
     }
+    else {
+      let chat = state.chats['motoboy'+obj.motoboy_id]
+      if (chat) {
+        for (let item of chat.mensagens)
+          if (item.usuario_id!==obj.usuario_id)
+            item.lida = true
+          chat.naoLida = 0
+      }
+    }
+    state.chats = JSON.parse(JSON.stringify(state.chats))
   },
   mensagemChat: (state, obj) => {
     if (!obj.error) {
-      let chat = state.chats['coleta'+obj.coleta_id]
-      if (!chat) chat = {coleta_id:obj.coleta_id,updated_at:obj.updated_at,mensagens:[]}
-      chat.mensagens.push(obj.mensagem)
-      let isCliente = (state.usuario.perfis && state.usuario.perfis.length>0 ? state.usuario.perfis[0].slug : '')==='cliente'
-      if ((isCliente && obj.mensagem.usuario_id!==state.usuario.id) || (!isCliente && obj.mensagem.usuario_id===chat.cliente.usuario_id))
-        chat.naoLida++
+      if (obj.coleta_id) {
+        let chat = state.chats['coleta'+obj.coleta_id]
+        if (!chat) chat = {id:obj.id,coleta_id:obj.coleta_id,updated_at:obj.updated_at,mensagens:[]}
+        chat.mensagens.push(obj.mensagem)
+        let isCliente = (state.usuario.perfis && state.usuario.perfis.length>0 ? state.usuario.perfis[0].slug : '')==='cliente'
+        if ((isCliente && obj.mensagem.usuario_id!==state.usuario.id) || (!isCliente && obj.mensagem.usuario_id===chat.cliente.usuario_id))
+          chat.naoLida++
+      }
+      else {
+        if (!state.chats['motoboy'+obj.motoboy_id]) state.chats['motoboy'+obj.motoboy_id] = {id:obj.id,motoboy_id:obj.motoboy_id,nome:obj.nome,updated_at:obj.updated_at,mensagens:[]}
+        let chat = state.chats['motoboy'+obj.motoboy_id]
+        chat.mensagens.push(obj.mensagem)
+        if (obj.mensagem.usuario_id!==state.usuario.id)
+          chat.naoLida++
+      }
       state.chats = JSON.parse(JSON.stringify(state.chats))
     }
   }

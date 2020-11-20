@@ -7,7 +7,7 @@
 						<q-item v-for="(item,index) in getChats" :key="index" clickable>
 							<q-item-section @click="abrirMensagem(item)">
 								<q-item-label>
-									Coleta {{item.coleta_id}}
+									{{item.coleta_id ? 'Coleta '+item.coleta_id : 'Motoboy '+(item.motoboy ? item.motoboy.nome : item.nome)}}
 								</q-item-label>
 								<q-item-label caption>
 									Resumo da mensagem
@@ -22,17 +22,17 @@
 			</div>
 			<div class="q-pa-md">
 				<q-scroll-area class="full-height">
-					<div v-for="(item,index) in (getChats['coleta'+conversa.coleta_id] || {}).mensagens" :key="index">
+					<div v-for="(item,index) in (getChats[conversa.coleta_id ? 'coleta'+conversa.coleta_id : 'motoboy'+conversa.motoboy_id] || {}).mensagens" :key="index">
 						<mensagem-enviada :item="item" v-if="item.usuario_id===getUsuario.id"/>
 						<mensagem-recebida :item="item" v-else/>
 					</div>
-					<div v-if="!conversa.coleta_id" class="text-center">Não foi selecionada nenhuma conversa.</div>
+					<div v-if="!conversa.coleta_id && !conversa.motoboy_id" class="text-center">Não foi selecionada nenhuma conversa.</div>
 					<div ref="input" style="height:48px;"></div>
 				</q-scroll-area>
 			</div>
 		</div>
 				
-		<q-page-sticky position="bottom" :offset="[10, 18]" expand v-if="conversa.coleta_id">
+		<q-page-sticky position="bottom" :offset="[10, 18]" expand v-if="conversa.coleta_id || conversa.motoboy_id">
 			<div class="q-px-lg full-width grid-input">
 				<div></div>
 				<q-input ref="mensagem" class="round-input" v-model="mensagem" placeholder="Inserir mensagem" bg-color="grey-2" rounded borderless dense v-on:keyup.enter="enviarMensagem()">
@@ -92,7 +92,8 @@ export default {
 		abrirMensagem(item) {
 			this.conversa = item
 			this.executeMethod({url:`api/Conversas/lida/${this.conversa.id}`,method:'get'}).then(r=>{
-				this.$store.commit('lidaChat',{coleta_id:this.conversa.coleta_id,usuario_id:this.getUsuario.id,cliente_id:this.conversa.cliente_id,isCliente:this.usuarioPerfil==='admin'})
+				if (this.conversa.coleta_id) this.$store.commit('lidaChat',{coleta_id:this.conversa.coleta_id,usuario_id:this.getUsuario.id,cliente_id:this.conversa.cliente_id,isCliente:this.usuarioPerfil==='admin'})
+				else this.$store.commit('lidaChat',{usuario_id:this.getUsuario.id,motoboy_id:this.conversa.motoboy_id,isCliente:this.usuarioPerfil==='admin'})
 			})
 			setTimeout(()=>{
 				if (this.$refs.mensagem) this.$refs.mensagem.focus()
@@ -103,13 +104,14 @@ export default {
 			if (this.$root.chat_connect) {
 				this.$root.chat.emit('message',{
 					coleta_id: this.conversa.coleta_id,
+					motoboy_id: this.conversa.motoboy_id,
 					mensagem: this.mensagem
 				})
 				this.mensagem = ""
 			}
 		},
-		atualizarScroll(coleta_id) {
-			if (this.conversa.coleta_id===coleta_id) this.scrollDown()
+		atualizarScroll(id) {
+			if (this.conversa.id===id) this.scrollDown()
 		},
 		async carregarTelaChat() {
 			if (this.$route.params.id) {
