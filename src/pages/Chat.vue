@@ -91,10 +91,7 @@ export default {
 		},
 		abrirMensagem(item) {
 			this.conversa = item
-			this.executeMethod({url:`api/Conversas/lida/${this.conversa.id}`,method:'get'}).then(r=>{
-				if (this.conversa.coleta_id) this.$store.commit('lidaChat',{coleta_id:this.conversa.coleta_id,usuario_id:this.getUsuario.id,cliente_id:this.conversa.cliente_id,isCliente:this.usuarioPerfil==='admin'})
-				else this.$store.commit('lidaChat',{usuario_id:this.getUsuario.id,motoboy_id:this.conversa.motoboy_id,isCliente:this.usuarioPerfil==='admin'})
-			})
+			this.marcarLida()
 			setTimeout(()=>{
 				if (this.$refs.mensagem) this.$refs.mensagem.focus()
 				this.scrollDown()
@@ -110,8 +107,18 @@ export default {
 				this.mensagem = ""
 			}
 		},
+		async marcarLida() {
+			let response = await this.executeMethod({url:`api/Conversas/lida/${this.conversa.id}`,method:'get'})
+			if (response.status===200) {
+				if (this.conversa.coleta_id) this.$store.commit('lidaChat',{coleta_id:this.conversa.coleta_id,usuario_id:this.getUsuario.id,cliente_id:this.conversa.cliente_id,isCliente:this.usuarioPerfil==='admin'})
+				else this.$store.commit('lidaChat',{usuario_id:this.getUsuario.id,motoboy_id:this.conversa.motoboy_id,isCliente:this.usuarioPerfil==='admin'})
+			}
+		},
 		atualizarScroll(id) {
-			if (this.conversa.id===id) this.scrollDown()
+			if (this.conversa.id===id) {
+				this.scrollDown()
+				this.marcarLida()
+			}
 		},
 		async carregarTelaChat() {
 			if (this.$route.params.id) {

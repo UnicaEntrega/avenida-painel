@@ -122,7 +122,7 @@
     <q-dialog v-model="modalMarker">
       <q-card>
         <q-card-section>
-          <div class="col-12 text-center">{{itemMarker.idx===0 ? 'Coleta' : 'Entrega '+itemMarker.idx}}</div>
+          <div class="col-12 text-center">{{itemMarker.label}}</div>
           <div class="col-12 q-pb-sm">{{itemMarker.endereco}}</div>
         </q-card-section>
       </q-card>
@@ -184,7 +184,6 @@ export default {
 			var response = await this.executeMethod({url:`api/Coletas/show/${this.$route.params.id}`,method:'get'})
 			if (response.status===200) {
 				this.pontos.push({
-					idx: 0,
 					endereco: this.formatarEndereco(response.data),
 					coords: {lat:parseFloat(response.data.latitude),lng:parseFloat(response.data.longitude)},
 					label: 'Coleta',
@@ -194,10 +193,18 @@ export default {
 				for (let idx in response.data.enderecosEntregas) {
 					let item = response.data.enderecosEntregas[idx]
 					this.pontos.push({
-						idx: parseInt(idx)+1,
 						endereco: this.formatarEndereco(item),
 						coords: {lat:parseFloat(item.latitude),lng:parseFloat(item.longitude)},
 						label: 'Entrega '+(parseInt(idx)+1),
+						icon: {url:'https://maps.gstatic.com/mapfiles/api-3/images/spotlight-poi2.png',size:{width:27,height:43,f:'px',b:'px'}}
+					})
+				}
+				if (['Em Coleta','Em Entrega'].indexOf(response.data.status)>-1 && response.data.motoboy) {
+					let coords = {lat:parseFloat(response.data.motoboy.latitude),lng:parseFloat(response.data.motoboy.longitude)}
+					this.pontos.push({
+						endereco: await this.buscarGeocode(null,coords),
+						coords: coords,
+						label: 'Motoboy '+response.data.motoboy.nome,
 						icon: {url:'https://maps.gstatic.com/mapfiles/api-3/images/spotlight-poi2.png',size:{width:27,height:43,f:'px',b:'px'}}
 					})
 				}

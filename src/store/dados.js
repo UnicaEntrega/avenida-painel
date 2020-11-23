@@ -29,7 +29,7 @@ const mutations = {
         for (let item of chat.mensagens)
           if ((obj.isCliente && item.usuario_id!==obj.usuario_id) || (!obj.isCliente && item.usuario_id!==obj.cliente_id))
             item.lida = true
-          chat.naoLida = 0
+        chat.naoLida = 0
       }
     }
     else {
@@ -38,7 +38,7 @@ const mutations = {
         for (let item of chat.mensagens)
           if (item.usuario_id!==obj.usuario_id)
             item.lida = true
-          chat.naoLida = 0
+        chat.naoLida = 0
       }
     }
     state.chats = JSON.parse(JSON.stringify(state.chats))
@@ -81,7 +81,7 @@ const getters = {
       let isCliente = (state.usuario.perfis && state.usuario.perfis.length>0 ? state.usuario.perfis[0].slug : '')==='cliente'
       for (let index in state.chats)
         for (let item of state.chats[index].mensagens)
-          if (!item.lida && ((isCliente && item.usuario_id!==state.usuario.id) || (!isCliente && item.usuario_id===state.chats[index].cliente.usuario_id)))
+          if (!item.lida && ((index.indexOf('motoboy')>-1 && item.usuario_id!==state.usuario.id) || (isCliente && item.usuario_id!==state.usuario.id) || (!isCliente && item.usuario_id===state.chats[index].cliente.usuario_id)))
             t++
     }
     catch(e) {}
