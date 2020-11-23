@@ -33,6 +33,7 @@ export default ({app, Vue}) => {
 			async efetuarLogout() {
 				if (this.getLogin) await this.executeMethod({method:'post',url:'auth/logout',data:{refresh_token:this.getLogin.refreshToken}})
 				await this.$store.dispatch('limparStore')
+				if (this.$root.chat_ws) this.$root.chat_ws.close()
 				this.$router.push('/login')
 			},
 			mostrarMsgErro(field) {
@@ -61,19 +62,23 @@ export default ({app, Vue}) => {
 				catch(e) {}
 				return null
 			},
-			async buscarGeocode(address) {
-				function resolver(address) {
+			async buscarGeocode(address,latLng) {
+				function resolver(opt) {
 					return new Promise(resolve=>{
-						Vue.$geocoder.send({address_line_1:address},response=>resolve(response))
+						Vue.$geocoder.send(opt,response=>resolve(response))
 					})
 				}
-				let pos = {lat:0,lng:0}
-				let response = await resolver(address)
+				Vue.$geocoder.setDefaultMode(address ? 'address' : 'lat-lng')
+				let response = await resolver(address ? {address_line_1:address} : latLng)
 				if (response.status==='OK' && response.results.length>0) {
-					pos.lat = response.results[0].geometry.location.lat
-					pos.lng = response.results[0].geometry.location.lng
+					if (address) {
+						let pos = {lat:0,lng:0}
+						pos.lat = response.results[0].geometry.location.lat
+						pos.lng = response.results[0].geometry.location.lng
+						return pos
+					}
+					else return response.results[0].formatted_address
 				}
-				return pos
 			},
 			formatarDataHora(d,f1,f2) {
 				return f2 ? Vue.moment(d,f1).format(f2) : Vue.moment(d).format(f1)
@@ -153,8 +158,10 @@ export default ({app, Vue}) => {
 				var response = await this.executeMethod({url:'api/Conversas',method:'get'})
 				if (response.status===200) {
 					let c = {}
-					for (let item of response.data)
-						c['coleta'+item.coleta_id] = item
+					for (let item of response.data) {
+						if (item.coleta_id) c['coleta'+item.coleta_id] = item
+						else c['motoboy'+item.motoboy_id] = item
+					}
 					await this.$store.commit('setDados',{key:'chats',value:c})
 				}
 				this.$root.$emit('carregarTelaChat')

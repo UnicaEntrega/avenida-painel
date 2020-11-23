@@ -14,7 +14,7 @@ Vue.use(VueI18n)
 Vue.use(VueTheMask)
 Vue.use(VueMoment,{moment})
 Vue.use(Vuelidate)
-Vue.use(Geocoder,{defaultCountryCode:'BR',defaultLanguage:'pt-BR',defaultMode:'address',googleMapsApiKey:'AIzaSyD1X8m1hfKzrEEAaAgG__O0KUXCLB5uPL4'})
+Vue.use(Geocoder,{defaultMode:'address',googleMapsApiKey:'AIzaSyD1X8m1hfKzrEEAaAgG__O0KUXCLB5uPL4'})
 Vue.use(VueGoogleMaps,{load:{region:'BR',language:'pt-BR',key:'AIzaSyCWTvPGIC5ZBhjuhpkKavofii0mkTQwZIo',libraries:'places'},installComponents:true})
 
 Vue.prototype.$axios = axios.create({baseURL:process.env.API_URL})

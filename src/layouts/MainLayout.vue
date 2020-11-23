@@ -157,16 +157,16 @@ export default {
 			if (this.usuarioPerfil==='cliente') this.carregarColetas()
 			await this.carregarChats()
 			this.$root.chat_connect = false
-			let ws = Ws(`${process.env.WS_URL}`).withJwtToken(this.getLogin.token).connect()
-			ws.on('open',()=>{
-				this.$root.chat = ws.subscribe(`chat:${this.usuarioPerfil==='cliente' ? 'usuario:'+this.getUsuario.id : 'admin'}`)
+			this.$root.chat_ws = Ws(`${process.env.WS_URL}`).withJwtToken(this.getLogin.token).connect()
+			this.$root.chat_ws.on('open',()=>{
+				this.$root.chat = this.$root.chat_ws.subscribe(`chat:${this.usuarioPerfil==='cliente' ? 'usuario:'+this.getUsuario.id : 'admin'}`)
 				this.$root.chat.on('ready',()=>{this.$root.chat_connect = true})
 				this.$root.chat.on('message',(m)=>{
 					this.$store.commit('mensagemChat',m)
-					this.$root.$emit('atualizarScroll',m.coleta_id)
+					this.$root.$emit('atualizarScroll',m.id)
 				})
 			})
-			ws.on('close',()=>{this.$root.chat_connect = false})
+			this.$root.chat_ws.on('close',()=>{this.$root.chat_connect = false})
 		}
 	}
 }
