@@ -1,11 +1,18 @@
 <template>
 	<div>
 		<q-card>
-			<q-card-section>
-				<q-item-label class="text-h6 text-primary">Cadastro de Motoboys</q-item-label>
-			</q-card-section>
-			<q-separator></q-separator>
 			<q-form @submit="onSubmit" @reset="onReset" class="q-gutter-y-md">
+				<q-card-section class="row">
+					<div class="col-6 text-h6 text-primary">Cadastro de Motoboys</div>
+						<div class="col-6 row justify-end">
+							<q-btn v-if="showBool" label="Voltar" icon="keyboard_arrow_left" type="reset" color="primary" flat></q-btn>
+							<q-btn v-if="showBool" label="Remover" icon="delete" color="negative" flat @click="removerMotoboy"></q-btn>
+							<q-btn v-if="showBool" label="Editar" icon="edit" color="primary" @click="showBool = false"></q-btn>
+							<q-btn v-if="!showBool" label="Cancelar" icon="close" type="reset" color="negative" flat></q-btn>
+							<q-btn v-if="!showBool" label="Salvar" icon="save" type="submit" color="primary"></q-btn>
+						</div>
+				</q-card-section>
+				<q-separator></q-separator>
 				<q-card-section class="row q-col-gutter-sm">
 					<div class="col-3">
 						<q-input v-model="motoboy.nome" label="Nome*" :rules="[validatorRequired]" :readonly="showBool"></q-input>
@@ -31,9 +38,6 @@
 						*Campos obrigatórios
 					</div>
 					<div class="col-6 row justify-end">
-						<q-btn v-if="showBool" label="Voltar" icon="keyboard_arrow_left" type="reset" color="primary" flat></q-btn>
-						<q-btn v-if="showBool" label="Remover" icon="delete" color="negative" flat @click="removerMotoboy"></q-btn>
-						<q-btn v-if="showBool" label="Editar" icon="edit" color="primary" @click="showBool = false"></q-btn>
 						<q-btn v-if="!showBool" label="Cancelar" icon="close" type="reset" color="negative" flat></q-btn>
 						<q-btn v-if="!showBool" label="Salvar" icon="save" type="submit" color="primary"></q-btn>
 					</div>
