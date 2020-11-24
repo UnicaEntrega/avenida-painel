@@ -177,7 +177,7 @@ export default {
 			else this.carregarMotoboys()
 			await this.carregarChats()
 			this.$root.chat_connect = false
-			this.$root.chat_ws = Ws(`${process.env.WS_URL}`).withJwtToken(this.getLogin.token).connect()
+			this.$root.chat_ws = Ws(`${process.env.API_URL}`.replace('http','ws')).withJwtToken(this.getLogin.token).connect()
 			this.$root.chat_ws.on('open',()=>{
 				this.$root.chat = this.$root.chat_ws.subscribe(`chat:${this.usuarioPerfil==='cliente' ? 'usuario:'+this.getUsuario.id : 'admin'}`)
 				this.$root.chat.on('ready',()=>{this.$root.chat_connect = true})
