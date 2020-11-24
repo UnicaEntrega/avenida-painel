@@ -1,14 +1,85 @@
 <template>
-	<q-page class="flex flex-center bg-grey-4">
-		<iframe frameborder="0" style="border:0; width: 100vw; height: 92vh" src="https://www.google.com/maps/embed/v1/place?q=place_id:ChIJ5VtrTX_m3JQRO23oqkx9i_s&key=AIzaSyCWTvPGIC5ZBhjuhpkKavofii0mkTQwZIo" allowfullscreen></iframe>
+	<q-page class="flex bg-grey-4">
+		<div style="width:200px;" v-if="motoboySelecionado">
+			<q-list separator>
+				<q-item v-for="(item,index) in motoboySelecionado.coletas" :key="index" clickable>
+					<q-item-section>
+						<q-item-label>
+							Coleta {{index+1}}
+						</q-item-label>
+						<q-item-label caption>
+							{{formatarEndereco(item)}}<br>
+							{{item.status}}
+						</q-item-label>
+					</q-item-section>
+				</q-item>
+			</q-list>
+		</div>
+		<gmap-map :center="coordsCenter" :zoom="15" style="height:92vh;" :style="motoboySelecionado ? 'width:calc(100% - 200px);' : 'width:100%;'">
+			<gmap-marker v-for="(item,index) in pontos" :key="index" :position="item.coords" :label="item.label" :icon="item.icon" :clickable="true" @click="clickMarker(item)"/>
+		</gmap-map>
+    <q-dialog v-model="modalMarker">
+      <q-card>
+        <q-card-section>
+          <div class="col-12 text-center">{{itemMarker.label}}</div>
+          <div class="col-12 q-pb-sm">{{itemMarker.endereco}}</div>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
 	</q-page>
 </template>
-
 <script>
 export default {
 	name: 'PageIndex',
+	data() {
+		return {
+			modalMarker: false,
+			motoboySelecionado: null,
+			coordsCenter: {lat:-25.3994957,lng:-49.2386427},
+			pontos: [],
+			itemMarker: {}
+		}
+	},
+	methods: {
+		async buscar() {
+			this.motoboySelecionado = null
+			this.pontos = []
+			if (this.$route.params.id) {
+				for (let item of this.getMotoboysOnline) {
+					if (item.id.toString()===this.$route.params.id.toString()) {
+						this.motoboySelecionado = item
+						this.coordsCenter = {lat:parseFloat(item.latitude),lng:parseFloat(item.longitude)}
+						this.pontos.push({
+							endereco: await this.buscarGeocode(null,this.coordsCenter),
+							coords: this.coordsCenter,
+							label: 'Motoboy',
+							icon: {url:'http://maps.gstatic.com/mapfiles/markers2/icon_green.png',size:{width:27,height:43,f:'px',b:'px'}}
+						})
+						for (let idx in item.coletas) {
+							let item2 = item.coletas[idx]
+							this.pontos.push({
+								endereco: this.formatarEndereco(item2),
+								coords: {lat:parseFloat(item2.latitude),lng:parseFloat(item2.longitude)},
+								label: 'Coleta '+(parseInt(idx)+1),
+								icon: {url:'https://maps.gstatic.com/mapfiles/api-3/images/spotlight-poi2.png',size:{width:27,height:43,f:'px',b:'px'}}
+							})
+						}
+						break
+					}
+				}
+			}
+		},
+		clickMarker(item) {
+			this.itemMarker = item
+			this.modalMarker = true
+		}
+	},
 	created() {
-		if (this.isBlank(this.getLogin.token)) this.$router.push('/login');
+		if (this.isBlank(this.getLogin.token)) this.$router.push('/login')
+		else this.buscar()
+	},
+	watch: {
+		'$route': function(a,b){if(a.path!==b.path)this.buscar()}
 	}
 }
 </script>

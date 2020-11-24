@@ -1,7 +1,8 @@
 const state = {
   login: {},
   usuario: {},
-  chats: {}
+  chats: {},
+  motoboysOnline: []
 }
 
 const mutations = {
@@ -10,6 +11,7 @@ const mutations = {
     state.login = {}
     state.usuario = {}
     state.chats = {}
+    state.motoboysOnline = []
   },
   /** SETAR DADOS NO STATE {key:'',value:''}*/
   setDados: (state, obj) => {
@@ -86,6 +88,9 @@ const getters = {
     }
     catch(e) {}
     return t
+  },
+  getMotoboysOnline: (state) => {
+    return state.motoboysOnline
   }
 }
 

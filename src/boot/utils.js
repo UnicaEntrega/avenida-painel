@@ -7,7 +7,8 @@ export default ({app, Vue}) => {
 				getLogin: "getLogin",
 				getUsuario: "getUsuario",
 				getChats: "getChats",
-				getTotalNaoLidas: "getTotalNaoLidas"
+				getTotalNaoLidas: "getTotalNaoLidas",
+				getMotoboysOnline: "getMotoboysOnline"
 			}),
 			ufOptions() {return ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO']},
 			tipoVeiculoOptions() {return [{label:'Moto',value:'moto'},{label:'Carro',value:'carro'}]},

@@ -32,7 +32,8 @@ const routes = [
 			{ path: "minhasColetas", component: () => import("pages/CadastroColetas/Minhas.vue") },
 			{ path: 'chat', component: () => import('pages/Chat.vue') },
 			{ path: 'chat/:id', component: () => import('pages/Chat.vue') },
-			{ path: 'relatorios', component: () => import('pages/Relatorio.vue') }
+			{ path: 'relatorios', component: () => import('pages/Relatorio.vue') },
+			{ path: 'motoboy/:id', component: () => import('pages/Index.vue') }
 		]
 	},
 	{

@@ -130,24 +130,43 @@ export default {
 		},
 		async carregarColetas() {
       var response = await this.executeMethod({url:'api/Coletas/minhas',method:'get'})
-      if (response.status===200) {
-				if (response.data.length>0) {
-					let coletas = {
-						icon: "img:images/avenida_web_motoboysOnline.png",
-						name: "Coletas em Andamento",
-						tipo: "cliente",
-						links: []
-					}
-					for (let item of response.data) {
-						coletas.links.push({
-							icon: "img:images/avenida_web_motoboysOnline.png",
-							title: `${item.id} - ${this.formatarDataHora(item.created_at,'DD/MM/YYYY')}`,
-							path: `/coleta/${item.id}`,
-							tipo: "cliente",
-						})
-					}
-					this.categorias.push(coletas)
+      if (response.status===200 && response.data.length>0) {
+				let coletas = {
+					icon: "img:images/avenida_web_motoboysOnline.png",
+					name: "Coletas em Andamento",
+					tipo: "cliente",
+					links: []
 				}
+				for (let item of response.data) {
+					coletas.links.push({
+						icon: "img:images/avenida_web_motoboysOnline.png",
+						title: `${item.id} - ${this.formatarDataHora(item.created_at,'DD/MM/YYYY')}`,
+						path: `/coleta/${item.id}`,
+						tipo: "cliente"
+					})
+				}
+				this.categorias.push(coletas)
+			}
+		},
+		async carregarMotoboys() {
+      var response = await this.executeMethod({url:'api/Motoboys/lista',method:'get'})
+      if (response.status===200 && response.data.length>0) {
+				await this.$store.commit('setDados',{key:'motoboysOnline',value:response.data})
+				let motoboys = {
+					icon: "img:images/avenida_web_motoboysOnline.png",
+					name: "Motoboys Online",
+					tipo: "admin",
+					links: []
+				}
+				for (let item of response.data) {
+					motoboys.links.push({
+						icon: "img:images/avenida_web_motoboysOnline.png",
+						title: `${item.nome} - ${item.placa}`,
+						path: `/motoboy/${item.id}`,
+						tipo: "admin"
+					})
+				}
+				this.categorias.push(motoboys)
 			}
 		}
 	},
@@ -155,6 +174,7 @@ export default {
 		if (this.isBlank(this.getLogin.token)) this.$router.push('/login')
 		else {
 			if (this.usuarioPerfil==='cliente') this.carregarColetas()
+			else this.carregarMotoboys()
 			await this.carregarChats()
 			this.$root.chat_connect = false
 			this.$root.chat_ws = Ws(`${process.env.WS_URL}`).withJwtToken(this.getLogin.token).connect()
