@@ -183,7 +183,7 @@ export default {
 				this.$root.chat.on('ready',()=>{this.$root.chat_connect = true})
 				this.$root.chat.on('message',(m)=>{
 					this.$store.commit('mensagemChat',m)
-					this.$root.$emit('atualizarScroll',m.id)
+					this.$root.$emit('atualizarScroll',m)
 				})
 			})
 			this.$root.chat_ws.on('close',()=>{this.$root.chat_connect = false})

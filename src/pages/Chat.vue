@@ -108,14 +108,13 @@ export default {
 			}
 		},
 		async marcarLida() {
-			let response = await this.executeMethod({url:`api/Conversas/lida/${this.conversa.id}`,method:'get'})
-			if (response.status===200) {
-				if (this.conversa.coleta_id) this.$store.commit('lidaChat',{coleta_id:this.conversa.coleta_id,usuario_id:this.getUsuario.id,cliente_id:this.conversa.cliente_id,isCliente:this.usuarioPerfil==='admin'})
-				else this.$store.commit('lidaChat',{usuario_id:this.getUsuario.id,motoboy_id:this.conversa.motoboy_id,isCliente:this.usuarioPerfil==='admin'})
-			}
+			if (this.conversa.id) await this.executeMethod({url:`api/Conversas/lida/${this.conversa.id}`,method:'get'})
+			if (this.conversa.coleta_id) this.$store.commit('lidaChat',{coleta_id:this.conversa.coleta_id,usuario_id:this.getUsuario.id,cliente_id:this.conversa.cliente_id,isCliente:this.usuarioPerfil==='admin'})
+			else this.$store.commit('lidaChat',{usuario_id:this.getUsuario.id,motoboy_id:this.conversa.motoboy_id,isCliente:this.usuarioPerfil==='admin'})
 		},
-		atualizarScroll(id) {
-			if (this.conversa.id===id) {
+		atualizarScroll(item) {
+			if (item.coleta_id.toString()===this.conversa.coleta_id.toString()) this.conversa.id = item.id
+			if (this.conversa.id===item.id) {
 				this.scrollDown()
 				this.marcarLida()
 			}

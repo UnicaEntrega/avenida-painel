@@ -48,16 +48,18 @@ const mutations = {
   mensagemChat: (state, obj) => {
     if (!obj.error) {
       if (obj.coleta_id) {
+        if (!state.chats['coleta'+obj.coleta_id]) state.chats['coleta'+obj.coleta_id] = {coleta_id:obj.coleta_id,cliente_id:obj.cliente_id,cliente:obj.cliente,mensagens:[],naoLida:0}
         let chat = state.chats['coleta'+obj.coleta_id]
-        if (!chat) chat = {id:obj.id,coleta_id:obj.coleta_id,updated_at:obj.updated_at,mensagens:[]}
+        chat.id = obj.id
         chat.mensagens.push(obj.mensagem)
         let isCliente = (state.usuario.perfis && state.usuario.perfis.length>0 ? state.usuario.perfis[0].slug : '')==='cliente'
         if ((isCliente && obj.mensagem.usuario_id!==state.usuario.id) || (!isCliente && obj.mensagem.usuario_id===chat.cliente.usuario_id))
           chat.naoLida++
       }
       else {
-        if (!state.chats['motoboy'+obj.motoboy_id]) state.chats['motoboy'+obj.motoboy_id] = {id:obj.id,motoboy_id:obj.motoboy_id,nome:obj.nome,updated_at:obj.updated_at,mensagens:[]}
+        if (!state.chats['motoboy'+obj.motoboy_id]) state.chats['motoboy'+obj.motoboy_id] = {motoboy_id:obj.motoboy_id,nome:obj.nome,mensagens:[],naoLida:0}
         let chat = state.chats['motoboy'+obj.motoboy_id]
+        chat.id = obj.id
         chat.mensagens.push(obj.mensagem)
         if (obj.mensagem.usuario_id!==state.usuario.id)
           chat.naoLida++
