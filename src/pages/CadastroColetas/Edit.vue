@@ -16,14 +16,14 @@
 					</div>
 				</q-card-section>
 				<q-separator></q-separator>
-				<q-card-section class="row q-col-gutter-sm">
-					<div class="col-8" v-if="usuarioPerfil!=='cliente'">
+				<q-card-section class="row q-col-gutter-sm" v-if="usuarioPerfil!=='cliente'">
+					<div class="col-8">
 						<q-select v-model="coleta.cliente_id" :options="clienteOptions" option-label="nome" option-value="id" map-options emit-value label="Cliente*" :rules="[validatorRequired]" :readonly="showBool" use-input filled @filter="buscarCliente">
 							<q-btn slot="after" icon="add" color="primary" @click="abrirModalCliente" v-if="!showBool"></q-btn>
 						</q-select>
 					</div>
-					<div class="col-3" :class="usuarioPerfil==='cliente' ? '' : 'offset-1'">
-						<q-select v-model="coleta.status" :options="coletaStatusOptions"  label="Status*" :rules="[validatorRequired]" :readonly="showBool"></q-select>
+					<div class="col-3">
+						<q-select v-model="coleta.status" :options="coletaStatusOptions" label="Status*" :rules="[validatorRequired]" :readonly="showBool"></q-select>
 					</div>
 				</q-card-section>
 				<q-card-section class="row q-col-gutter-sm">
@@ -116,7 +116,7 @@
 					<div class="col-3">
 						<q-select v-model="coleta.tipo_entrega" :options="tipoEntregaOptions" label="Tipo da Entrega" :rules="[validatorRequired]" :readonly="showBool"></q-select>
 					</div>
-					<div class="col-3">
+					<div class="col-3" v-if="usuarioPerfil!=='cliente'">
 						<q-input v-model="coleta.valor_entrega" label="Valor da Entrega" :rules="[validatorRequired]" :readonly="showBool" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 					</div>
 					<div class="col-3">
@@ -125,10 +125,10 @@
 					<div class="col-3" v-if="coleta.forma_pagamento==='Boleto'">
 						<q-input v-model="coleta.numero_boleto" label="Número do Boleto" :rules="[validatorRequired]" :readonly="showBool"></q-input>
 					</div>
-					<div class="col-3">
-						<q-select v-model="coleta.motoboy_id" :options="motoboyOptions" option-label="nome" option-value="id" map-options emit-value label="Motoboy*" :rules="[validatorRequired]" :readonly="showBool" use-input filled @filter="buscarMotoboy"/>
+					<div class="col-3" v-if="usuarioPerfil!=='cliente'">
+						<q-select v-model="coleta.motoboy_id" :options="motoboyOptions" option-label="nome" option-value="id" map-options emit-value label="Motoboy" :readonly="showBool" use-input filled @filter="buscarMotoboy"/>
 					</div>
-					<div class="col-3">
+					<div class="col-3" v-if="usuarioPerfil!=='cliente'">
 						<q-input v-model="coleta.comissao" label="Porcentagem de Comissão" :rules="[validatorRequired]" :readonly="showBool" mask="#,##" fill-mask="0" reverse-fill-mask suffix="%"></q-input>
 					</div>
 					<div class="col-12 q-pb-md" v-if="showBool && !isBlank(coleta.observacao_cancelamento)">
