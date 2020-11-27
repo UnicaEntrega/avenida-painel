@@ -26,6 +26,10 @@
 					<div class="col-3 q-px-xs">
 						<q-select v-model="pesquisa.forma_pagamento" :options="formaPagamentoOptions"  label="Forma de pagamento" @input="buscar()" multiple></q-select>
 					</div>
+					<div class="col-4 q-px-xs">
+						<q-btn outline icon="import_export" label="CSV" color="primary" @click="exportar('csv')" class="q-mr-xs"/>
+						<q-btn outline icon="print" label="PDF" color="primary" @click="exportar('pdf')" class="q-ml-xs"/>
+					</div>
 				</template>
 				<template v-slot:bottom>
 					<div class="col-12 text-right text-bold">Qtde: {{resumo.q}}</div>
@@ -121,6 +125,9 @@ export default {
 			var response = await this.executeMethod(data)
 			if (response.status===200) this.motoboyOptions = response.data.data
 			update()
+		},
+		exportar(tipo) {
+			window.open(encodeURI(`${process.env.API_URL}api/Coletas/Relatorio?token=${this.getLogin.token}&export=${tipo}&filter=`+JSON.stringify({...this.pesquisa,...this.pagination})),'_blank')
 		}
 	}
 }

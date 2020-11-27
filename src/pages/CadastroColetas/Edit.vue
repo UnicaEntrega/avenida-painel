@@ -388,7 +388,7 @@ export default {
 				endereco.bairro = r.bairro
 				endereco.cidade = r.localidade
 				endereco.estado = r.uf
-				if (idx) {
+				if (idx!==undefined) {
 					if (this.$refs['endereco_numero'+idx]) this.$refs['endereco_numero'+idx][0].focus()
 				}
 				else this.$refs.endereco_numero.focus()
