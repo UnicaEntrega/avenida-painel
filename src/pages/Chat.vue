@@ -113,7 +113,7 @@ export default {
 			else this.$store.commit('lidaChat',{usuario_id:this.getUsuario.id,motoboy_id:this.conversa.motoboy_id,isCliente:this.usuarioPerfil==='admin'})
 		},
 		atualizarScroll(item) {
-			if (item.coleta_id.toString()===this.conversa.coleta_id.toString()) this.conversa.id = item.id
+			if (this.conversa.coleta_id && item.coleta_id.toString()===this.conversa.coleta_id.toString()) this.conversa.id = item.id
 			if (this.conversa.id===item.id) {
 				this.scrollDown()
 				this.marcarLida()

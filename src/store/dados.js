@@ -54,7 +54,7 @@ const mutations = {
         chat.mensagens.push(obj.mensagem)
         let isCliente = (state.usuario.perfis && state.usuario.perfis.length>0 ? state.usuario.perfis[0].slug : '')==='cliente'
         if ((isCliente && obj.mensagem.usuario_id!==state.usuario.id) || (!isCliente && obj.mensagem.usuario_id===chat.cliente.usuario_id))
-          chat.naoLida++
+          chat.naoLida = parseInt(chat.naoLida)+1
       }
       else {
         if (!state.chats['motoboy'+obj.motoboy_id]) state.chats['motoboy'+obj.motoboy_id] = {motoboy_id:obj.motoboy_id,nome:obj.nome,mensagens:[],naoLida:0}
@@ -62,7 +62,7 @@ const mutations = {
         chat.id = obj.id
         chat.mensagens.push(obj.mensagem)
         if (obj.mensagem.usuario_id!==state.usuario.id)
-          chat.naoLida++
+          chat.naoLida = parseInt(chat.naoLida)+1
       }
       state.chats = JSON.parse(JSON.stringify(state.chats))
     }
@@ -82,11 +82,8 @@ const getters = {
   getTotalNaoLidas: (state) => {
     let t = 0
     try {
-      let isCliente = (state.usuario.perfis && state.usuario.perfis.length>0 ? state.usuario.perfis[0].slug : '')==='cliente'
       for (let index in state.chats)
-        for (let item of state.chats[index].mensagens)
-          if (!item.lida && ((index.indexOf('motoboy')>-1 && item.usuario_id!==state.usuario.id) || (isCliente && item.usuario_id!==state.usuario.id) || (!isCliente && item.usuario_id===state.chats[index].cliente.usuario_id)))
-            t++
+        t += parseInt(state.chats[index].naoLida)
     }
     catch(e) {}
     return t
