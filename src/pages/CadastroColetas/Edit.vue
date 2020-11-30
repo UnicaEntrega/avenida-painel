@@ -10,7 +10,7 @@
 						<q-btn v-if="showBool" label="Voltar" icon="keyboard_arrow_left" type="reset" color="primary" flat></q-btn>
 						<q-btn v-if="showBool && usuarioPerfil!=='cliente'" label="Remover" icon="delete" color="negative" flat @click="removerColeta"></q-btn>
 						<q-btn v-if="showBool && usuarioPerfil!=='cliente'" label="Editar" icon="edit" color="primary" @click="showBool = false"></q-btn>
-						<q-btn v-if="showBool && usuarioPerfil==='cliente' && coleta.status==='Finalizado' && dataRelatarProblema" label="Relatar Problema" icon="edit" color="primary" @click="abrirModalProblema"></q-btn>
+						<q-btn v-if="showBool && usuarioPerfil==='cliente' && coleta.status==='Finalizado' && dataRelatarProblema && !coleta.problema" label="Relatar Problema" icon="edit" color="primary" @click="abrirModalProblema"></q-btn>
 						<q-btn v-if="!showBool" label="Cancelar" icon="close" type="reset" color="negative" flat></q-btn>
 						<q-btn v-if="!showBool" label="Salvar" icon="save" type="submit" color="primary"></q-btn>
 					</div>
@@ -155,8 +155,8 @@
 				<q-separator></q-separator>
 				<q-card-section>
 					<q-list separator>
-						<q-item v-for="status in coletaStatusOptions" :key="status" :class="c_statusItem(status)" clickable @click="status=status">
-							<q-item-section>{{status}}</q-item-section>
+						<q-item v-for="(item,index) in coletaStatusOptions" :key="index" :class="c_statusItem(item)" clickable @click="status=item">
+							<q-item-section>{{item}}</q-item-section>
 						</q-item>
 					</q-list>
 				</q-card-section>
@@ -226,7 +226,7 @@ export default {
 				numero_boleto: '',
 				motoboy_id: '',
 				comissao: 0,
-				status: '',
+				status: 'Aberto',
 				observacao_cancelamento: '',
 				latitude: 0,
 				longitude: 0,
@@ -269,6 +269,7 @@ export default {
 					problema: this.problema
 				})
 				this.modalProblema = false
+				this.$router.push('/chat/'+this.coleta.id)
 			}
 		},
 		abrirModalStatus() {

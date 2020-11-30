@@ -20,7 +20,7 @@
 
 					<template v-slot:body-cell-motoboy="props">
 						<q-td>
-							{{props.row.motoboy.nome}}
+							{{props.row.motoboy ? props.row.motoboy.nome : ''}}
 						</q-td>
 					</template>
 				</q-table>
