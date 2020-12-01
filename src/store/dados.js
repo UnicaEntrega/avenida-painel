@@ -20,10 +20,6 @@ const mutations = {
   abrirChat: (state,obj) => {
     state.chats['coleta'+obj.coleta_id] = obj
   },
-  removerChat: (state,coleta_id) => {
-    delete state.chats['coleta'+coleta_id]
-    state.chats = JSON.parse(JSON.stringify(state.chats))
-  },
   lidaChat: (state,obj) => {
     if (obj.coleta_id) {
       let chat = state.chats['coleta'+obj.coleta_id]
@@ -48,24 +44,33 @@ const mutations = {
   mensagemChat: (state, obj) => {
     if (!obj.error) {
       if (obj.coleta_id) {
-        if (!state.chats['coleta'+obj.coleta_id]) state.chats['coleta'+obj.coleta_id] = {coleta_id:obj.coleta_id,cliente_id:obj.cliente_id,cliente:obj.cliente,mensagens:[],naoLida:0}
+        if (!state.chats['coleta'+obj.coleta_id]) state.chats['coleta'+obj.coleta_id] = {coleta_id:obj.coleta_id,cliente_id:obj.cliente_id,cliente:obj.cliente,mensagens:[],naoLida:0,finalizado:false}
         let chat = state.chats['coleta'+obj.coleta_id]
         chat.id = obj.id
+        chat.finalizado = obj.finalizado
         chat.mensagens.push(obj.mensagem)
         let isCliente = (state.usuario.perfis && state.usuario.perfis.length>0 ? state.usuario.perfis[0].slug : '')==='cliente'
         if ((isCliente && obj.mensagem.usuario_id!==state.usuario.id) || (!isCliente && obj.mensagem.usuario_id===chat.cliente.usuario_id))
           chat.naoLida = parseInt(chat.naoLida)+1
       }
       else {
-        if (!state.chats['motoboy'+obj.motoboy_id]) state.chats['motoboy'+obj.motoboy_id] = {motoboy_id:obj.motoboy_id,nome:obj.nome,mensagens:[],naoLida:0}
+        if (!state.chats['motoboy'+obj.motoboy_id]) state.chats['motoboy'+obj.motoboy_id] = {motoboy_id:obj.motoboy_id,nome:obj.nome,mensagens:[],naoLida:0,finalizado:false}
         let chat = state.chats['motoboy'+obj.motoboy_id]
         chat.id = obj.id
+        chat.finalizado = obj.finalizado
         chat.mensagens.push(obj.mensagem)
         if (obj.mensagem.usuario_id!==state.usuario.id)
           chat.naoLida = parseInt(chat.naoLida)+1
       }
-      state.chats = JSON.parse(JSON.stringify(state.chats))
     }
+    else {
+      if (obj.coleta_id) {
+        let chat = state.chats['coleta'+obj.coleta_id]
+        if (chat) chat.finalizado = true
+        console.log(chat)
+      }
+    }
+    state.chats = JSON.parse(JSON.stringify(state.chats))
   }
 }
 

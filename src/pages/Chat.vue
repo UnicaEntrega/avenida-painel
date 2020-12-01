@@ -32,7 +32,7 @@
 			</div>
 		</div>
 				
-		<q-page-sticky position="bottom" :offset="[10, 18]" expand v-if="conversa.coleta_id || conversa.motoboy_id">
+		<q-page-sticky position="bottom" :offset="[10, 18]" expand v-if="(conversa.coleta_id || conversa.motoboy_id) && !(getChats[conversa.coleta_id ? 'coleta'+conversa.coleta_id : 'motoboy'+conversa.motoboy_id] || {}).finalizado">
 			<div class="q-px-lg full-width grid-input">
 				<div></div>
 				<q-input ref="mensagem" class="round-input" v-model="mensagem" placeholder="Inserir mensagem" bg-color="grey-2" rounded borderless dense v-on:keyup.enter="enviarMensagem()">
@@ -83,10 +83,7 @@ export default {
 		enviarResolvido() {
 			this.$q.dialog({title:'Confirmação',message:'Tem certeza que deseja marcar como resolvido?',ok:'Sim',cancel:'Não'}).onOk(async ()=>{
         var response = await this.executeMethod({url:`api/Conversas/resolvido/${this.conversa.id}`,method:'post'})
-				if (response.status===200) {
-					this.$store.commit('removerChat',this.conversa.coleta_id)
-					this.conversa = {}
-				}
+				if (response.status===200) this.conversa = {}
 			})
 		},
 		abrirMensagem(item) {
@@ -113,17 +110,19 @@ export default {
 			else this.$store.commit('lidaChat',{usuario_id:this.getUsuario.id,motoboy_id:this.conversa.motoboy_id,isCliente:this.usuarioPerfil==='admin'})
 		},
 		atualizarScroll(item) {
-			if (this.conversa.coleta_id && item.coleta_id.toString()===this.conversa.coleta_id.toString()) this.conversa.id = item.id
-			if (this.conversa.id===item.id) {
-				this.scrollDown()
-				this.marcarLida()
+			if (!item.error) {
+				if (this.conversa.coleta_id && item.coleta_id.toString()===this.conversa.coleta_id.toString()) this.conversa.id = item.id
+				if (this.conversa.id===item.id) {
+					this.scrollDown()
+					this.marcarLida()
+				}
 			}
 		},
 		async carregarTelaChat() {
 			if (this.$route.params.id) {
 				let c = this.getChats['coleta'+this.$route.params.id]
 				if (!c) {
-					await this.$store.commit('abrirChat',{coleta_id:this.$route.params.id,naoLida:0,mensagens:[]})
+					await this.$store.commit('abrirChat',{coleta_id:this.$route.params.id,naoLida:0,mensagens:[],finalizado:false})
 					c = this.getChats['coleta'+this.$route.params.id]
 				}
 				if (c) this.abrirMensagem(c)
