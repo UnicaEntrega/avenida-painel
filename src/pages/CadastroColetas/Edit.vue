@@ -254,7 +254,7 @@ export default {
 		dataRelatarProblema() {
 			if (!this.coleta.data_finalizado) return false
 			let m = this.getMoment()
-			return m(this.coleta.data_finalizado,'YYYY-MM-DD').add(7,'days').format('YYYYMMDD')>=m().format('YYYYMMDD')
+			return m(this.coleta.data_finalizado,'YYYY-MM-DD').add(1,'days').format('YYYYMMDD')>=m().format('YYYYMMDD')
 		}
 	},
 	methods: {
