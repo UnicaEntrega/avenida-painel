@@ -111,7 +111,7 @@
 
 				<q-card-section class="row q-col-gutter-sm">
 					<div class="col-12 q-pb-md">
-						<q-input v-model="coleta.observacao" type="textarea" label="Observações" :readonly="showBool"></q-input>
+						<q-input v-model="coleta.observacao" type="textarea" label="Observações" :readonly="showBool" :autogrow="showBool"></q-input>
 					</div>					
 					<div class="col-3">
 						<q-select v-model="coleta.tipo_entrega" :options="tipoEntregaOptions" label="Tipo da Entrega" :rules="[validatorRequired]" :readonly="showBool"></q-select>
@@ -135,16 +135,15 @@
 						<q-input v-model="coleta.comissao" label="Porcentagem de Comissão" :rules="[validatorRequired]" :readonly="showBool" mask="#,##" fill-mask="0" reverse-fill-mask suffix="%"></q-input>
 					</div>
 					<div class="col-12 q-pb-md" v-if="showBool && !isBlank(coleta.observacao_cancelamento)">
-						<q-input v-model="coleta.observacao_cancelamento" type="textarea" label="Observações de cancelamento" :readonly="showBool"></q-input>
+						<q-input v-model="coleta.observacao_cancelamento" type="textarea" label="Observações de cancelamento" :readonly="showBool" :autogrow="showBool"></q-input>
 					</div>
-					<div class="col-12 q-pb-md" v-if="showBool && !isBlank(coleta.foto_finalizado)">
-						<label>Foto</label>
-						<q-img :src="fotoSrc" style="width:200px;"/>
-						<q-btn label="Abrir local da foto" icon="map" color="primary" @click="abrirMapa()"/>
+				</q-card-section>
+				<q-card-section class="row q-col-gutter-sm" v-if="showBool && !isBlank(coleta.foto_finalizado)">
+					<div class="col-12 q-pb-md">
+						<div>Foto</div>
+						<q-img :src="fotoSrc" style="width:300px;"/>
+						<q-btn label="Abrir localização da foto" icon="map" color="primary" @click="abrirMapa()"/>
 					</div>
-					<gmap-map :center="mapa.coords" :zoom="15" style="height:50vh;width:100%;" v-if="mapa.mostrar">
-						<gmap-marker :position="mapa.coords" :label="mapa.label" :icon="mapa.icon" :clickable="true" @click="modalMarker=true"/>
-					</gmap-map>
 				</q-card-section>
 				<q-card-section class="q-col-gutter-md row items-center">
 					<div class="col-6 text-grey-6">
@@ -209,6 +208,16 @@
 				</q-card-section>
 			</q-card>
 		</q-dialog>
+    <q-dialog v-model="mapa.mostrar">
+      <q-card style="min-width:90vw;min-heigth:90vh;" class="relative-position">
+				<div class="absolute" style="left:calc((90vw / 2) - 21px);top:5px;z-index:6000;">
+					<q-btn round icon="close" color="primary" @click="mapa.mostrar=false"/>
+				</div>
+				<gmap-map :center="mapa.coords" :zoom="15" style="height:calc(100vh - 48px);width:100%;">
+					<gmap-marker :position="mapa.coords" :label="mapa.label" :icon="mapa.icon" :clickable="true" @click="modalMarker=true"/>
+				</gmap-map>
+      </q-card>
+    </q-dialog>
     <q-dialog v-model="modalMarker">
       <q-card>
         <q-card-section>
