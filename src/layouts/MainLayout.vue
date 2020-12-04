@@ -86,9 +86,15 @@ export default {
 					tipo: "admin",
 				},
 				{
+					icon: "two_wheeler",
+					title: "Veículos",
+					path: "/cadastroVeiculos",
+					tipo: "admin",
+				},
+				{
 					icon: "img:images/avenida_web_motoboysOnline.png",
 					title: "Motoboys",
-					path: "/motoboys",
+					path: "/cadastroMotoboys",
 					tipo: "admin",
 				},
 				{
@@ -121,7 +127,8 @@ export default {
 					path: '/cadastroColetas/edit',
 					tipo: "cliente",
 				}
-			]
+			],
+			_interval: null
 		}
 	},
 	methods: {
@@ -129,6 +136,13 @@ export default {
 			return (this.usuarioPerfil == categoria.tipo) || categoria.tipo == "Ambos"
 		},
 		async carregarColetas() {
+			let categorias = JSON.parse(JSON.stringify(this.categorias))
+			for (let index in categorias) {
+				if (categorias[index].name==='Coletas em Andamento') {
+					categorias.splice(index,1)
+					break
+				}
+			}
       var response = await this.executeMethod({url:'api/Coletas/minhas',method:'get'})
       if (response.status===200 && response.data.length>0) {
 				let coletas = {
@@ -145,10 +159,18 @@ export default {
 						tipo: "cliente"
 					})
 				}
-				this.categorias.push(coletas)
+				categorias.push(coletas)
 			}
+			this.categorias = categorias
 		},
 		async carregarMotoboys() {
+			let categorias = JSON.parse(JSON.stringify(this.categorias))
+			for (let index in categorias) {
+				if (categorias[index].name==='Motoboys Online') {
+					categorias.splice(index,1)
+					break
+				}
+			}
       var response = await this.executeMethod({url:'api/Motoboys/lista',method:'get'})
       if (response.status===200 && response.data.length>0) {
 				await this.$store.commit('setDados',{key:'motoboysOnline',value:response.data})
@@ -158,23 +180,37 @@ export default {
 					tipo: "admin",
 					links: []
 				}
+				if (response.data.length>2)
+					motoboys.links.push({
+						icon: "img:images/avenida_web_motoboysOnline.png",
+						title: 'Todos',
+						path: '/',
+						tipo: "admin"
+					})
 				for (let item of response.data) {
 					motoboys.links.push({
 						icon: "img:images/avenida_web_motoboysOnline.png",
-						title: `${item.nome} - ${item.placa}`,
+						title: `${item.nome} - ${item.veiculo ? item.veiculo.placa : ''}`,
 						path: `/motoboy/${item.id}`,
 						tipo: "admin"
 					})
 				}
-				this.categorias.push(motoboys)
+				categorias.push(motoboys)
 			}
+			this.categorias = categorias
 		}
 	},
 	async created() {
 		if (this.isBlank(this.getLogin.token)) this.$router.push('/login')
 		else {
-			if (this.usuarioPerfil==='cliente') this.carregarColetas()
-			else this.carregarMotoboys()
+			if (this.usuarioPerfil==='cliente') {
+				this._interval = setInterval(()=>{this.carregarColetas()},5000)
+				this.carregarColetas()
+			}
+			else {
+				this._interval = setInterval(()=>{this.carregarMotoboys()},5000)
+				this.carregarMotoboys()
+			}
 			await this.carregarChats()
 			this.$root.chat_connect = false
 			this.$root.chat_ws = Ws(`${process.env.API_URL}`.replace('http','ws')).withJwtToken(this.getLogin.token).connect()
@@ -188,6 +224,9 @@ export default {
 			})
 			this.$root.chat_ws.on('close',()=>{this.$root.chat_connect = false})
 		}
+	},
+	destroyed() {
+		if (this._interval) clearInterval(this._interval)
 	}
 }
 </script>

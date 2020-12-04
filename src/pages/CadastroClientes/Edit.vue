@@ -5,6 +5,7 @@
 				<q-card-section class="row">
 					<div class="col-6 text-h6 text-primary">Cadastro de Clientes</div>
 					<div class="col-6 row justify-end">
+						<q-btn v-if="showBool" label="Registrar Bloco" icon="receipt_long" @click="abrirModalBloco" color="primary" flat></q-btn>
 						<q-btn v-if="showBool" label="Voltar" icon="keyboard_arrow_left" type="reset" color="primary" flat></q-btn>
 						<q-btn v-if="showBool" label="Remover" icon="delete" color="negative" flat @click="removerCliente"></q-btn>
 						<q-btn v-if="showBool" label="Editar" icon="edit" color="primary" @click="showBool = false"></q-btn>
@@ -98,6 +99,27 @@
 				</q-card-section>
 			</q-form>
 		</q-card>
+
+		<q-dialog v-model="modalBloco">
+			<q-card>
+				<q-form @submit="salvarBloco" @reset="modalBloco=false" class="q-gutter-y-md">
+					<q-card-section>
+						<q-item-label class="text-h6 text-primary">Registrar Bloco</q-item-label>
+					</q-card-section>
+					<q-card-section class="row q-col-gutter-sm">
+						<div class="col-12">
+							<q-input type="number" v-model="bloco_numero" label="Número" :rules="[validatorRequired]"></q-input>
+						</div>
+					</q-card-section>
+					<q-card-section class="q-col-gutter-md row items-center">
+						<div class="col-12 row justify-end">
+							<q-btn label="Cancelar" icon="close" color="negative" flat type="reset"></q-btn>
+							<q-btn label="Salvar" icon="save" color="primary" type="submit"></q-btn>
+						</div>
+					</q-card-section>
+				</q-form>
+			</q-card>
+		</q-dialog>
 	</div>
 </template>
 <script>
@@ -120,10 +142,20 @@ export default {
 				estado: "",
 				contatos: [],
 				observacao: ""
-			}
+			},
+			bloco_numero: '',
+			modalBloco: false
 		}
 	},
 	methods: {
+		abrirModalBloco() {
+			this.bloco_numero = ''
+			this.modalBloco = true
+		},
+		async salvarBloco() {
+			var response = await this.executeMethod({url:`api/Clientes/registrarBloco/${this.cliente.id}`,method:'post',data:{numero:this.bloco_numero}})
+			if (response.status===200) this.modalBloco = false
+		},
 		adicionarContato() {
 			this.cliente.contatos.push({
 				nome: "",

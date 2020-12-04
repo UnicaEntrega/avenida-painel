@@ -1,17 +1,14 @@
 <template>
 	<q-page class="q-pa-lg bg-grey-4">
 		<transition mode="out-in" enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
-			<div v-if="$route.path == '/motoboys'" key="list">
+			<div v-if="$route.path == '/cadastroMotoboys'" key="list">
 				<q-table :data="motoboys" :columns="motoboyColumns" align="left" row-key="id" :pagination.sync="pagination" @update:pagination="v=>buscar()" :loading="loading" @request="buscar" :rows-per-page-options="[10,20,50,100]" :pagination-label="paginationLabel" binary-state-sort>
 					<template v-slot:top>
-						<div class="col-6 text-h5 text-primary">Motoboys</div>
+						<div class="col-9 text-h5 text-primary">Motoboys</div>
 						<div class="col-3">
 							<q-input v-model="search" placeholder="Pesquisar" @input="buscar()" :debounce="400">
 								<q-icon slot="append" name="search" color="primary"></q-icon>
 							</q-input>
-						</div>
-						<div class="col-3 q-px-xs">
-							<q-select v-model="tipo_veiculo" placeholder="Tipo de veículo" clearable :options="tipoVeiculoOptions" map-options emit-value @input="buscar()"/>
 						</div>
 					</template>
 					<template v-slot:body-cell-actions="props">
@@ -43,15 +40,14 @@ export default {
 	data () {
 		return {
 			search: "",
-			tipo_veiculo: '',
 			motoboys: [],
 			motoboyColumns: [
 				{ name: "actions", label: "Ações", field: "actions", align: "left" },
 				{ name: "nome", label: "Nome", field: "nome", align: "left" },
 				{ name: "email", label: "E-mail", field: "email", align: "left" },
 				{ name: "telefone", label: "Telefone", field: "telefone", align: "left" },
-				{ name: "tipo_veiculo", label: "Tipo de veículo", field: "tipo_veiculo", align: "left" },
-				{ name: "placa", label: "Placa", field: "placa", align: "left" }
+				{ name: "tipo_veiculo", label: "Tipo de veículo", field: "veiculo", align: "left", format:val=>val ? val.tipo_veiculo : '' },
+				{ name: "placa", label: "Placa", field: "veiculo", align: "left", format:val=>val ? val.placa : '' }
 			],
       loading: false,
       pagination: {
@@ -77,7 +73,6 @@ export default {
       }
       let data = {
 				filter: this.search,
-				tipo_veiculo: this.tipo_veiculo,
         ...this.pagination
       }
       var response = await this.executeMethod({url:'api/Motoboys',method:'get',params:data})
@@ -88,10 +83,10 @@ export default {
       this.loading = false
     },
 		adicionarMotoboy() {
-			this.$router.push("motoboys/edit")
+			this.$router.push("cadastroMotoboys/edit")
 		},
 		editarMotoboy(id) {
-			this.$router.push("motoboys/edit/"+id);
+			this.$router.push("cadastroMotoboys/edit/"+id);
 		},
 		removerMotoboy(id) {
       this.$q.dialog({title:'Confirmação',message:'Tem certeza que deseja remover este motoboy? Esta ação é irreversível.',ok:'Sim',cancel:'Não'}).onOk(async ()=>{
@@ -106,7 +101,7 @@ export default {
 			})
 		},
 		showMotoboy(id) {
-			this.$router.push("motoboys/show/"+id)
+			this.$router.push("cadastroMotoboys/show/"+id)
 		}
 	}
 }

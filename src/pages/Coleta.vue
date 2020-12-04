@@ -24,7 +24,7 @@
 					<q-item class="bg-grey-2 rounded-borders">
 						<q-item-section>
 							<q-item-label class="text-primary" caption>Motoboy</q-item-label>
-							<q-item-label class="">{{coleta.motoboy ? coleta.motoboy.nome : ''}}</q-item-label>
+							<q-item-label class="">{{coleta.motoboy ? coleta.motoboy.nome : ''}} - {{coleta.motoboy && coleta.motoboy.veiculo ? coleta.motoboy.veiculo.placa : ''}}</q-item-label>
 						</q-item-section>
 					</q-item>
 				</div>
@@ -204,7 +204,7 @@ export default {
 					this.pontos.push({
 						endereco: await this.buscarGeocode(null,coords),
 						coords: coords,
-						label: 'Motoboy '+response.data.motoboy.nome,
+						label: 'Motoboy '+response.data.motoboy.nome+'-'+(response.data.motoboy.veiculo ? response.data.motoboy.placa : ''),
 						icon: {url:'https://maps.gstatic.com/mapfiles/api-3/images/spotlight-poi2.png',size:{width:27,height:43,f:'px',b:'px'}}
 					})
 				}

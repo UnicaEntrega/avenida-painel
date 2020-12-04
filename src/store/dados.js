@@ -67,7 +67,6 @@ const mutations = {
       if (obj.coleta_id) {
         let chat = state.chats['coleta'+obj.coleta_id]
         if (chat) chat.finalizado = true
-        console.log(chat)
       }
     }
     state.chats = JSON.parse(JSON.stringify(state.chats))

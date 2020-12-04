@@ -11,10 +11,10 @@ export default ({app, Vue}) => {
 				getMotoboysOnline: "getMotoboysOnline"
 			}),
 			ufOptions() {return ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO']},
-			tipoVeiculoOptions() {return [{label:'Moto',value:'moto'},{label:'Carro',value:'carro'}]},
+			tipoVeiculoOptions() {return ['Moto','Carro','Van','Caminhão']},
 			coletaStatusOptions() {return ['Aberto','Encaminhado','Em Coleta','Em Entrega','Finalizado','Cancelado']},
 			tipoEntregaOptions() {return ['Expresso','Convencional']},
-			formaPagamentoOptions() {return ['Dinheiro','Boleto','Crédito','Débito','Depósito']},
+			formaPagamentoOptions() {return ['Dinheiro','Boleto','Crédito','Débito','Depósito','Boletim de Transporte']},
 			simNaoOptions() {return [{label:'Sim',value:'1'},{label:'Não',value:'0'}]},
 			usuarioPerfil() {return this.getUsuario.perfis && this.getUsuario.perfis.length>0 ? this.getUsuario.perfis[0].slug : ''}
 		},
@@ -153,7 +153,10 @@ export default ({app, Vue}) => {
 				return (index > 0 && val.includes(".", index)) || "Este email é inválido."
 			},
 			validatorRequired(val) {
-				return val !== null && val !== "" || "Este campo é obrigatório."
+				return !this.isBlank(val) || "Este campo é obrigatório."
+			},
+			validatorBoletim(val) {
+				return val!=='0' || "Este campo é obrigatório."
 			},
 			async carregarChats() {
 				var response = await this.executeMethod({url:'api/Conversas',method:'get'})

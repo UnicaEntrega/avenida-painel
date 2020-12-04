@@ -18,7 +18,7 @@
 				<q-separator></q-separator>
 				<q-card-section class="row q-col-gutter-sm" v-if="usuarioPerfil!=='cliente'">
 					<div class="col-8">
-						<q-select v-model="coleta.cliente_id" :options="clienteOptions" option-label="nome" option-value="id" map-options emit-value label="Cliente*" :rules="[validatorRequired]" :readonly="showBool" use-input filled @filter="buscarCliente">
+						<q-select v-model="coleta.cliente_id" :options="clienteOptions" option-label="nome" option-value="id" map-options emit-value label="Cliente*" :rules="[validatorRequired]" :readonly="showBool" use-input filled @filter="buscarCliente" @input="selecionarBoletins">
 							<q-btn slot="after" icon="add" color="primary" @click="abrirModalCliente" v-if="!showBool"></q-btn>
 						</q-select>
 					</div>
@@ -120,10 +120,13 @@
 						<q-input v-model="coleta.valor_entrega" label="Valor da Entrega" :rules="[validatorRequired]" :readonly="showBool" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 					</div>
 					<div class="col-3">
-						<q-select v-model="coleta.forma_pagamento" :options="formaPagamentoOptions" label="Forma de Pagamento" :rules="[validatorRequired]" :readonly="showBool"></q-select>
+						<q-select v-model="coleta.forma_pagamento" :options="formaPagamentoOptions" label="Forma de Pagamento" :rules="[validatorRequired]" :readonly="showBool" @input="selecionarBoletins"></q-select>
 					</div>
 					<div class="col-3" v-if="coleta.forma_pagamento==='Boleto'">
 						<q-input v-model="coleta.numero_boleto" label="Número do Boleto" :rules="[validatorRequired]" :readonly="showBool"></q-input>
+					</div>
+					<div class="col-3" v-if="coleta.forma_pagamento==='Boletim de Transporte'">
+						<q-select v-model="coleta.cliente_boletim_id" :options="boletimOptions" map-options emit-value label="Número do Boletim*" :rules="[validatorRequired,validatorBoletim]" :readonly="showBool"></q-select>
 					</div>
 					<div class="col-3" v-if="usuarioPerfil!=='cliente'">
 						<q-select v-model="coleta.motoboy_id" :options="motoboyOptions" option-label="nome" option-value="id" map-options emit-value label="Motoboy" :readonly="showBool" use-input filled @filter="buscarMotoboy"/>
@@ -230,6 +233,7 @@ export default {
 				observacao_cancelamento: '',
 				latitude: 0,
 				longitude: 0,
+				cliente_boletim_id: '',
 				enderecosEntregas: []
 			},
 			cepLoading: false,
@@ -242,7 +246,8 @@ export default {
 			modalMotoboy: false,
 			motoboy_id: '',
 			modalProblema: false,
-			problema: ''
+			problema: '',
+			boletimOptions: []
 		}
 	},
 	computed: {
@@ -258,6 +263,22 @@ export default {
 		}
 	},
 	methods: {
+		async selecionarBoletins() {
+			this.boletimOptions = []
+			if (this.coleta.forma_pagamento!=='Boletim de Transporte') return
+			var response = await this.executeMethod({url:'api/Clientes/boletins',method:'post',data:{cliente_id:this.coleta.cliente_id,coleta_id:this.coleta.id}})
+			if (response.status===200 && response.data.length>0) {
+				for (let item of response.data) {
+					this.boletimOptions.push({label:item.numero,value:item.id})
+					if (this.coleta.id && item.coleta_id && item.coleta_id.toString()===this.coleta.id.toString())
+						this.coleta.cliente_boletim_id = item.id
+				}
+			}
+			else {
+				this.boletimOptions = [{label:'Cliente sem boletim disponível',value:'0'}]
+				this.coleta.cliente_boletim_id = '0'
+			}
+		},
 		abrirModalProblema() {
 			this.problema = ''
 			this.modalProblema = true
@@ -429,6 +450,7 @@ export default {
 					if (response.data.cliente) this.clienteOptions = [response.data.cliente]
 					if (response.data.motoboy) this.motoboyOptions = [response.data.motoboy]
 					this.coleta = response.data
+					this.selecionarBoletins()
 				}
 				else {
 					this.$q.notify({

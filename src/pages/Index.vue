@@ -35,8 +35,8 @@ export default {
 		return {
 			modalMarker: false,
 			motoboySelecionado: null,
-			coordsCenter: {lat:-25.3994957,lng:-49.2386427},
 			pontos: [],
+			coordsCenter: {lat:-25.3994957,lng:-49.2386427},
 			itemMarker: {}
 		}
 	},
@@ -44,17 +44,19 @@ export default {
 		async buscar() {
 			this.motoboySelecionado = null
 			this.pontos = []
-			if (this.$route.params.id) {
-				for (let item of this.getMotoboysOnline) {
-					if (item.id.toString()===this.$route.params.id.toString()) {
-						this.motoboySelecionado = item
-						this.coordsCenter = {lat:parseFloat(item.latitude),lng:parseFloat(item.longitude)}
-						this.pontos.push({
-							endereco: await this.buscarGeocode(null,this.coordsCenter),
-							coords: this.coordsCenter,
-							label: 'Motoboy',
-							icon: {url:'http://maps.gstatic.com/mapfiles/markers2/icon_green.png',size:{width:27,height:43,f:'px',b:'px'}}
-						})
+			let coordsCenter
+			for (let item of this.getMotoboysOnline) {
+				if (this.isBlank(this.$route.params.id) || item.id.toString()===this.$route.params.id.toString()) {
+					if (!this.isBlank(this.$route.params.id)) this.motoboySelecionado = item
+					coordsCenter = {lat:parseFloat(item.latitude),lng:parseFloat(item.longitude)}
+					this.pontos.push({
+						endereco: await this.buscarGeocode(null,coordsCenter),
+						coords: coordsCenter,
+						label: item.nome+' - '+(item.veiculo ? item.veiculo.placa : ''),
+						icon: {url:'http://maps.gstatic.com/mapfiles/markers2/icon_green.png',size:{width:27,height:43,f:'px',b:'px'}}
+					})
+					if (this.motoboySelecionado) {
+						this.coordsCenter = coordsCenter
 						for (let idx in item.coletas) {
 							let item2 = item.coletas[idx]
 							this.pontos.push({

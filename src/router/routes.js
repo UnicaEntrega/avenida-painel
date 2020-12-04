@@ -20,10 +20,15 @@ const routes = [
 				{ path: "edit/:id", component: () => import("pages/CadastroColetas/Edit.vue")},
 				{ path: "show/:id", component: () => import("pages/CadastroColetas/Edit.vue"), meta: { show: true }},
 			] },
-			{ path: "motoboys", component: () => import("pages/Motoboys/List.vue"), children: [
-				{ path: "edit", component: () => import("pages/Motoboys/Edit.vue")},
-				{ path: "edit/:id", component: () => import("pages/Motoboys/Edit.vue")},
-				{ path: "show/:id", component: () => import("pages/Motoboys/Edit.vue"), meta: { show: true }},
+			{ path: "cadastroMotoboys", component: () => import("pages/CadastroMotoboys/List.vue"), children: [
+				{ path: "edit", component: () => import("pages/CadastroMotoboys/Edit.vue")},
+				{ path: "edit/:id", component: () => import("pages/CadastroMotoboys/Edit.vue")},
+				{ path: "show/:id", component: () => import("pages/CadastroMotoboys/Edit.vue"), meta: { show: true }},
+			] },
+			{ path: "cadastroVeiculos", component: () => import("pages/CadastroVeiculos/List.vue"), children: [
+				{ path: "edit", component: () => import("pages/CadastroVeiculos/Edit.vue")},
+				{ path: "edit/:id", component: () => import("pages/CadastroVeiculos/Edit.vue")},
+				{ path: "show/:id", component: () => import("pages/CadastroVeiculos/Edit.vue"), meta: { show: true }},
 			] },
 			{ path: 'coleta/:id', component: () => import('pages/Coleta.vue') },
 			{ path: "meusDados", component: () => import("pages/CadastroClientes/List.vue"), children: [
