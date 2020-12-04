@@ -136,7 +136,15 @@
 					</div>
 					<div class="col-12 q-pb-md" v-if="showBool && !isBlank(coleta.observacao_cancelamento)">
 						<q-input v-model="coleta.observacao_cancelamento" type="textarea" label="Observações de cancelamento" :readonly="showBool"></q-input>
-					</div>	
+					</div>
+					<div class="col-12 q-pb-md" v-if="showBool && !isBlank(coleta.foto_finalizado)">
+						<label>Foto</label>
+						<q-img :src="fotoSrc" style="width:200px;"/>
+						<q-btn label="Abrir local da foto" icon="map" color="primary" @click="abrirMapa()"/>
+					</div>
+					<gmap-map :center="mapa.coords" :zoom="15" style="height:50vh;width:100%;" v-if="mapa.mostrar">
+						<gmap-marker :position="mapa.coords" :label="mapa.label" :icon="mapa.icon" :clickable="true" @click="modalMarker=true"/>
+					</gmap-map>
 				</q-card-section>
 				<q-card-section class="q-col-gutter-md row items-center">
 					<div class="col-6 text-grey-6">
@@ -201,6 +209,14 @@
 				</q-card-section>
 			</q-card>
 		</q-dialog>
+    <q-dialog v-model="modalMarker">
+      <q-card>
+        <q-card-section>
+          <div class="col-12 text-center">{{mapa.label}}</div>
+          <div class="col-12 q-pb-sm">{{mapa.endereco}}</div>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
 	</div>
 </template>
 <script>
@@ -247,7 +263,15 @@ export default {
 			motoboy_id: '',
 			modalProblema: false,
 			problema: '',
-			boletimOptions: []
+			boletimOptions: [],
+			mapa: {
+				mostrar: false,
+				coords: {lat:-25.3994957,lng:-49.2386427},
+				endereco: '',
+				label: '',
+				icon: {}
+			},
+			modalMarker: false
 		}
 	},
 	computed: {
@@ -260,9 +284,17 @@ export default {
 			if (!this.coleta.data_finalizado) return false
 			let m = this.getMoment()
 			return m(this.coleta.data_finalizado,'YYYY-MM-DD').add(1,'days').format('YYYYMMDD')>=m().format('YYYYMMDD')
-		}
+		},
+		fotoSrc() {return this.coleta && this.isBlank(this.coleta.foto_finalizado) ? '' : `${process.env.API_URL}api/Arquivos/Coleta/download/${this.coleta.foto_finalizado}`}
 	},
 	methods: {
+		async abrirMapa() {
+			this.mapa.coords = {lat:parseFloat(this.coleta.latitude_finalizado),lng:parseFloat(this.coleta.longitude_finalizado)}
+			this.mapa.endereco = await this.buscarGeocode(null,this.mapa.coords)
+			this.mapa.label = 'Entrega - Finalizado'
+			this.mapa.icon = {url:'http://maps.gstatic.com/mapfiles/markers2/icon_green.png',size:{width:27,height:43,f:'px',b:'px'}}
+			this.mapa.mostrar = true
+		},
 		async selecionarBoletins() {
 			this.boletimOptions = []
 			if (this.coleta.forma_pagamento!=='Boletim de Transporte') return
