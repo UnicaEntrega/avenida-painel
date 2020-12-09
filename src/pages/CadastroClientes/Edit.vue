@@ -60,7 +60,7 @@
 				<q-card-section>
 					<q-item-label class="text-h6 text-primary">
 						Contatos
-						<q-btn icon="add" color="primary" flat dense @click="adicionarContato"></q-btn>
+						<q-btn icon="add" color="primary" flat dense @click="adicionarContato" v-if="!showBool"/>
 					</q-item-label>
 					<q-list separator>
 						<transition-group enter-active-class="animated zoomIn" leave-active-class="animated zoomOut">
