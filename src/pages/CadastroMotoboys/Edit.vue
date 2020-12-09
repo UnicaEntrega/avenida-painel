@@ -21,7 +21,7 @@
 						<q-input v-model="motoboy.email" label="E-mail*" :rules="[validatorRequired, validatorEmail]" :readonly="showBool"></q-input>
 					</div>
 					<div class="col-3">
-						<q-input v-model="motoboy.password" type="password" label="Senha*" :rules="[validatorRequired]" :readonly="showBool"></q-input>
+						<q-input v-model="motoboy.password" type="password" :label="'Senha'+(isBlank(motoboy.id) ? '*' : '')" :rules="isBlank(motoboy.id) ? [validatorRequired] : []" :readonly="showBool"></q-input>
 					</div>
 					<div class="col-3">
 						<q-input v-model="motoboy.telefone" label="Telefone*" v-mask="['(##) ####-####', '(##) #####-####']" :rules="[validatorRequired]" :readonly="showBool"></q-input>

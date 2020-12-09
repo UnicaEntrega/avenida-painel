@@ -88,6 +88,14 @@
 						</transition-group>
 					</q-list>
 				</q-card-section>
+				<q-separator v-if="showBool && cliente.boletins.length>0"/>
+				<q-card-section class="row q-col-gutter-sm" v-if="showBool && cliente.boletins.length>0">
+					<q-table class="col-12" :data="cliente.boletins" :columns="boletimColumns" align="left" row-key="id" :rows-per-page-options="[10,20,50,100]" :pagination-label="paginationLabel">
+						<template v-slot:top>
+							<div class="col-12 text-h5 text-primary">Boletins</div>
+						</template>
+					</q-table>
+				</q-card-section>
 				<q-card-section class="q-col-gutter-md row items-center">
 					<div class="col-6 text-grey-6">
 						*Campos obrigatórios
@@ -141,13 +149,26 @@ export default {
 				cidade: "",
 				estado: "",
 				contatos: [],
-				observacao: ""
+				observacao: "",
+				boletins: []
 			},
 			bloco_numero: '',
-			modalBloco: false
+			modalBloco: false,
+			boletimColumns: [
+				{ name: "numero", label: "Número", field: "numero", align: "left" },
+				{ name: "coleta_id", label: "Coleta", field: "coleta_id", align: "left", format:val=>val ? val : 'Disponível' }
+			],
+      pagination: {
+        page: 1,
+        rowsPerPage: 10,
+        rowsNumber: 0
+			}
 		}
 	},
 	methods: {
+    paginationLabel(first,end,total) {
+      return 'Registros '+first+' até '+end+' de '+total
+    },
 		abrirModalBloco() {
 			this.bloco_numero = ''
 			this.modalBloco = true
