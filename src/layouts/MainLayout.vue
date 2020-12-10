@@ -204,11 +204,11 @@ export default {
 		if (this.isBlank(this.getLogin.token)) this.$router.push('/login')
 		else {
 			if (this.usuarioPerfil==='cliente') {
-				this._interval = setInterval(()=>{this.carregarColetas()},5000)
+				this._interval = setInterval(()=>{this.carregarColetas()},30000)
 				this.carregarColetas()
 			}
 			else {
-				this._interval = setInterval(()=>{this.carregarMotoboys()},5000)
+				this._interval = setInterval(()=>{this.carregarMotoboys()},30000)
 				this.carregarMotoboys()
 			}
 			await this.carregarChats()
