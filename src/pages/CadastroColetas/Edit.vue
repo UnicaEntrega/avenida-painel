@@ -431,12 +431,7 @@ export default {
 					type: "positive"
 				})
 			}
-			else {
-				this.$q.notify({
-					message: response.data.error.message,
-					type: "negative"
-				})
-			}
+			else this.responseError(response)
 		},
 		onReset() {
 			if (this.usuarioPerfil==='cliente') this.$router.push("/");

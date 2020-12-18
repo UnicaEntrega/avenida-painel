@@ -139,6 +139,12 @@ export default ({app, Vue}) => {
 				if (resultado != digitos.charAt(1)) return false;	
 				return true
 			},
+			responseError(response) {
+				if (response.data.error && response.data.error.message)
+					this.$q.notify({message:(response.data.error.e ? response.data.error.e+'<br>' : '')+response.data.error.message,type:'negative',html:true})
+				else
+					this.$q.notify({message:'Não foi possível executar a solicitação!',type:'negative'})
+			},
 			getObjectValue(obj,arr,s) {
 				s = s || ''
 				if (this.isBlank(obj)) return s
