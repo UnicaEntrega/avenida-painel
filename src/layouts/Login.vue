@@ -1,6 +1,9 @@
 <template>
 	<div class="column justify-center" style="height: 100vh">
 		<div class="col-3 row justify-center">
+			<div class="col-10 offset-1 text-center text-h6 no-margin" v-if="expirado">
+				O link usado está expirado!<br>Clique em "Esqueci minha senha" se ainda precisar recuperar ou criar sua senha.
+			</div>
 			<q-card class="col-3">
 				<q-card-section class="primary-gradient text-white text-h5 text-center">
 					<div>ACESSE <b>SUA CONTA</b></div>
@@ -57,7 +60,8 @@ export default {
 			modalEsqueceuSenha: false,
 			esqueceu: {
 				email: ''
-			}
+			},
+			expirado: false
 		}
 	},
 	validations: {
@@ -114,6 +118,7 @@ export default {
 	},
 	created() {
 		if (!this.isBlank(this.getLogin.token)) this.$router.push('/')
+		else this.expirado = this.$route.query.expirado
 	}
 }
 </script>

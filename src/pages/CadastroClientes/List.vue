@@ -48,39 +48,39 @@ export default {
 				{ name: "telefone", label: "Telefone", field: "telefone", align: "left" },
 				{ name: "email", label: "E-mail", field: "email", align: "left" },
 			],
-      loading: false,
-      pagination: {
-        sortBy: 'nome',
-        descending: false,
-        page: 1,
-        rowsPerPage: 10,
-        rowsNumber: 0
+			loading: false,
+			pagination: {
+				sortBy: 'nome',
+				descending: false,
+				page: 1,
+				rowsPerPage: 10,
+				rowsNumber: 0
+				}
 			}
-		}
 	},
 	methods: {
-    paginationLabel(first,end,total) {
-      return 'Registros '+first+' até '+end+' de '+total
-    },
-    async buscar(props) {
-      this.loading = true
-      if (props) {
-        this.pagination.page = props.pagination.page
-        this.pagination.rowsPerPage = props.pagination.rowsPerPage
-        this.pagination.sortBy = props.pagination.sortBy
-        this.pagination.descending = props.pagination.descending
-      }
-      let data = {
+		paginationLabel(first,end,total) {
+			return 'Registros '+first+' até '+end+' de '+total
+		},
+		async buscar(props) {
+			this.loading = true
+			if (props) {
+				this.pagination.page = props.pagination.page
+				this.pagination.rowsPerPage = props.pagination.rowsPerPage
+				this.pagination.sortBy = props.pagination.sortBy
+				this.pagination.descending = props.pagination.descending
+			}
+			let data = {
 				filter: this.search,
-        ...this.pagination
-      }
-      var response = await this.executeMethod({url:'api/Clientes',method:'get',params:data})
-      if (response.status===200) {
-        this.pagination.rowsNumber = parseInt(response.data.total)
+				...this.pagination
+			}
+			var response = await this.executeMethod({url:'api/Clientes',method:'get',params:data})
+			if (response.status===200) {
+				this.pagination.rowsNumber = parseInt(response.data.total)
 				this.clientes = response.data.data
-      }
-      this.loading = false
-    },
+			}
+			this.loading = false
+		},
 		adicionarCliente() {
 			this.$router.push("cadastroClientes/edit")
 		},
@@ -88,16 +88,16 @@ export default {
 			this.$router.push("cadastroClientes/edit/"+id);
 		},
 		removerCliente(id) {
-      this.$q.dialog({title:'Confirmação',message:'Tem certeza que deseja remover este cliente? Esta ação é irreversível.',ok:'Sim',cancel:'Não'}).onOk(async ()=>{
-        var response = await this.executeMethod({url:'api/Clientes/'+id,method:'delete'})
-				if (response.status===200) {
-					this.$q.notify({
-						message: "Cliente removido com sucesso",
-						type: "positive"
-					})
-					this.buscar()
-				}
-      })
+			this.$q.dialog({title:'Confirmação',message:'Tem certeza que deseja remover este cliente? Esta ação é irreversível.',ok:'Sim',cancel:'Não'}).onOk(async ()=>{
+				var response = await this.executeMethod({url:'api/Clientes/'+id,method:'delete'})
+					if (response.status===200) {
+						this.$q.notify({
+							message: "Cliente removido com sucesso",
+							type: "positive"
+						})
+						this.buscar()
+					}
+			})
 		},
 		showCliente(id) {
 			this.$router.push("cadastroClientes/show/"+id)

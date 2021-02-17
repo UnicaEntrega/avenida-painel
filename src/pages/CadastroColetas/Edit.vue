@@ -469,7 +469,7 @@ export default {
 		},
 		removerColeta() {
 			this.$q.dialog({title:'Confirmação',message:'Tem certeza que deseja remover esta coleta? Esta ação é irreversível.',ok:'Sim',cancel:'Não'}).onOk(async ()=>{
-        var response = await this.executeMethod({url:'api/Coletas/'+this.usuario.id,method:'delete'})
+        		var response = await this.executeMethod({url:'api/Coletas/'+this.usuario.id,method:'delete'})
 				if (response.status===200) {
 					this.$q.notify({
 						message: "Coleta removido com sucesso",
@@ -501,6 +501,10 @@ export default {
 		}
 	},
 	async created() {
+		if (this.usuarioPerfil==='cliente') {
+			let response = await this.executeMethod({url:'api/Clientes/meusDados',method:'get'})
+			if (response.status===200) this.coleta.cliente_id = response.data.id
+		}
 		this.buscar()
 	}
 }
