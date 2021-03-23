@@ -10,7 +10,7 @@
 						<q-btn v-if="showBool" label="Voltar" icon="keyboard_arrow_left" type="reset" color="primary" flat></q-btn>
 						<q-btn v-if="showBool && usuarioPerfil!=='cliente'" label="Remover" icon="delete" color="negative" flat @click="removerColeta"></q-btn>
 						<q-btn v-if="showBool && usuarioPerfil!=='cliente'" label="Editar" icon="edit" color="primary" @click="showBool = false"></q-btn>
-						<q-btn v-if="showBool && usuarioPerfil==='cliente' && coleta.status==='Finalizado' && dataRelatarProblema && !coleta.problema" label="Relatar Problema" icon="edit" color="primary" @click="abrirModalProblema"></q-btn>
+						<q-btn v-if="showBool && usuarioPerfil==='cliente' && coleta.status==='Entregue' && dataRelatarProblema && !coleta.problema" label="Relatar Problema" icon="edit" color="primary" @click="abrirModalProblema"></q-btn>
 						<q-btn v-if="!showBool" label="Cancelar" icon="close" type="reset" color="negative" flat></q-btn>
 						<q-btn v-if="!showBool" label="Salvar" icon="save" type="submit" color="primary"></q-btn>
 					</div>
@@ -29,6 +29,7 @@
 				<q-card-section class="row q-col-gutter-sm">
 					<q-item-label class="col-12 text-h6 text-primary">
 						Endereço de Coleta
+						<q-btn icon="content_copy" color="primary" flat @click="copiarEnderecoColetaCliente" v-if="!showBool"></q-btn>
 					</q-item-label>
 					<div class="col-3">
 						<q-input v-model="coleta.quem" label="Com Quem Coleta" :rules="[validatorRequired]" :readonly="showBool"></q-input>
@@ -58,6 +59,9 @@
 					<div class="col-xl-1 col-xs-3">
 						<q-select v-model="coleta.estado" label="Estado*" :options="ufOptions" :loading="cepLoading" :rules="[validatorRequired]"></q-select>
 					</div>
+					<div class="col-xl-2 col-xs-3">
+						<q-input v-model="coleta.ponto_referencia" label="Ponto de referência" :readonly="showBool"></q-input>
+					</div>
 				</q-card-section>
 
 				<q-card-section>
@@ -70,7 +74,7 @@
 							<q-item-section>
 								<div class="row q-col-gutter-sm">
 									<div class="col-3">
-										<q-input v-model="endereco.quem" label="Pra Quem Entrega" :rules="[validatorRequired]" :readonly="showBool"></q-input>
+										<q-select v-model="endereco.quem" label="Pra Quem Entrega" :options="enderecoQuemOptions" input-debounce="0" use-input new-value-mode="add" @new-value="enderecoQuemAdd" :rules="[validatorRequired]" :readonly="showBool"></q-select>
 									</div>
 									<div class="col-3">
 										<q-input v-model="endereco.telefone" label="Telefone" v-mask="['(##) ####-####', '(##) #####-####']" :rules="[validatorRequired, val => val.length >= 14 || 'Telefone incompleto']" :readonly="showBool"></q-input>
@@ -100,9 +104,13 @@
 									<div class="col-xl-1 col-xs-3">
 										<q-select v-model="endereco.estado" label="Estado*" :options="ufOptions" :loading="cepLoading" :rules="[validatorRequired]"></q-select>
 									</div>
+									<div class="col-xl-2 col-xs-3">
+										<q-input v-model="endereco.ponto_referencia" label="Ponto de referência" :readonly="showBool"></q-input>
+									</div>
 								</div>
 							</q-item-section>
 							<q-item-section side>
+								<q-btn icon="content_copy" color="primary" flat @click="copiarEnderecoEntregaCliente(index)" v-if="!showBool"></q-btn>
 								<q-btn icon="close" color="negative" flat @click="removerEnderecoEntrega(index)" v-if="!showBool"></q-btn>
 							</q-item-section>
 						</q-item>
@@ -112,21 +120,27 @@
 				<q-card-section class="row q-col-gutter-sm">
 					<div class="col-12 q-pb-md">
 						<q-input v-model="coleta.observacao" type="textarea" label="Observações" :readonly="showBool" :autogrow="showBool"></q-input>
-					</div>					
+					</div>	
 					<div class="col-3">
-						<q-select v-model="coleta.tipo_entrega" :options="tipoEntregaOptions" label="Tipo da Entrega" :rules="[validatorRequired]" :readonly="showBool"></q-select>
+						<q-select v-model="coleta.tipo_veiculo" label="Tipo de Veículo*" :options="tipoVeiculoOptions" :rules="[validatorRequired]" :readonly="showBool"></q-select>
+					</div>				
+					<div class="col-3">
+						<q-select v-model="coleta.tipo_entrega" :options="tipoEntregaOptions" label="Tipo da Entrega" map-options emit-value :rules="[validatorRequired]" :readonly="showBool"></q-select>
 					</div>
 					<div class="col-3" v-if="usuarioPerfil!=='cliente'">
 						<q-input v-model="coleta.valor_entrega" label="Valor da Entrega" :rules="[validatorRequired]" :readonly="showBool" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 					</div>
 					<div class="col-3">
-						<q-select v-model="coleta.forma_pagamento" :options="formaPagamentoOptions" label="Forma de Pagamento" :rules="[validatorRequired]" :readonly="showBool" @input="selecionarBoletins"></q-select>
+						<q-select v-model="coleta.forma_pagamento" :options="formaPagamentoOptions" label="Forma de Pagamento" map-options emit-value :rules="[validatorRequired]" :readonly="showBool" @input="selecionarBoletins" hint="O motoboy só leva a máquina quando solicitado (débito ou crédito)."></q-select>
+					</div>
+					<div class="col-3" v-if="coleta.forma_pagamento==='Dinheiro'">
+						<q-input v-model="coleta.troco" label="Precisa de troco?" :rules="[validatorRequired]" :readonly="showBool" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 					</div>
 					<div class="col-3" v-if="coleta.forma_pagamento==='Boleto'">
 						<q-input v-model="coleta.numero_boleto" label="Número do Boleto" :rules="[validatorRequired]" :readonly="showBool"></q-input>
 					</div>
 					<div class="col-3" v-if="coleta.forma_pagamento==='Boletim de Transporte'">
-						<q-select v-model="coleta.cliente_boletim_id" :options="boletimOptions" map-options emit-value label="Número do Boletim*" :rules="[validatorRequired,validatorBoletim]" :readonly="showBool"></q-select>
+						<q-select v-model="coleta.cliente_boletim_id" :options="boletimOptions" map-options emit-value :label="'Número do Boletim'+(usuarioPerfil==='cliente' ? '' : '*')" :rules="usuarioPerfil==='cliente' ? [validatorBoletim] : [validatorRequired,validatorBoletim]" :readonly="showBool"></q-select>
 					</div>
 					<div class="col-3" v-if="usuarioPerfil!=='cliente'">
 						<q-select v-model="coleta.motoboy_id" :options="motoboyOptions" option-label="nome" option-value="id" map-options emit-value label="Motoboy" :readonly="showBool" use-input filled @filter="buscarMotoboy"/>
@@ -136,6 +150,9 @@
 					</div>
 					<div class="col-12 q-pb-md" v-if="showBool && !isBlank(coleta.observacao_cancelamento)">
 						<q-input v-model="coleta.observacao_cancelamento" type="textarea" label="Observações de cancelamento" :readonly="showBool" :autogrow="showBool"></q-input>
+					</div>
+					<div class="col-12 text-center">
+						<q-btn label="Ver nossa tabela de Valores" icon="list" @click="abrirTabelaValores()" color="primary" flat></q-btn>
 					</div>
 				</q-card-section>
 				<q-card-section class="row q-col-gutter-sm" v-if="showBool && !isBlank(coleta.foto_finalizado)">
@@ -208,24 +225,37 @@
 				</q-card-section>
 			</q-card>
 		</q-dialog>
-    <q-dialog v-model="mapa.mostrar">
-      <q-card style="min-width:90vw;min-heigth:90vh;" class="relative-position">
+		<q-dialog v-model="mapa.mostrar">
+			<q-card style="min-width:90vw;min-heigth:90vh;" class="relative-position">
 				<div class="absolute" style="left:calc((90vw / 2) - 21px);top:5px;z-index:6000;">
 					<q-btn round icon="close" color="primary" @click="mapa.mostrar=false"/>
 				</div>
 				<gmap-map :center="mapa.coords" :zoom="15" style="height:calc(100vh - 48px);width:100%;">
 					<gmap-marker :position="mapa.coords" :label="mapa.label" :icon="mapa.icon" :clickable="true" @click="modalMarker=true"/>
 				</gmap-map>
-      </q-card>
-    </q-dialog>
-    <q-dialog v-model="modalMarker">
-      <q-card>
-        <q-card-section>
-          <div class="col-12 text-center">{{mapa.label}}</div>
-          <div class="col-12 q-pb-sm">{{mapa.endereco}}</div>
-        </q-card-section>
-      </q-card>
-    </q-dialog>
+      		</q-card>
+		</q-dialog>
+		<q-dialog v-model="modalMarker">
+			<q-card>
+				<q-card-section>
+					<div class="col-12 text-center">{{mapa.label}}</div>
+					<div class="col-12 q-pb-sm">{{mapa.endereco}}</div>
+				</q-card-section>
+			</q-card>
+		</q-dialog>
+		<q-dialog v-model="modalTabelaValores">
+			<q-card style="min-width:700px;">
+				<q-card-section>
+					<div class="row items-center justify-between">
+						<div class="text-primary text-h6">Tabela de Valores</div>
+						<q-btn icon="close" color="primary" flat v-close-popup></q-btn>
+					</div>
+				</q-card-section>
+				<q-card-section>
+					<q-table :data="tabelaValores" :columns="tabelaValorColumns" align="left" row-key="id" :pagination.sync="pagination" @update:pagination="v=>tabelaValoresBuscar()" :loading="loading" :rows-per-page-options="[10,20,50,100]" @request="tabelaValoresBuscar" :pagination-label="paginationLabel"/>
+				</q-card-section>
+			</q-card>
+		</q-dialog>
 	</div>
 </template>
 <script>
@@ -245,15 +275,18 @@ export default {
 				bairro: '',
 				cidade: '',
 				estado: '',
+				ponto_referencia: '',
 				quem: '',
 				telefone: '',
 				observacao: '',
+				tipo_veiculo: '',
 				tipo_entrega: '',
 				valor_entrega: 0,
+				troco: 0,
 				forma_pagamento: '',
 				numero_boleto: '',
 				motoboy_id: '',
-				comissao: 0,
+				comissao: '65,00',
 				status: 'Aberto',
 				observacao_cancelamento: '',
 				latitude: 0,
@@ -275,12 +308,27 @@ export default {
 			boletimOptions: [],
 			mapa: {
 				mostrar: false,
-				coords: {lat:-25.3994957,lng:-49.2386427},
+				coords: this.coordsDefault,
 				endereco: '',
 				label: '',
 				icon: {}
 			},
-			modalMarker: false
+			modalMarker: false,
+			enderecoQuemOptions: ['Deixar na Portaria','Entregar em Mãos','Deixar na Residência'],
+			modalTabelaValores: false,
+			tabelaValores: [],
+			tabelaValorColumns: [
+				{ name: "bairro", label: "Bairro", field: "bairro", align: "left" },
+				{ name: "valor", label: "Valor", field: "valor", align: "left", format:val=>'R$ '+(val ? parseFloat(val).toFixed(2).replace('.',',') : '0,00') }
+			],
+			pagination: {
+				sortBy: 'bairro',
+				descending: false,
+				page: 1,
+				rowsPerPage: 10,
+				rowsNumber: 0
+			},
+			loading: false
 		}
 	},
 	computed: {
@@ -297,10 +345,86 @@ export default {
 		fotoSrc() {return this.coleta && this.isBlank(this.coleta.foto_finalizado) ? '' : `${process.env.API_URL}api/Arquivos/Coleta/download/${this.coleta.foto_finalizado}`}
 	},
 	methods: {
+		paginationLabel(first,end,total) {
+			return 'Registros '+first+' até '+end+' de '+total
+		},
+		abrirTabelaValores() {
+			this.tabelaValoresBuscar()
+			this.modalTabelaValores = true
+		},
+		async tabelaValoresBuscar(props) {
+			this.loading = true
+			if (props) {
+				this.pagination.page = props.pagination.page
+				this.pagination.rowsPerPage = props.pagination.rowsPerPage
+				this.pagination.sortBy = props.pagination.sortBy
+				this.pagination.descending = props.pagination.descending
+			}
+			var response = await this.executeMethod({url:'api/TabelaValores',method:'get',params:{...this.pagination}})
+			if (response.status===200) {
+				this.pagination.rowsNumber = parseInt(response.data.total)
+				this.tabelaValores = response.data.data
+			}
+			this.loading = false
+		},
+		copiarEnderecoColetaCliente() {
+			this.$q.dialog({
+				title: "Confirmação",
+				message: "Tem certeza que deseja copiar o endereço do cliente?",
+				ok: "Sim",
+				cancel: "Não"
+			}).onOk(() => {
+				for (let cliente of this.clienteOptions) {
+					if (cliente.id===this.coleta.cliente_id) {
+						this.coleta.cep = cliente.cep
+						this.coleta.endereco = cliente.endereco
+						this.coleta.endereco_numero = cliente.endereco_numero
+						this.coleta.complemento = cliente.complemento
+						this.coleta.bairro = cliente.bairro
+						this.coleta.cidade = cliente.cidade
+						this.coleta.estado = cliente.estado
+					}
+				}
+				this.$q.notify({
+					message: "Endereço copiado com sucesso",
+					type: "positive"
+				})
+			})
+		},
+		copiarEnderecoEntregaCliente(index) {
+			this.$q.dialog({
+				title: "Confirmação",
+				message: "Tem certeza que deseja copiar o endereço do cliente?",
+				ok: "Sim",
+				cancel: "Não"
+			}).onOk(() => {
+				for (let cliente of this.clienteOptions) {
+					if (cliente.id===this.coleta.cliente_id) {
+						this.coleta.enderecosEntregas[index].cep = cliente.cep
+						this.coleta.enderecosEntregas[index].endereco = cliente.endereco
+						this.coleta.enderecosEntregas[index].endereco_numero = cliente.endereco_numero
+						this.coleta.enderecosEntregas[index].complemento = cliente.complemento
+						this.coleta.enderecosEntregas[index].bairro = cliente.bairro
+						this.coleta.enderecosEntregas[index].cidade = cliente.cidade
+						this.coleta.enderecosEntregas[index].estado = cliente.estado
+					}
+				}
+				this.$q.notify({
+					message: "Endereço copiado com sucesso",
+					type: "positive"
+				})
+			})
+		},
+		enderecoQuemAdd(val,done) {
+			if (val.length>0) {
+				if (!this.enderecoQuemOptions.includes(val)) this.enderecoQuemOptions.push(val)
+				done(val)
+			}
+		},
 		async abrirMapa() {
 			this.mapa.coords = {lat:parseFloat(this.coleta.latitude_finalizado),lng:parseFloat(this.coleta.longitude_finalizado)}
 			this.mapa.endereco = await this.buscarGeocode(null,this.mapa.coords)
-			this.mapa.label = 'Entrega - Finalizado'
+			this.mapa.label = 'Entrega - Entregue'
 			this.mapa.icon = {url:'http://maps.gstatic.com/mapfiles/markers2/icon_green.png',size:{width:27,height:43,f:'px',b:'px'}}
 			this.mapa.mostrar = true
 		},
@@ -399,6 +523,7 @@ export default {
 				bairro: "",
 				cidade: "",
 				estado: "",
+				ponto_referencia: "",
 				retorno: '',
 				quem: '',
 				telefone: '',
@@ -503,7 +628,10 @@ export default {
 	async created() {
 		if (this.usuarioPerfil==='cliente') {
 			let response = await this.executeMethod({url:'api/Clientes/meusDados',method:'get'})
-			if (response.status===200) this.coleta.cliente_id = response.data.id
+			if (response.status===200) {
+				this.coleta.cliente_id = response.data.id
+				this.clienteOptions.push(response.data)
+			}
 		}
 		this.buscar()
 	}

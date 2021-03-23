@@ -21,10 +21,10 @@
 						<div class="col-6 q-px-xs"><q-input type="date" v-model="pesquisa.data_entrega2" clearable @input="buscar()"/></div>
 					</div>
 					<div class="col-3 q-px-xs">
-						<q-select v-model="pesquisa.tipo_entrega" :options="tipoEntregaOptions"  label="Tipo de entrega" @input="buscar()" multiple></q-select>
+						<q-select v-model="pesquisa.tipo_entrega" :options="tipoEntregaOptions" label="Tipo de entrega" @input="buscar()" multiple map-options emit-value></q-select>
 					</div>
 					<div class="col-3 q-px-xs">
-						<q-select v-model="pesquisa.forma_pagamento" :options="formaPagamentoOptions"  label="Forma de pagamento" @input="buscar()" multiple></q-select>
+						<q-select v-model="pesquisa.forma_pagamento" :options="formaPagamentoOptions" map-options emit-value label="Forma de pagamento" @input="buscar()" multiple></q-select>
 					</div>
 					<div class="col-4 q-px-xs">
 						<q-btn outline icon="import_export" label="CSV" color="primary" @click="exportar('csv')" class="q-mr-xs"/>

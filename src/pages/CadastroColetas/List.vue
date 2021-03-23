@@ -31,6 +31,7 @@
 
 					<template v-slot:body-cell-cliente="props">
 						<q-td>
+							<q-btn size="12px" dense flat icon="error" color="negative" v-if="props.row.status==='Aberto' && !props.row.motoboy"/>
 							{{props.row.cliente.nome}}
 						</q-td>
 					</template>
@@ -60,6 +61,7 @@ export default {
 			coletas: [],
 			coletaColumns: [
 				{ name: "actions", label: "Ações", field: "actions", align: "left" },
+				{ name: "created_at", label: "Data", field: "created_at", align: "left", format:val=>val ? this.formatarDataHora(val,'DD/MM/YYYY HH:mm:ss') : '' },
 				{ name: "id", label: "ID", field: "id", align: "left" },
 				{ name: "status", label: "Status", field: "status", align: "left" },
 				{ name: "cliente", label: "Cliente", field: "cliente", align: "left" },
@@ -67,8 +69,8 @@ export default {
 			],
       loading: false,
       pagination: {
-        sortBy: 'status',
-        descending: false,
+        sortBy: 'created_at',
+        descending: true,
         page: 1,
         rowsPerPage: 10,
         rowsNumber: 0
@@ -76,29 +78,29 @@ export default {
 		}
 	},
 	methods: {
-    paginationLabel(first,end,total) {
-      return 'Registros '+first+' até '+end+' de '+total
-    },
-    async buscar(props) {
-      this.loading = true
-      if (props) {
-        this.pagination.page = props.pagination.page
-        this.pagination.rowsPerPage = props.pagination.rowsPerPage
-        this.pagination.sortBy = props.pagination.sortBy
-        this.pagination.descending = props.pagination.descending
-      }
-      let data = {
+		paginationLabel(first,end,total) {
+			return 'Registros '+first+' até '+end+' de '+total
+		},
+		async buscar(props) {
+			this.loading = true
+			if (props) {
+				this.pagination.page = props.pagination.page
+				this.pagination.rowsPerPage = props.pagination.rowsPerPage
+				this.pagination.sortBy = props.pagination.sortBy
+				this.pagination.descending = props.pagination.descending
+			}
+			let data = {
 				filter: this.search,
 				status: this.status,
-        ...this.pagination
-      }
-      var response = await this.executeMethod({url:'api/Coletas',method:'get',params:data})
-      if (response.status===200) {
-        this.pagination.rowsNumber = parseInt(response.data.total)
+				...this.pagination
+			}
+			var response = await this.executeMethod({url:'api/Coletas',method:'get',params:data})
+			if (response.status===200) {
+				this.pagination.rowsNumber = parseInt(response.data.total)
 				this.coletas = response.data.data
-      }
-      this.loading = false
-    },
+			}
+			this.loading = false
+		},
 		adicionarColeta() {
 			this.$router.push("cadastroColetas/edit")
 		},

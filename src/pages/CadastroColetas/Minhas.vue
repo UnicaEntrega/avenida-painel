@@ -41,14 +41,15 @@ export default {
 			coletas: [],
 			coletaColumns: [
 				{ name: "actions", label: "Ações", field: "actions", align: "left" },
+				{ name: "created_at", label: "Data", field: "created_at", align: "left", format:val=>val ? this.formatarDataHora(val,'DD/MM/YYYY HH:mm:ss') : '' },
 				{ name: "id", label: "ID", field: "id", align: "left" },
 				{ name: "status", label: "Status", field: "status", align: "left" },
 				{ name: "motoboy", label: "Motoboy", field: "motoboy", align: "left" },
 			],
       loading: false,
       pagination: {
-        sortBy: 'status',
-        descending: false,
+        sortBy: 'created_at',
+        descending: true,
         page: 1,
         rowsPerPage: 10,
         rowsNumber: 0

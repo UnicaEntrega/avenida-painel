@@ -30,6 +30,11 @@ const routes = [
 				{ path: "edit/:id", component: () => import("pages/CadastroVeiculos/Edit.vue")},
 				{ path: "show/:id", component: () => import("pages/CadastroVeiculos/Edit.vue"), meta: { show: true }},
 			] },
+			{ path: "cadastroTabelaValores", component: () => import("pages/CadastroTabelaValores/List.vue"), children: [
+				{ path: "edit", component: () => import("pages/CadastroTabelaValores/Edit.vue")},
+				{ path: "edit/:id", component: () => import("pages/CadastroTabelaValores/Edit.vue")},
+				{ path: "show/:id", component: () => import("pages/CadastroTabelaValores/Edit.vue"), meta: { show: true }},
+			] },
 			{ path: 'coleta/:id', component: () => import('pages/Coleta.vue') },
 			{ path: "meusDados", component: () => import("pages/CadastroClientes/List.vue"), children: [
 				{ path: "/", component: () => import("pages/CadastroClientes/Edit.vue")}

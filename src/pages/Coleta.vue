@@ -163,9 +163,9 @@ export default {
 	},
 	methods: {
 		clickMarker(item) {
-      this.itemMarker = item
-      this.modalMarker = true
-    },
+			this.itemMarker = item
+			this.modalMarker = true
+		},
 		confirmarCancelamento() {
 			this.motivoCancelamento = "";
 			this.cancelamentoModal = true;

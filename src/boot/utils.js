@@ -12,11 +12,12 @@ export default ({app, Vue}) => {
 			}),
 			ufOptions() {return ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO']},
 			tipoVeiculoOptions() {return ['Moto','Carro','Van','Caminhão']},
-			coletaStatusOptions() {return ['Aberto','Encaminhado','Em Coleta','Em Entrega','Finalizado','Cancelado']},
-			tipoEntregaOptions() {return ['Expresso','Convencional']},
-			formaPagamentoOptions() {return ['Dinheiro','Boleto','Crédito','Débito','Depósito','Boletim de Transporte']},
+			coletaStatusOptions() {return ['Aberto','Encaminhado','Em Coleta','Em Entrega','Entregue','Finalizado','Cancelado']},
+			tipoEntregaOptions() {return [{label:'Expresso (em até 20 minutos)',value:'Expresso'},{label:'Convencional (em até 30 minutos)',value:'Convencional'}]},
+			formaPagamentoOptions() {return [{label:'Boletim de Transporte',value:'Boletim de Transporte'},{label:'Pix',value:'Pix'},{label:'Débito (na máquina)',value:'Débito'},{label:'Crédito (na máquina)',value:'Crédito'},{label:'Dinheiro',value:'Dinheiro'},{label:'Depósito',value:'Depósito'}]},
 			simNaoOptions() {return [{label:'Sim',value:'1'},{label:'Não',value:'0'}]},
-			usuarioPerfil() {return this.getUsuario.perfis && this.getUsuario.perfis.length>0 ? this.getUsuario.perfis[0].slug : ''}
+			usuarioPerfil() {return this.getUsuario.perfis && this.getUsuario.perfis.length>0 ? this.getUsuario.perfis[0].slug : ''},
+			coordsDefault() {return {lat:-25.3994957,lng:-49.2386427}}
 		},
 		methods: {
 			async executeMethod(data) {
@@ -34,7 +35,10 @@ export default ({app, Vue}) => {
 			async efetuarLogout() {
 				if (this.getLogin) await this.executeMethod({method:'post',url:'auth/logout',data:{refresh_token:this.getLogin.refreshToken}})
 				await this.$store.dispatch('limparStore')
-				if (this.$root.chat_ws) this.$root.chat_ws.close()
+				try {
+					if (this.$root.chat_ws) this.$root.chat_ws.close()
+				}
+				catch(e){}
 				this.$router.push('/login')
 			},
 			mostrarMsgErro(field) {

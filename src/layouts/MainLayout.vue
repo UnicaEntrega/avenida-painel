@@ -45,6 +45,9 @@
 							<q-item-section v-if="categoria.path=='/chat'" side>
 								<q-chip color="negative" text-color="white" v-if="getTotalNaoLidas>0">{{getTotalNaoLidas}}</q-chip>
 							</q-item-section>
+							<q-item-section v-if="categoria.path=='/cadastroColetas'" side>
+								<q-chip color="negative" text-color="white" v-if="contadorColeta>0">{{contadorColeta}}</q-chip>
+							</q-item-section>
 						</q-item>
 					</router-link>
 					<q-separator></q-separator>
@@ -92,6 +95,12 @@ export default {
 					tipo: "admin",
 				},
 				{
+					icon: "table_chart",
+					title: "Tabela de Valores",
+					path: "/cadastroTabelaValores",
+					tipo: "admin",
+				},
+				{
 					icon: "img:images/avenida_web_motoboysOnline.png",
 					title: "Motoboys",
 					path: "/cadastroMotoboys",
@@ -128,7 +137,8 @@ export default {
 					tipo: "cliente",
 				}
 			],
-			_interval: null
+			_interval: null,
+			contadorColeta: 0
 		}
 	},
 	methods: {
@@ -143,8 +153,8 @@ export default {
 					break
 				}
 			}
-      var response = await this.executeMethod({url:'api/Coletas/minhas',method:'get'})
-      if (response.status===200 && response.data.length>0) {
+			var response = await this.executeMethod({url:'api/Coletas/minhas',method:'get'})
+			if (response.status===200 && response.data.length>0) {
 				let coletas = {
 					icon: "img:images/avenida_web_motoboysOnline.png",
 					name: "Coletas em Andamento",
@@ -171,8 +181,8 @@ export default {
 					break
 				}
 			}
-      var response = await this.executeMethod({url:'api/Motoboys/lista',method:'get'})
-      if (response.status===200 && response.data.length>0) {
+			var response = await this.executeMethod({url:'api/Motoboys/lista',method:'get'})
+			if (response.status===200 && response.data.length>0) {
 				await this.$store.commit('setDados',{key:'motoboysOnline',value:response.data})
 				let motoboys = {
 					icon: "img:images/avenida_web_motoboysOnline.png",
@@ -198,6 +208,10 @@ export default {
 				categorias.push(motoboys)
 			}
 			this.categorias = categorias
+		},
+		async carregarContadorColetasAbertas() {
+			var response = await this.executeMethod({url:'api/Coletas/abertas',method:'post'})
+			if (response.status===200) this.contadorColeta = parseInt(response.data)
 		}
 	},
 	async created() {
@@ -208,8 +222,12 @@ export default {
 				this.carregarColetas()
 			}
 			else {
-				this._interval = setInterval(()=>{this.carregarMotoboys()},30000)
+				this._interval = setInterval(()=>{
+					this.carregarMotoboys()
+					this.carregarContadorColetasAbertas()
+				},30000)
 				this.carregarMotoboys()
+				this.carregarContadorColetasAbertas()
 			}
 			await this.carregarChats()
 			this.$root.chat_connect = false

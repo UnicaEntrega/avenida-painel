@@ -36,7 +36,7 @@ export default {
 			modalMarker: false,
 			motoboySelecionado: null,
 			pontos: [],
-			coordsCenter: {lat:-25.3994957,lng:-49.2386427},
+			coordsCenter: this.coordsDefault,
 			itemMarker: {}
 		}
 	},
@@ -77,6 +77,7 @@ export default {
 		}
 	},
 	created() {
+		this.coordsCenter = this.coordsDefault
 		if (this.isBlank(this.getLogin.token)) this.$router.push('/login')
 		else this.buscar()
 	},

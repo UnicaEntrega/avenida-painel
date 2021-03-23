@@ -112,7 +112,10 @@
 			<q-card>
 				<q-form @submit="salvarBloco" @reset="modalBloco=false" class="q-gutter-y-md">
 					<q-card-section>
-						<q-item-label class="text-h6 text-primary">Registrar Bloco</q-item-label>
+						<div class="row items-center justify-between">
+							<div class="text-primary text-h6">Registrar Bloco</div>
+							<q-btn icon="close" color="primary" flat type="reset"></q-btn>
+						</div>
 					</q-card-section>
 					<q-card-section class="row q-col-gutter-sm">
 						<div class="col-12">
@@ -121,7 +124,6 @@
 					</q-card-section>
 					<q-card-section class="q-col-gutter-md row items-center">
 						<div class="col-12 row justify-end">
-							<q-btn label="Cancelar" icon="close" color="negative" flat type="reset"></q-btn>
 							<q-btn label="Salvar" icon="save" color="primary" type="submit"></q-btn>
 						</div>
 					</q-card-section>
@@ -158,24 +160,27 @@ export default {
 				{ name: "numero", label: "Número", field: "numero", align: "left" },
 				{ name: "coleta_id", label: "Coleta", field: "coleta_id", align: "left", format:val=>val ? val : 'Disponível' }
 			],
-      pagination: {
-        page: 1,
-        rowsPerPage: 10,
-        rowsNumber: 0
+			pagination: {
+				page: 1,
+				rowsPerPage: 10,
+				rowsNumber: 0
 			}
 		}
 	},
 	methods: {
-    paginationLabel(first,end,total) {
-      return 'Registros '+first+' até '+end+' de '+total
-    },
+		paginationLabel(first,end,total) {
+			return 'Registros '+first+' até '+end+' de '+total
+		},
 		abrirModalBloco() {
 			this.bloco_numero = ''
 			this.modalBloco = true
 		},
 		async salvarBloco() {
 			var response = await this.executeMethod({url:`api/Clientes/registrarBloco/${this.cliente.id}`,method:'post',data:{numero:this.bloco_numero}})
-			if (response.status===200) this.modalBloco = false
+			if (response.status===200) {
+				this.modalBloco = false
+				this.buscar()
+			}
 		},
 		adicionarContato() {
 			this.cliente.contatos.push({
@@ -215,7 +220,7 @@ export default {
 		},
 		removerContato(index) {
 			this.$q.dialog({title:'Confirmação',message:'Tem certeza que deseja remover este contato? Esta ação é irreversível.',ok:'Sim',cancel:'Não'}).onOk(()=>{
-        this.cliente.contatos.splice(index, 1);
+        		this.cliente.contatos.splice(index, 1);
 				this.$q.notify({
 					message: "Contato removido com sucesso",
 					type: "positive"
@@ -224,7 +229,7 @@ export default {
 		},
 		removerCliente() {
 			this.$q.dialog({title:'Confirmação',message:'Tem certeza que deseja remover este cliente? Esta ação é irreversível.',ok:'Sim',cancel:'Não'}).onOk(async ()=>{
-        var response = await this.executeMethod({url:'api/Clientes/'+this.cliente.id,method:'delete'})
+        		var response = await this.executeMethod({url:'api/Clientes/'+this.cliente.id,method:'delete'})
 				if (response.status===200) {
 					this.$q.notify({
 						message: "Cliente removido com sucesso",
@@ -233,39 +238,42 @@ export default {
 					this.$router.push("/cadastroClientes")
 				}
 			})
+		},
+		async buscar() {
+			if (this.usuarioPerfil==='cliente') {
+				let response = await this.executeMethod({url:'api/Clientes/meusDados',method:'get'})
+				if (response.status===200) {
+					this.cliente = response.data
+					this.cliente.contatos.sort(function(a,b){return a.id-b.id})
+				}
+				else {
+					this.$q.notify({
+						message: "Cliente não encontrado",
+						type: "negative"
+					})
+					this.$router.push("/")
+				}
+				this.showBool = false
+			}
+			else if (this.$route.params.id) {
+				let response = await this.executeMethod({url:`api/Clientes/show/${this.$route.params.id}`,method:'get'})
+				if (response.status===200) {
+					this.cliente = response.data
+					this.cliente.contatos.sort(function(a,b){return a.id-b.id})
+				}
+				else {
+					this.$q.notify({
+						message: "Cliente não encontrado",
+						type: "negative"
+					})
+					this.$router.push("/cadastroClientes")
+				}
+				this.showBool = this.$route.meta.show
+			}
 		}
 	},
 	async created() {
-		if (this.usuarioPerfil==='cliente') {
-			let response = await this.executeMethod({url:'api/Clientes/meusDados',method:'get'})
-			if (response.status===200) {
-				this.cliente = response.data
-				this.cliente.contatos.sort(function(a,b){return a.id-b.id})
-			}
-			else {
-				this.$q.notify({
-					message: "Cliente não encontrado",
-					type: "negative"
-				})
-				this.$router.push("/")
-			}
-			this.showBool = false
-		}
-		else if (this.$route.params.id) {
-			let response = await this.executeMethod({url:`api/Clientes/show/${this.$route.params.id}`,method:'get'})
-			if (response.status===200) {
-				this.cliente = response.data
-				this.cliente.contatos.sort(function(a,b){return a.id-b.id})
-			}
-			else {
-				this.$q.notify({
-					message: "Cliente não encontrado",
-					type: "negative"
-				})
-				this.$router.push("/cadastroClientes")
-			}
-			this.showBool = this.$route.meta.show
-		}
+		this.buscar()
 	}
 }
 </script>
