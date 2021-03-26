@@ -73,7 +73,7 @@
 						<q-item v-for="(endereco, index) in coleta.enderecosEntregas" :key="'endereco-'+index">
 							<q-item-section>
 								<div class="row q-col-gutter-sm">
-									<div class="col-3">
+									<div class="col-3 div-input-add">
 										<q-select v-model="endereco.quem" label="Pra Quem Entrega" :options="enderecoQuemOptions" input-debounce="0" use-input new-value-mode="add" @new-value="enderecoQuemAdd" :rules="[validatorRequired]" :readonly="showBool"></q-select>
 									</div>
 									<div class="col-3">
@@ -637,3 +637,8 @@ export default {
 	}
 }
 </script>
+<style>
+	.div-input-add .q-field__input {
+		min-width: 0!important;
+	}
+</style>
