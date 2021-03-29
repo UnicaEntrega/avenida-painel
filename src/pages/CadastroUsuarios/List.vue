@@ -117,7 +117,10 @@ export default {
 	},
 	async created() {
 		var response = await this.executeMethod({url:'api/Usuarios/perfis',method:'get'})
-		if (response.status===200) this.perfilOptions = response.data
+		if (response.status===200){
+			this.perfilOptions = response.data.filter( tipoPerfil => tipoPerfil.name != "Usuário")
+		}
+		 
 	}
 }
 </script>

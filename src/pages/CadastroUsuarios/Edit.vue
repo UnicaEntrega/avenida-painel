@@ -92,7 +92,9 @@ export default {
 	},
 	async created() {
 		var response = await this.executeMethod({url:'api/Usuarios/perfis',method:'get'})
-		if (response.status===200) this.perfilOptions = response.data
+		if (response.status===200){
+			this.perfilOptions = response.data.filter( tipoPerfil => tipoPerfil.name != "Usuário")
+		}
 		if (this.$route.params.id) {
 			response = await this.executeMethod({url:`api/Usuarios/show/${this.$route.params.id}`,method:'get'})
 			if (response.status===200) {
