@@ -8,7 +8,7 @@
 				<q-space></q-space>
 				<q-item>
 					<q-item-section class="text-right">
-						<q-item-label class="text-primary">Olá, {{getUsuario.nome}}</q-item-label>
+						<q-item-label class="text-primary">Olá, {{ getUsuario.nome }}</q-item-label>
 					</q-item-section>
 					<q-item-section side>
 						<q-btn label="sair" icon="exit_to_app" color="primary" flat no-caps stack @click="efetuarLogout"></q-btn>
@@ -28,7 +28,7 @@
 										<q-icon :name="item.icon" color="primary" size="20px"></q-icon>
 									</q-item-section>
 									<q-item-section>
-										{{item.title}}
+										{{ item.title }}
 									</q-item-section>
 								</q-item>
 							</router-link>
@@ -40,13 +40,13 @@
 								<q-icon :name="categoria.icon" color="primary"></q-icon>
 							</q-item-section>
 							<q-item-section>
-								{{categoria.title}}
+								{{ categoria.title }}
 							</q-item-section>
-							<q-item-section v-if="categoria.path=='/chat'" side>
-								<q-chip color="negative" text-color="white" v-if="getTotalNaoLidas>0">{{getTotalNaoLidas}}</q-chip>
+							<q-item-section v-if="categoria.path == '/chat'" side>
+								<q-chip color="negative" text-color="white" v-if="getTotalNaoLidas > 0">{{ getTotalNaoLidas }}</q-chip>
 							</q-item-section>
-							<q-item-section v-if="categoria.path=='/cadastroColetas'" side>
-								<q-chip color="negative" text-color="white" v-if="contadorColeta>0">{{contadorColeta}}</q-chip>
+							<q-item-section v-if="categoria.path == '/cadastroColetas'" side>
+								<q-chip color="negative" text-color="white" v-if="contadorColeta > 0">{{ contadorColeta }}</q-chip>
 							</q-item-section>
 						</q-item>
 					</router-link>
@@ -66,75 +66,81 @@
 import Ws from '@adonisjs/websocket-client/index'
 export default {
 	name: 'MainLayout',
-	data () {
+	data() {
 		return {
 			leftDrawerOpen: true,
 			categorias: [
 				{
-					icon: "emoji_people",
-					title: "Clientes",
-					path: "/cadastroClientes",
-					tipo: "admin",
+					icon: 'emoji_people',
+					title: 'Clientes',
+					path: '/cadastroClientes',
+					tipo: 'admin'
 				},
 				{
-					icon: "person",
-					title: "Usuarios",
-					path: "/cadastroUsuarios",
-					tipo: "admin",
+					icon: 'person',
+					title: 'Usuarios',
+					path: '/cadastroUsuarios',
+					tipo: 'admin'
 				},
 				{
-					icon: "topic",
-					title: "Coletas",
-					path: "/cadastroColetas",
-					tipo: "admin",
+					icon: 'topic',
+					title: 'Coletas',
+					path: '/cadastroColetas',
+					tipo: 'admin'
 				},
 				{
-					icon: "two_wheeler",
-					title: "Veículos",
-					path: "/cadastroVeiculos",
-					tipo: "admin",
+					icon: 'two_wheeler',
+					title: 'Veículos',
+					path: '/cadastroVeiculos',
+					tipo: 'admin'
+				},
+				/*{
+					icon: 'table_chart',
+					title: 'Tabela de Valores',
+					path: '/cadastroTabelaValores',
+					tipo: 'admin'
+				},*/
+				{
+					icon: 'img:images/avenida_web_motoboysOnline.png',
+					title: 'Motoboys',
+					path: '/cadastroMotoboys',
+					tipo: 'admin'
 				},
 				{
-					icon: "table_chart",
-					title: "Tabela de Valores",
-					path: "/cadastroTabelaValores",
-					tipo: "admin",
-				},
-				{
-					icon: "img:images/avenida_web_motoboysOnline.png",
-					title: "Motoboys",
-					path: "/cadastroMotoboys",
-					tipo: "admin",
-				},
-				{
-					icon: "img:images/avenida_web_chat.png",
-					title: "Chat",
+					icon: 'img:images/avenida_web_chat.png',
+					title: 'Chat',
 					path: '/chat',
-					tipo: "Ambos",
+					tipo: 'Ambos'
 				},
 				{
-					icon: "emoji_people",
-					title: "Relatórios",
-					path: "/relatorios",
-					tipo: "admin",
+					icon: 'emoji_people',
+					title: 'Relatórios',
+					path: '/relatorios',
+					tipo: 'admin'
 				},
 				{
-					icon: "person",
-					title: "Meus Dados",
+					icon: 'emoji_people',
+					title: 'Configurações',
+					path: '/configuracoes',
+					tipo: 'admin'
+				},
+				{
+					icon: 'person',
+					title: 'Meus Dados',
 					path: '/meusDados',
-					tipo: "cliente",
+					tipo: 'cliente'
 				},
 				{
-					icon: "topic",
-					title: "Minhas Coletas",
+					icon: 'topic',
+					title: 'Minhas Coletas',
 					path: '/minhasColetas',
-					tipo: "cliente",
+					tipo: 'cliente'
 				},
 				{
-					icon: "create_new_folder",
-					title: "Nova Coleta",
+					icon: 'create_new_folder',
+					title: 'Nova Coleta',
 					path: '/cadastroColetas/edit',
-					tipo: "cliente",
+					tipo: 'cliente'
 				}
 			],
 			_interval: null,
@@ -143,30 +149,30 @@ export default {
 	},
 	methods: {
 		mostrarItemMenu(categoria) {
-			return (this.usuarioPerfil == categoria.tipo) || categoria.tipo == "Ambos"
+			return this.usuarioPerfil == categoria.tipo || categoria.tipo == 'Ambos'
 		},
 		async carregarColetas() {
 			let categorias = JSON.parse(JSON.stringify(this.categorias))
 			for (let index in categorias) {
-				if (categorias[index].name==='Coletas em Andamento') {
-					categorias.splice(index,1)
+				if (categorias[index].name === 'Coletas em Andamento') {
+					categorias.splice(index, 1)
 					break
 				}
 			}
-			var response = await this.executeMethod({url:'api/Coletas/minhas',method:'get'})
-			if (response.status===200 && response.data.length>0) {
+			var response = await this.executeMethod({ url: 'api/Coletas/minhas', method: 'get' })
+			if (response.status === 200 && response.data.length > 0) {
 				let coletas = {
-					icon: "img:images/avenida_web_motoboysOnline.png",
-					name: "Coletas em Andamento",
-					tipo: "cliente",
+					icon: 'img:images/avenida_web_motoboysOnline.png',
+					name: 'Coletas em Andamento',
+					tipo: 'cliente',
 					links: []
 				}
 				for (let item of response.data) {
 					coletas.links.push({
-						icon: "img:images/avenida_web_motoboysOnline.png",
-						title: `${item.id} - ${this.formatarDataHora(item.created_at,'DD/MM/YYYY')}`,
+						icon: 'img:images/avenida_web_motoboysOnline.png',
+						title: `${item.id} - ${this.formatarDataHora(item.created_at, 'DD/MM/YYYY')}`,
 						path: `/coleta/${item.id}`,
-						tipo: "cliente"
+						tipo: 'cliente'
 					})
 				}
 				categorias.push(coletas)
@@ -176,33 +182,33 @@ export default {
 		async carregarMotoboys() {
 			let categorias = JSON.parse(JSON.stringify(this.categorias))
 			for (let index in categorias) {
-				if (categorias[index].name==='Motoboys Online') {
-					categorias.splice(index,1)
+				if (categorias[index].name === 'Motoboys Online') {
+					categorias.splice(index, 1)
 					break
 				}
 			}
-			var response = await this.executeMethod({url:'api/Motoboys/lista',method:'get'})
-			if (response.status===200 && response.data.length>0) {
-				await this.$store.commit('setDados',{key:'motoboysOnline',value:response.data})
+			var response = await this.executeMethod({ url: 'api/Motoboys/lista', method: 'get' })
+			if (response.status === 200 && response.data.length > 0) {
+				await this.$store.commit('setDados', { key: 'motoboysOnline', value: response.data })
 				let motoboys = {
-					icon: "img:images/avenida_web_motoboysOnline.png",
-					name: "Motoboys Online",
-					tipo: "admin",
+					icon: 'img:images/avenida_web_motoboysOnline.png',
+					name: 'Motoboys Online',
+					tipo: 'admin',
 					links: []
 				}
-				if (response.data.length>2)
+				if (response.data.length > 2)
 					motoboys.links.push({
-						icon: "img:images/avenida_web_motoboysOnline.png",
+						icon: 'img:images/avenida_web_motoboysOnline.png',
 						title: 'Todos',
 						path: '/',
-						tipo: "admin"
+						tipo: 'admin'
 					})
 				for (let item of response.data) {
 					motoboys.links.push({
-						icon: "img:images/avenida_web_motoboysOnline.png",
+						icon: 'img:images/avenida_web_motoboysOnline.png',
 						title: `${item.nome} - ${item.veiculo ? item.veiculo.placa : ''}`,
 						path: `/motoboy/${item.id}`,
-						tipo: "admin"
+						tipo: 'admin'
 					})
 				}
 				categorias.push(motoboys)
@@ -210,37 +216,44 @@ export default {
 			this.categorias = categorias
 		},
 		async carregarContadorColetasAbertas() {
-			var response = await this.executeMethod({url:'api/Coletas/abertas',method:'post'})
-			if (response.status===200) this.contadorColeta = parseInt(response.data)
+			var response = await this.executeMethod({ url: 'api/Coletas/abertas', method: 'post' })
+			if (response.status === 200) this.contadorColeta = parseInt(response.data)
 		}
 	},
 	async created() {
 		if (this.isBlank(this.getLogin.token)) this.$router.push('/login')
 		else {
-			if (this.usuarioPerfil==='cliente') {
-				this._interval = setInterval(()=>{this.carregarColetas()},30000)
+			if (this.usuarioPerfil === 'cliente') {
+				this._interval = setInterval(() => {
+					this.carregarColetas()
+				}, 30000)
 				this.carregarColetas()
-			}
-			else {
-				this._interval = setInterval(()=>{
+			} else {
+				this._interval = setInterval(() => {
 					this.carregarMotoboys()
 					this.carregarContadorColetasAbertas()
-				},30000)
+				}, 30000)
 				this.carregarMotoboys()
 				this.carregarContadorColetasAbertas()
 			}
 			await this.carregarChats()
 			this.$root.chat_connect = false
-			this.$root.chat_ws = Ws(`${process.env.API_URL}`.replace('http','ws')).withJwtToken(this.getLogin.token).connect()
-			this.$root.chat_ws.on('open',()=>{
-				this.$root.chat = this.$root.chat_ws.subscribe(`chat:${this.usuarioPerfil==='cliente' ? 'usuario:'+this.getUsuario.id : 'admin'}`)
-				this.$root.chat.on('ready',()=>{this.$root.chat_connect = true})
-				this.$root.chat.on('message',(m)=>{
-					this.$store.commit('mensagemChat',m)
-					this.$root.$emit('atualizarScroll',m)
+			this.$root.chat_ws = Ws(`${process.env.API_URL}`.replace('http', 'ws'))
+				.withJwtToken(this.getLogin.token)
+				.connect()
+			this.$root.chat_ws.on('open', () => {
+				this.$root.chat = this.$root.chat_ws.subscribe(`chat:${this.usuarioPerfil === 'cliente' ? 'usuario:' + this.getUsuario.id : 'admin'}`)
+				this.$root.chat.on('ready', () => {
+					this.$root.chat_connect = true
+				})
+				this.$root.chat.on('message', m => {
+					this.$store.commit('mensagemChat', m)
+					this.$root.$emit('atualizarScroll', m)
 				})
 			})
-			this.$root.chat_ws.on('close',()=>{this.$root.chat_connect = false})
+			this.$root.chat_ws.on('close', () => {
+				this.$root.chat_connect = false
+			})
 		}
 	},
 	destroyed() {

@@ -97,6 +97,9 @@ export default ({app, Vue}) => {
 			formatarEndereco(item) {
 				return item.endereco+', '+(item.endereco_numero || '')+(this.isBlank(item.complemento) ? '' : ', '+item.complemento)+' - '+item.bairro+' - '+item.cidade+' - '+item.estado
 			},
+			testarEndereco(item) {
+				return item.cep && item.endereco && item.bairro && item.cidade && item.estado
+			},
 			testarCpf(cpf) {
 				cpf = (cpf || '').replace(/[^\d]+/g,'')
 				if (cpf == '') return false
@@ -179,6 +182,33 @@ export default ({app, Vue}) => {
 					await this.$store.commit('setDados',{key:'chats',value:c})
 				}
 				this.$root.$emit('carregarTelaChat')
+			},
+			calcularTotalKm(pontos) {
+				return new Promise(resolve=>{
+					this.$gmapApiPromiseLazy().then(()=>{
+						let origens = []
+						let destinos = []
+						for (let idx in pontos) {
+							if (parseInt(idx)===0) origens.push(pontos[idx])
+							else if (parseInt(idx)===pontos.length-1) destinos.push(pontos[idx])
+							else {
+								origens.push(pontos[idx])
+								destinos.push(pontos[idx])
+							}
+						}
+						new google.maps.DistanceMatrixService().getDistanceMatrix({
+							origins: origens,
+							destinations: destinos,
+							travelMode: 'DRIVING'
+						},function(response, status){
+							if (status!=='OK') resolve(0)
+							let total = 0
+							for (let i in origens)
+								total += response.rows[i].elements[i].distance.value
+							resolve(total/1000)
+						})
+					})
+				})
 			}
 		}
 	})

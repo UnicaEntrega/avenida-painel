@@ -43,6 +43,7 @@ const routes = [
 			{ path: 'chat', component: () => import('pages/Chat.vue') },
 			{ path: 'chat/:id', component: () => import('pages/Chat.vue') },
 			{ path: 'relatorios', component: () => import('pages/Relatorio.vue') },
+			{ path: 'configuracoes', component: () => import('pages/Configuracoes.vue') },
 			{ path: 'motoboy/:id', component: () => import('pages/Index.vue') }
 		]
 	},
