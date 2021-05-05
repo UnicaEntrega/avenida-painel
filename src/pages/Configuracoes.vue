@@ -21,7 +21,7 @@
 									<q-input v-model="configuracao.entrega_convencional_valor_minimo" label="Valor mínimo" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 								</div>
 								<div class="col-3">
-									<q-input v-model="configuracao.entrega_convencional_km_minimo" label="KM mínimo" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
+									<q-input type="number" v-model="configuracao.entrega_convencional_km_minimo" label="KM mínimo" :rules="[validatorRequired]"></q-input>
 								</div>
 								<div class="col-3">
 									<q-input v-model="configuracao.entrega_convencional_km_moto" label="KM Moto" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
@@ -49,7 +49,7 @@
 									<q-input v-model="configuracao.entrega_expresso_valor_minimo" label="Valor mínimo" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 								</div>
 								<div class="col-3">
-									<q-input v-model="configuracao.entrega_expresso_km_minimo" label="KM mínimo" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
+									<q-input type="number" v-model="configuracao.entrega_expresso_km_minimo" label="KM mínimo" :rules="[validatorRequired]"></q-input>
 								</div>
 								<div class="col-3">
 									<q-input v-model="configuracao.entrega_expresso_km_moto" label="KM Moto" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>

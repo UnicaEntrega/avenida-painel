@@ -672,8 +672,8 @@ export default {
 			this.calcularValorColeta(false)
 		},
 		async calcularValorColeta(testar, alterarValor) {
-			if (testar !== false && (!this.testarEndereco(this.coleta) || this.coleta.enderecosEntregas.length === 0 || !this.testarEndereco(this.coleta.enderecosEntregas[0]))) {
-				this.$q.notify({ message: 'É necessário inserir endereço de coleta e entrega para calcular o valor!', type: 'negative' })
+			if (!this.testarEndereco(this.coleta) || this.coleta.enderecosEntregas.length === 0 || !this.testarEndereco(this.coleta.enderecosEntregas[0])) {
+				if (testar !== false) this.$q.notify({ message: 'É necessário inserir endereço de coleta e entrega para calcular o valor!', type: 'negative' })
 				this.pontoDestino = undefined
 				this.pontosEntre = []
 				this.coleta.valor_entrega = '0,00'

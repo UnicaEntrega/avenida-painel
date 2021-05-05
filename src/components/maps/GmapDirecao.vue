@@ -14,21 +14,31 @@ export default MapElementFactory({
 		pontosEntre: { type: Array }
 	},
 	afterCreate(directionsRenderer) {
-		let { modo, origem, destino, pontosEntre } = this
-		if (!modo || !origem || !destino) return
-		if (!pontosEntre) pontosEntre = []
-		new google.maps.DirectionsService().route(
-			{
-				travelMode: modo,
-				origin: origem,
-				destination: destino,
-				waypoints: pontosEntre
-			},
-			(response, status) => {
-				if (status !== 'OK') return
-				directionsRenderer.setDirections(response)
-			}
+		let directionsService = new google.maps.DirectionsService()
+		this.carregar(directionsRenderer, directionsService)
+		this.$watch(
+			() => [this.modo, this.origem, this.destino, this.pontosEntre],
+			() => this.carregar(directionsRenderer, directionsService)
 		)
+	},
+	methods: {
+		carregar(directionsRenderer, directionsService) {
+			let { modo, origem, destino, pontosEntre } = this
+			if (!modo || !origem || !destino) return
+			if (!pontosEntre) pontosEntre = []
+			directionsService.route(
+				{
+					travelMode: modo,
+					origin: origem,
+					destination: destino,
+					waypoints: pontosEntre
+				},
+				(response, status) => {
+					if (status !== 'OK') return
+					directionsRenderer.setDirections(response)
+				}
+			)
+		}
 	}
 })
 </script>
