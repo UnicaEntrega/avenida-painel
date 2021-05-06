@@ -155,9 +155,9 @@
 						<q-btn label="Ver nossa tabela de Valores" icon="list" @click="abrirTabelaValores()" color="primary" flat></q-btn>
 					</div>
 				</q-card-section>
-				<q-card-section class="row q-col-gutter-sm" v-if="pontoDestino">
-					<gmap-map :center="coordsDefault" :zoom="15" style="width:100%;height:60vh;" :options="{ streetViewControl: false, fullscreenControl: false, mapTypeControl: false }">
-						<gmap-direcao modo="DRIVING" :origem="coordsDefault" :destino="pontoDestino" :pontosEntre="pontosEntre" />
+				<q-card-section class="row q-col-gutter-sm" v-if="pontoOrigem">
+					<gmap-map :center="pontoOrigem" :zoom="15" style="width:100%;height:60vh;" :options="{ streetViewControl: false, fullscreenControl: false, mapTypeControl: false }">
+						<gmap-direcao modo="DRIVING" :origem="pontoOrigem" :destino="pontoDestino" :pontosEntre="pontosEntre" v-if="pontoDestino" />
 					</gmap-map>
 				</q-card-section>
 				<q-card-section class="row q-col-gutter-sm" v-if="showBool && !isBlank(coleta.foto_finalizado)">
@@ -349,6 +349,7 @@ export default {
 			},
 			loading: false,
 			configuracao: {},
+			pontoOrigem: this.coordsDefault,
 			pontoDestino: undefined,
 			pontosEntre: []
 		}
@@ -672,17 +673,17 @@ export default {
 			this.calcularValorColeta(false)
 		},
 		async calcularValorColeta(testar, alterarValor) {
+			this.pontoOrigem = this.coordsDefault
 			if (!this.testarEndereco(this.coleta) || this.coleta.enderecosEntregas.length === 0 || !this.testarEndereco(this.coleta.enderecosEntregas[0])) {
 				if (testar !== false) this.$q.notify({ message: 'É necessário inserir endereço de coleta e entrega para calcular o valor!', type: 'negative' })
 				this.pontoDestino = undefined
 				this.pontosEntre = []
 				this.coleta.valor_entrega = '0,00'
 			} else {
+				this.pontoOrigem = { lat: parseFloat(this.coleta.latitude), lng: parseFloat(this.coleta.longitude) }
 				let pontos = []
-				pontos.push(this.coordsDefault)
 				pontos.push({ lat: parseFloat(this.coleta.latitude), lng: parseFloat(this.coleta.longitude) })
 				let pontosEntre = []
-				pontosEntre.push({ location: { lat: parseFloat(this.coleta.latitude), lng: parseFloat(this.coleta.longitude) } })
 				let retornos = 0
 				for (let index in this.coleta.enderecosEntregas) {
 					let item = this.coleta.enderecosEntregas[index]
@@ -694,10 +695,10 @@ export default {
 				this.pontosEntre = pontosEntre
 
 				if (alterarValor !== false) {
-					let tipo = this.coleta.tipo_entrega === 'Expresso' ? 'expresso' : 'normal'
+					let tipo = this.coleta.tipo_entrega === 'Expresso' ? 'expresso' : 'convencional'
 					let veiculo = this.coleta.tipo_veiculo.toLowerCase() === 'caminhão' ? 'caminhao' : this.coleta.tipo_veiculo.toLowerCase()
 					let totalKm = await this.calcularTotalKm(pontos)
-					let valorKm = parseFloat(this.configuracao['entrega_' + tipo + '_km_minimo'])
+					let valorKm = parseInt(this.configuracao['entrega_' + tipo + '_km_minimo'])
 					let valorVeiculo = parseFloat(this.configuracao['entrega_' + tipo + '_km_' + veiculo])
 					let valorRetorno = parseFloat(this.configuracao['entrega_' + tipo + '_retorno_minimo'])
 

@@ -13,7 +13,7 @@ export default ({app, Vue}) => {
 			ufOptions() {return ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO']},
 			tipoVeiculoOptions() {return ['Moto','Carro','Van','Caminhão']},
 			coletaStatusOptions() {return ['Aberto','Encaminhado','Em Coleta','Em Entrega','Entregue','Finalizado','Cancelado']},
-			tipoEntregaOptions() {return [{label:'Expresso (em até 20 minutos)',value:'Expresso'},{label:'Convencional (em até 30 minutos)',value:'Convencional'}]},
+			tipoEntregaOptions() {return [{label:'Convencional (em até 30 minutos)',value:'Convencional'},{label:'Expresso (em até 20 minutos)',value:'Expresso'}]},
 			formaPagamentoOptions() {return [{label:'Boletim de Transporte',value:'Boletim de Transporte'},{label:'Pix',value:'Pix'},{label:'Débito (na máquina)',value:'Débito'},{label:'Crédito (na máquina)',value:'Crédito'},{label:'Dinheiro',value:'Dinheiro'},{label:'Depósito',value:'Depósito'}]},
 			simNaoOptions() {return [{label:'Sim',value:'1'},{label:'Não',value:'0'}]},
 			usuarioPerfil() {return this.getUsuario.perfis && this.getUsuario.perfis.length>0 ? this.getUsuario.perfis[0].slug : ''},
