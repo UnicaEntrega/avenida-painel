@@ -80,7 +80,7 @@
 										<q-input v-model="endereco.telefone" label="Telefone" v-mask="['(##) ####-####', '(##) #####-####']" :rules="[validatorRequired, val => val.length >= 14 || 'Telefone incompleto']" :readonly="showBool"></q-input>
 									</div>
 									<div class="col-3">
-										<q-select v-model="endereco.retorno" :options="simNaoOptions" map-options emit-value label="Com Retorno" :rules="[validatorRequired]" :readonly="showBool"></q-select>
+										<q-select v-model="endereco.retorno" :options="simNaoOptions" map-options emit-value label="Com Retorno" :rules="[validatorRequired]" :readonly="showBool" @input="calcularValorColeta()"></q-select>
 									</div>
 									<div class="col-xl-3"></div>
 									<div class="col-xl-1 col-xs-3">
@@ -701,12 +701,24 @@ export default {
 					let valorKm = parseInt(this.configuracao['entrega_' + tipo + '_km_minimo'])
 					let valorVeiculo = parseFloat(this.configuracao['entrega_' + tipo + '_km_' + veiculo])
 					let valorRetorno = parseFloat(this.configuracao['entrega_' + tipo + '_retorno_minimo'])
+					console.log('veiculo', veiculo)
+					console.log('totalKm', totalKm)
+					console.log('valorKm', valorKm)
+					console.log('valorVeiculo', valorVeiculo)
+					console.log('valorRetorno', valorRetorno)
 
 					let p1 = parseFloat(this.configuracao['entrega_' + tipo + '_valor_minimo']) * this.coleta.enderecosEntregas.length
-					let p2 = (totalKm < valorKm ? valorKm : totalKm - valorKm) * valorVeiculo
-					let p3 = totalKm < valorKm ? valorKm - totalKm : totalKm - valorKm
+					console.log('p1 valor_minimo*entrega', parseFloat(this.configuracao['entrega_' + tipo + '_valor_minimo']), this.coleta.enderecosEntregas.length, p1)
+					let p2 = totalKm < valorKm ? valorKm : totalKm - valorKm
+					console.log('p2 totalKm', totalKm, valorKm, p2)
+					let p3 = p1 + p2 * valorVeiculo
+					console.log('p3 p1+(p2*valorVeiculo)', p1, p2, valorVeiculo, p3)
 					let p4 = valorRetorno * retornos
-					this.coleta.valor_entrega = (p1 + p2 + p3 + p4).toFixed(2).replace('.', ',')
+					console.log('p4 valorRetorno*retornos', retornos, p4)
+					let p5 = retornos > 0 ? p4 + p2 * valorVeiculo : 0
+					console.log('p5 p4+(p2*valorVeiculo)', p4, p2, valorVeiculo, p5)
+					this.coleta.valor_entrega = (p3 + p5).toFixed(2).replace('.', ',')
+					console.log('total', p3, p5, this.coleta.valor_entrega)
 				}
 			}
 		}
