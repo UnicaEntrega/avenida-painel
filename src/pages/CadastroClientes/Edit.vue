@@ -19,7 +19,7 @@
 						<q-input v-model="cliente.nome" label="Nome*" :rules="[validatorRequired]" :readonly="showBool"></q-input>
 					</div>
 					<div class="col-3">
-						<q-input v-model="cliente.cpf_cnpj" label="CPF/CNPJ*" v-mask="['###.###.###-##', '##.###.###/####-##']" :rules="[validatorRequired, val => ((val.length == 14 && testarCpf(val)) || (val.length == 18 && testarCnpj(val))) || 'CPF/CNPJ inválido']" :readonly="showBool"></q-input>
+						<q-input v-model="cliente.cpf_cnpj" label="CPF/CNPJ*" v-mask="['###.###.###-##', '##.###.###/####-##']" :rules="[validatorRequired, val => (val.length == 14 && testarCpf(val)) || (val.length == 18 && testarCnpj(val)) || 'CPF/CNPJ inválido']" :readonly="showBool"></q-input>
 					</div>
 					<div class="col-3">
 						<q-input v-model="cliente.telefone" label="Telefone*" v-mask="['(##) ####-####', '(##) #####-####']" :rules="[validatorRequired, val => val.length >= 14 || 'Telefone incompleto']" :readonly="showBool"></q-input>
@@ -32,42 +32,40 @@
 					</div>
 				</q-card-section>
 				<q-card-section class="row q-col-gutter-sm">
-						<q-item-label class="col-12 text-h6 text-primary">
-							Endereço
-						</q-item-label>
-						<div class="col-xl-1 col-xs-3">
-							<q-input v-model="cliente.cep" label="CEP*" :loading="cepLoading" v-mask="'##.###-###'" :rules="[validatorRequired, val => val.length >= 10 || 'CEP inválido']" @blur="pesquisarCep" :readonly="showBool"></q-input>
-						</div>
-						<div class="col-xl-3 col-xs-3">
-							<q-input v-model="cliente.endereco" label="Rua*" :loading="cepLoading" :rules="[validatorRequired]" :readonly="showBool"></q-input>
-						</div>
-						<div class="col-xl-1 col-xs-3">
-							<q-input v-model="cliente.endereco_numero" label="Número" :loading="cepLoading" :readonly="showBool" ref="endereco_numero"></q-input>
-						</div>
-						<div class="col-xl-2 col-xs-3">
-							<q-input v-model="cliente.complemento" label="Complemento" :loading="cepLoading" :readonly="showBool"></q-input>
-						</div>
-						<div class="col-xl-2 col-xs-3">
-							<q-input v-model="cliente.bairro" label="Bairro*" :loading="cepLoading" :rules="[validatorRequired]" :readonly="showBool"></q-input>
-						</div>
-						<div class="col-xl-2 col-xs-3">
-							<q-input v-model="cliente.cidade" label="Cidade*" :loading="cepLoading" :rules="[validatorRequired]" :readonly="showBool"></q-input>
-						</div>
-						<div class="col-xl-1 col-xs-3">
-							<q-select v-model="cliente.estado" label="Estado*" :options="ufOptions" :loading="cepLoading" :rules="[validatorRequired]"></q-select>
-						</div>
+					<q-item-label class="col-12 text-h6 text-primary">
+						Endereço
+					</q-item-label>
+					<div class="col-xl-1 col-xs-3">
+						<q-input v-model="cliente.cep" label="CEP*" :loading="cepLoading" v-mask="'##.###-###'" :rules="[validatorRequired, val => val.length >= 10 || 'CEP inválido']" @blur="pesquisarCep" :readonly="showBool"></q-input>
+					</div>
+					<div class="col-xl-3 col-xs-6">
+						<q-input v-model="cliente.endereco" label="Rua*" :loading="cepLoading" :rules="[validatorRequired]" :readonly="showBool"></q-input>
+					</div>
+					<div class="col-xl-1 col-xs-3">
+						<q-input v-model="cliente.endereco_numero" label="Número" :loading="cepLoading" :readonly="showBool" ref="endereco_numero"></q-input>
+					</div>
+					<div class="col-xl-2 col-xs-3">
+						<q-input v-model="cliente.complemento" label="Complemento" :loading="cepLoading" :readonly="showBool"></q-input>
+					</div>
+					<div class="col-xl-2 col-xs-3">
+						<q-input v-model="cliente.bairro" label="Bairro*" :loading="cepLoading" :rules="[validatorRequired]" :readonly="showBool"></q-input>
+					</div>
+					<div class="col-xl-2 col-xs-3">
+						<q-input v-model="cliente.cidade" label="Cidade*" :loading="cepLoading" :rules="[validatorRequired]" :readonly="showBool"></q-input>
+					</div>
+					<div class="col-xl-1 col-xs-3">
+						<q-select v-model="cliente.estado" label="Estado*" :options="ufOptions" :loading="cepLoading" :rules="[validatorRequired]"></q-select>
+					</div>
 				</q-card-section>
 				<q-card-section>
 					<q-item-label class="text-h6 text-primary">
 						Contatos
-						<q-btn icon="add" color="primary" flat dense @click="adicionarContato" v-if="!showBool"/>
+						<q-btn icon="add" color="primary" flat dense @click="adicionarContato" v-if="!showBool" />
 					</q-item-label>
 					<q-list separator>
 						<transition-group enter-active-class="animated zoomIn" leave-active-class="animated zoomOut">
-							<q-item v-for="(contato, index) in cliente.contatos" :key="'contato'+index">
-								<q-item-section side class="text-primary text-h6 text-bold">
-									{{index}} -
-								</q-item-section>
+							<q-item v-for="(contato, index) in cliente.contatos" :key="'contato' + index">
+								<q-item-section side class="text-primary text-h6 text-bold"> {{ index }} - </q-item-section>
 								<q-item-section>
 									<div class="row q-col-gutter-sm">
 										<div class="col-4">
@@ -88,9 +86,9 @@
 						</transition-group>
 					</q-list>
 				</q-card-section>
-				<q-separator v-if="showBool && cliente.boletins.length>0"/>
-				<q-card-section class="row q-col-gutter-sm" v-if="showBool && cliente.boletins.length>0">
-					<q-table class="col-12" :data="cliente.boletins" :columns="boletimColumns" align="left" row-key="id" :rows-per-page-options="[10,20,50,100]" :pagination-label="paginationLabel">
+				<q-separator v-if="showBool && cliente.boletins.length > 0" />
+				<q-card-section class="row q-col-gutter-sm" v-if="showBool && cliente.boletins.length > 0">
+					<q-table class="col-12" :data="cliente.boletins" :columns="boletimColumns" align="left" row-key="id" :rows-per-page-options="[10, 20, 50, 100]" :pagination-label="paginationLabel">
 						<template v-slot:top>
 							<div class="col-12 text-h5 text-primary">Boletins</div>
 						</template>
@@ -110,7 +108,7 @@
 
 		<q-dialog v-model="modalBloco">
 			<q-card>
-				<q-form @submit="salvarBloco" @reset="modalBloco=false" class="q-gutter-y-md">
+				<q-form @submit="salvarBloco" @reset="modalBloco = false" class="q-gutter-y-md">
 					<q-card-section>
 						<div class="row items-center justify-between">
 							<div class="text-primary text-h6">Registrar Bloco</div>
@@ -134,31 +132,31 @@
 </template>
 <script>
 export default {
-	data () {
+	data() {
 		return {
 			cepLoading: false,
 			showBool: false,
 			cliente: {
-				nome: "",
-				cpf_cnpj: "",
-				telefone: "",
-				email: "",
-				cep: "",
-				endereco: "",
-				endereco_numero: "",
-				complemento: "",
-				bairro: "",
-				cidade: "",
-				estado: "",
+				nome: '',
+				cpf_cnpj: '',
+				telefone: '',
+				email: '',
+				cep: '',
+				endereco: '',
+				endereco_numero: '',
+				complemento: '',
+				bairro: '',
+				cidade: '',
+				estado: '',
 				contatos: [],
-				observacao: "",
+				observacao: '',
 				boletins: []
 			},
 			bloco_numero: '',
 			modalBloco: false,
 			boletimColumns: [
-				{ name: "numero", label: "Número", field: "numero", align: "left" },
-				{ name: "coleta_id", label: "Coleta", field: "coleta_id", align: "left", format:val=>val ? val : 'Disponível' }
+				{ name: 'numero', label: 'Número', field: 'numero', align: 'left' },
+				{ name: 'coleta_id', label: 'Coleta', field: 'coleta_id', align: 'left', format: val => (val ? val : 'Disponível') }
 			],
 			pagination: {
 				page: 1,
@@ -168,46 +166,45 @@ export default {
 		}
 	},
 	methods: {
-		paginationLabel(first,end,total) {
-			return 'Registros '+first+' até '+end+' de '+total
+		paginationLabel(first, end, total) {
+			return 'Registros ' + first + ' até ' + end + ' de ' + total
 		},
 		abrirModalBloco() {
 			this.bloco_numero = ''
 			this.modalBloco = true
 		},
 		async salvarBloco() {
-			var response = await this.executeMethod({url:`api/Clientes/registrarBloco/${this.cliente.id}`,method:'post',data:{numero:this.bloco_numero}})
-			if (response.status===200) {
+			var response = await this.executeMethod({ url: `api/Clientes/registrarBloco/${this.cliente.id}`, method: 'post', data: { numero: this.bloco_numero } })
+			if (response.status === 200) {
 				this.modalBloco = false
 				this.buscar()
 			}
 		},
 		adicionarContato() {
 			this.cliente.contatos.push({
-				nome: "",
-				telefone: "",
-				email: ""
+				nome: '',
+				telefone: '',
+				email: ''
 			})
 		},
 		async onSubmit() {
-			var response = await this.executeMethod({url:'api/Clientes'+(this.cliente.id ? '/'+this.cliente.id : ''),method:this.cliente.id ? 'put' : 'post',data:this.cliente})
-			if (response.status===200) {
-				if (this.usuarioPerfil==='cliente') this.$router.push("/");
-				else this.$router.push("/cadastroClientes");
+			var response = await this.executeMethod({ url: 'api/Clientes' + (this.cliente.id ? '/' + this.cliente.id : ''), method: this.cliente.id ? 'put' : 'post', data: this.cliente })
+			if (response.status === 200) {
+				if (this.usuarioPerfil === 'cliente') this.$router.push('/')
+				else this.$router.push('/cadastroClientes')
 				this.$q.notify({
-					message: "Cliente cadastrado com sucesso.",
-					type: "positive"
+					message: 'Cliente cadastrado com sucesso.',
+					type: 'positive'
 				})
-			}
-			else this.responseError(response)
+			} else this.responseError(response)
 		},
 		onReset() {
-			if (this.usuarioPerfil==='cliente') this.$router.push("/");
-			else if (!this.showBool && this.cliente.id) this.showBool = true;
-			else this.$router.push("/cadastroClientes");
+			if (this.usuarioPerfil === 'cliente') this.$router.push('/')
+			else if (!this.showBool && this.cliente.id) this.showBool = true
+			else this.$router.push('/cadastroClientes')
 		},
 		async pesquisarCep() {
-			this.cepLoading = true;
+			this.cepLoading = true
 			let r = await this.buscarCep(this.cliente.cep)
 			if (r) {
 				this.cliente.endereco = r.logradouro
@@ -216,57 +213,58 @@ export default {
 				this.cliente.estado = r.uf
 				this.$refs.endereco_numero.focus()
 			}
-			this.cepLoading = false;
+			this.cepLoading = false
 		},
 		removerContato(index) {
-			this.$q.dialog({title:'Confirmação',message:'Tem certeza que deseja remover este contato? Esta ação é irreversível.',ok:'Sim',cancel:'Não'}).onOk(()=>{
-        		this.cliente.contatos.splice(index, 1);
+			this.$q.dialog({ title: 'Confirmação', message: 'Tem certeza que deseja remover este contato? Esta ação é irreversível.', ok: 'Sim', cancel: 'Não' }).onOk(() => {
+				this.cliente.contatos.splice(index, 1)
 				this.$q.notify({
-					message: "Contato removido com sucesso",
-					type: "positive"
+					message: 'Contato removido com sucesso',
+					type: 'positive'
 				})
 			})
 		},
 		removerCliente() {
-			this.$q.dialog({title:'Confirmação',message:'Tem certeza que deseja remover este cliente? Esta ação é irreversível.',ok:'Sim',cancel:'Não'}).onOk(async ()=>{
-        		var response = await this.executeMethod({url:'api/Clientes/'+this.cliente.id,method:'delete'})
-				if (response.status===200) {
+			this.$q.dialog({ title: 'Confirmação', message: 'Tem certeza que deseja remover este cliente? Esta ação é irreversível.', ok: 'Sim', cancel: 'Não' }).onOk(async () => {
+				var response = await this.executeMethod({ url: 'api/Clientes/' + this.cliente.id, method: 'delete' })
+				if (response.status === 200) {
 					this.$q.notify({
-						message: "Cliente removido com sucesso",
-						type: "positive"
+						message: 'Cliente removido com sucesso',
+						type: 'positive'
 					})
-					this.$router.push("/cadastroClientes")
+					this.$router.push('/cadastroClientes')
 				}
 			})
 		},
 		async buscar() {
-			if (this.usuarioPerfil==='cliente') {
-				let response = await this.executeMethod({url:'api/Clientes/meusDados',method:'get'})
-				if (response.status===200) {
+			if (this.usuarioPerfil === 'cliente') {
+				let response = await this.executeMethod({ url: 'api/Clientes/meusDados', method: 'get' })
+				if (response.status === 200) {
 					this.cliente = response.data
-					this.cliente.contatos.sort(function(a,b){return a.id-b.id})
-				}
-				else {
-					this.$q.notify({
-						message: "Cliente não encontrado",
-						type: "negative"
+					this.cliente.contatos.sort(function(a, b) {
+						return a.id - b.id
 					})
-					this.$router.push("/")
+				} else {
+					this.$q.notify({
+						message: 'Cliente não encontrado',
+						type: 'negative'
+					})
+					this.$router.push('/')
 				}
 				this.showBool = false
-			}
-			else if (this.$route.params.id) {
-				let response = await this.executeMethod({url:`api/Clientes/show/${this.$route.params.id}`,method:'get'})
-				if (response.status===200) {
+			} else if (this.$route.params.id) {
+				let response = await this.executeMethod({ url: `api/Clientes/show/${this.$route.params.id}`, method: 'get' })
+				if (response.status === 200) {
 					this.cliente = response.data
-					this.cliente.contatos.sort(function(a,b){return a.id-b.id})
-				}
-				else {
-					this.$q.notify({
-						message: "Cliente não encontrado",
-						type: "negative"
+					this.cliente.contatos.sort(function(a, b) {
+						return a.id - b.id
 					})
-					this.$router.push("/cadastroClientes")
+				} else {
+					this.$q.notify({
+						message: 'Cliente não encontrado',
+						type: 'negative'
+					})
+					this.$router.push('/cadastroClientes')
 				}
 				this.showBool = this.$route.meta.show
 			}

@@ -1,9 +1,7 @@
 <template>
 	<div class="column justify-center" style="height: 100vh">
-		<div class="col-3 row justify-center">
-			<div class="col-10 offset-1 text-center text-h6 no-margin" v-if="expirado">
-				O link usado está expirado!<br>Clique em "Esqueci minha senha" se ainda precisar recuperar ou criar sua senha.
-			</div>
+		<div class="col-4 row justify-center">
+			<div class="col-10 offset-1 text-center text-h6 no-margin" v-if="expirado">O link usado está expirado!<br />Clique em "Esqueci minha senha" se ainda precisar recuperar ou criar sua senha.</div>
 			<q-card class="col-3">
 				<q-card-section class="primary-gradient text-white text-h5 text-center">
 					<div>ACESSE <b>SUA CONTA</b></div>
@@ -21,6 +19,11 @@
 							<q-btn label="Entrar" color="primary" @click="doLogin()"></q-btn>
 						</q-item-section>
 					</q-item>
+					<q-item>
+						<q-item-section>
+							<q-btn label="Faça seu cadastro" outline no-caps dense @click="$router.push('/cadastro')"></q-btn>
+						</q-item-section>
+					</q-item>
 				</q-card-section>
 			</q-card>
 		</div>
@@ -29,19 +32,19 @@
 			<q-card>
 				<q-card-section class="row items-center">
 					<div class="text-h6">Esqueceu sua senha</div>
-					<q-space/>
-					<q-btn icon="close" flat round dense v-close-popup/>
+					<q-space />
+					<q-btn icon="close" flat round dense v-close-popup />
 				</q-card-section>
-				<q-separator/>
+				<q-separator />
 				<q-card-section>
 					<p>Informe seu e-mail de cadastro para que possamos lhe enviar uma nova senha.</p>
 					<div class="row q-pa-md">
-						<div class="col-12"><q-input v-model="esqueceu.email" label="Email" bottom-slots :error-message="mostrarMsgErro($v.esqueceu.email)" @blur="$v.esqueceu.email.$touch" :error="$v.esqueceu.email.$error" ref="esqueceuEmail" v-on:keyup.enter="enviarEsqueceuSenha()"/></div>
+						<div class="col-12"><q-input v-model="esqueceu.email" label="Email" bottom-slots :error-message="mostrarMsgErro($v.esqueceu.email)" @blur="$v.esqueceu.email.$touch" :error="$v.esqueceu.email.$error" ref="esqueceuEmail" v-on:keyup.enter="enviarEsqueceuSenha()" /></div>
 					</div>
 				</q-card-section>
-				<q-separator/>
+				<q-separator />
 				<q-card-actions align="around">
-					<q-btn flat no-caps label="Enviar" color="primary" icon="check" @click="enviarEsqueceuSenha()"/>
+					<q-btn flat no-caps label="Enviar" color="primary" icon="check" @click="enviarEsqueceuSenha()" />
 				</q-card-actions>
 			</q-card>
 		</q-dialog>
@@ -66,10 +69,10 @@ export default {
 	},
 	validations: {
 		form: {
-			email: {required,email},
-			password: {required}
+			email: { required, email },
+			password: { required }
 		},
-		esqueceu: {email: {required,email}}
+		esqueceu: { email: { required, email } }
 	},
 	methods: {
 		async doLogin() {
@@ -77,15 +80,14 @@ export default {
 			if (this.$v.form.$error) return
 			this.$q.loading.show()
 			await this.$store.dispatch('limparStore')
-			var response = await this.executeMethod({url:'auth/login',method:'post',data:this.form})
+			var response = await this.executeMethod({ url: 'auth/login', method: 'post', data: this.form })
 			if (response) {
-				if (response.status===200) {
-					await this.$store.commit('setDados',{key:'login',value:response.data.login})
-					await this.$store.commit('setDados',{key:'usuario',value:response.data.usuario})
+				if (response.status === 200) {
+					await this.$store.commit('setDados', { key: 'login', value: response.data.login })
+					await this.$store.commit('setDados', { key: 'usuario', value: response.data.usuario })
 					this.$router.push('/')
-				}
-				else {
-					this.$q.notify({message:this.getObjectValue(response,['data','error','message'],'Não foi possível executar a solicitação!'),type:'negative'})
+				} else {
+					this.$q.notify({ message: this.getObjectValue(response, ['data', 'error', 'message'], 'Não foi possível executar a solicitação!'), type: 'negative' })
 				}
 			}
 			this.$q.loading.hide()
@@ -99,16 +101,13 @@ export default {
 			this.$v.esqueceu.$touch()
 			if (this.$v.esqueceu.$error) return
 			this.$q.loading.show()
-			var response = await this.executeMethod({url:'auth/forgot',method:'post',data:{email:this.esqueceu.email}})
-			if (response.status===200) {
-				this.$q.notify({message:response.data.message,type:'positive'})
+			var response = await this.executeMethod({ url: 'auth/forgot', method: 'post', data: { email: this.esqueceu.email } })
+			if (response.status === 200) {
+				this.$q.notify({ message: response.data.message, type: 'positive' })
 				this.modalEsqueceuSenha = false
-			}
-			else {
-				if (response.data.error && response.data.error.message)
-					this.$q.notify({message:(response.data.error.e ? response.data.error.e+'<br>' : '')+response.data.error.message,type:'negative',html:true})
-				else
-					this.$q.notify({message:'Não foi possível executar a solicitação!',type:'negative'})
+			} else {
+				if (response.data.error && response.data.error.message) this.$q.notify({ message: (response.data.error.e ? response.data.error.e + '<br>' : '') + response.data.error.message, type: 'negative', html: true })
+				else this.$q.notify({ message: 'Não foi possível executar a solicitação!', type: 'negative' })
 			}
 			this.$q.loading.hide()
 		}

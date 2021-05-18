@@ -41,7 +41,7 @@
 					<div class="col-xl-1 col-xs-3">
 						<q-input v-model="coleta.cep" label="CEP*" :loading="cepLoading" v-mask="'##.###-###'" :rules="[validatorRequired, val => val.length >= 10 || 'CEP inválido']" @blur="pesquisarCep(coleta)" :readonly="showBool"></q-input>
 					</div>
-					<div class="col-xl-3 col-xs-3">
+					<div class="col-xl-3 col-xs-6">
 						<q-input v-model="coleta.endereco" label="Rua*" :loading="cepLoading" :rules="[validatorRequired]" :readonly="showBool" @input="geocodeEndereco()" :debounce="1000"></q-input>
 					</div>
 					<div class="col-xl-1 col-xs-3">
@@ -57,7 +57,7 @@
 						<q-input v-model="coleta.cidade" label="Cidade*" :loading="cepLoading" :rules="[validatorRequired]" :readonly="showBool" @input="geocodeEndereco()" :debounce="1000"></q-input>
 					</div>
 					<div class="col-xl-1 col-xs-3">
-						<q-select v-model="coleta.estado" label="Estado*" :options="ufOptions" :loading="cepLoading" :rules="[validatorRequired]" @input="geocodeEndereco()"></q-select>
+						<q-select v-model="coleta.estado" label="Estado*" :options="ufOptions" :loading="cepLoading" :rules="[validatorRequired]" :readonly="showBool" @input="geocodeEndereco()"></q-select>
 					</div>
 					<div class="col-xl-2 col-xs-3">
 						<q-input v-model="coleta.ponto_referencia" label="Ponto de referência" :readonly="showBool"></q-input>
@@ -82,11 +82,10 @@
 									<div class="col-3">
 										<q-select v-model="endereco.retorno" :options="simNaoOptions" map-options emit-value label="Com Retorno" :rules="[validatorRequired]" :readonly="showBool" @input="calcularValorColeta()"></q-select>
 									</div>
-									<div class="col-xl-3"></div>
 									<div class="col-xl-1 col-xs-3">
 										<q-input v-model="endereco.cep" label="CEP*" :loading="cepLoading" v-mask="'##.###-###'" :rules="[validatorRequired, val => val.length >= 10 || 'CEP inválido']" @blur="pesquisarCep(endereco, index)" :readonly="showBool"></q-input>
 									</div>
-									<div class="col-xl-3 col-xs-3">
+									<div class="col-xl-3 col-xs-6">
 										<q-input v-model="endereco.endereco" label="Rua*" :loading="cepLoading" :rules="[validatorRequired]" :readonly="showBool" @input="geocodeEndereco(index)" :debounce="1000"></q-input>
 									</div>
 									<div class="col-xl-1 col-xs-3">
@@ -102,7 +101,7 @@
 										<q-input v-model="endereco.cidade" label="Cidade*" :loading="cepLoading" :rules="[validatorRequired]" :readonly="showBool" @input="geocodeEndereco(index)" :debounce="1000"></q-input>
 									</div>
 									<div class="col-xl-1 col-xs-3">
-										<q-select v-model="endereco.estado" label="Estado*" :options="ufOptions" :loading="cepLoading" :rules="[validatorRequired]" @input="geocodeEndereco(index)"></q-select>
+										<q-select v-model="endereco.estado" label="Estado*" :options="ufOptions" :loading="cepLoading" :rules="[validatorRequired]" :readonly="showBool" @input="geocodeEndereco(index)"></q-select>
 									</div>
 									<div class="col-xl-2 col-xs-3">
 										<q-input v-model="endereco.ponto_referencia" label="Ponto de referência" :readonly="showBool"></q-input>
@@ -351,7 +350,8 @@ export default {
 			configuracao: {},
 			pontoOrigem: this.coordsDefault,
 			pontoDestino: undefined,
-			pontosEntre: []
+			pontosEntre: [],
+			foraRaioViagem: false
 		}
 	},
 	computed: {
@@ -581,14 +581,15 @@ export default {
 			this.clienteOptions = [cliente]
 		},
 		async onSubmit() {
+			if (this.foraRaioViagem) {
+				this.$q.notify({ message: 'Não é possível fazer uma coleta nessa localização neste momento.', type: 'negative' })
+				return
+			}
 			var response = await this.executeMethod({ url: 'api/Coletas' + (this.coleta.id ? '/' + this.coleta.id : ''), method: this.coleta.id ? 'put' : 'post', data: this.coleta })
 			if (response.status === 200) {
 				if (this.usuarioPerfil === 'cliente') this.$router.push('/')
 				else this.$router.push('/cadastroColetas')
-				this.$q.notify({
-					message: 'Coleta cadastrado com sucesso.',
-					type: 'positive'
-				})
+				this.$q.notify({ message: 'Coleta cadastrado com sucesso.', type: 'positive' })
 			} else this.responseError(response)
 		},
 		onReset() {
@@ -621,10 +622,7 @@ export default {
 				})
 				.onOk(() => {
 					this.coleta.enderecosEntregas.splice(index, 1)
-					this.$q.notify({
-						message: 'Endereço de entrega removido com sucesso',
-						type: 'positive'
-					})
+					this.$q.notify({ message: 'Endereço de entrega removido com sucesso', type: 'positive' })
 					this.calcularValorColeta()
 				})
 		},
@@ -632,10 +630,7 @@ export default {
 			this.$q.dialog({ title: 'Confirmação', message: 'Tem certeza que deseja remover esta coleta? Esta ação é irreversível.', ok: 'Sim', cancel: 'Não' }).onOk(async () => {
 				var response = await this.executeMethod({ url: 'api/Coletas/' + this.usuario.id, method: 'delete' })
 				if (response.status === 200) {
-					this.$q.notify({
-						message: 'Coleta removido com sucesso',
-						type: 'positive'
-					})
+					this.$q.notify({ message: 'Coleta removido com sucesso', type: 'positive' })
 					this.$router.push('/cadastroColetas')
 				}
 			})
@@ -649,10 +644,7 @@ export default {
 					this.coleta = response.data
 					this.selecionarBoletins()
 				} else {
-					this.$q.notify({
-						message: 'Coleta não encontrado',
-						type: 'negative'
-					})
+					this.$q.notify({ message: 'Coleta não encontrado', type: 'negative' })
 					this.$router.push('/cadastroColetas')
 				}
 				this.showBool = this.$route.meta.show
@@ -673,6 +665,7 @@ export default {
 			this.calcularValorColeta(false)
 		},
 		async calcularValorColeta(testar, alterarValor) {
+			this.foraRaioViagem = false
 			this.pontoOrigem = this.coordsDefault
 			if (!this.testarEndereco(this.coleta) || this.coleta.enderecosEntregas.length === 0 || !this.testarEndereco(this.coleta.enderecosEntregas[0])) {
 				if (testar !== false) this.$q.notify({ message: 'É necessário inserir endereço de coleta e entrega para calcular o valor!', type: 'negative' })
@@ -694,13 +687,25 @@ export default {
 				}
 				this.pontosEntre = pontosEntre
 
+				let raioKmViagem = parseInt(this.configuracao.raio_km_viagem)
+				let totalKmCalculado = await this.calcularTotalKm(pontos)
+				if (totalKmCalculado.maior_distancia > raioKmViagem) {
+					this.foraRaioViagem = true
+					this.$q.notify({ message: 'Não é possível fazer uma coleta nessa localização neste momento.', type: 'negative' })
+					return
+				}
+
 				if (alterarValor !== false) {
 					let tipo = this.coleta.tipo_entrega === 'Expresso' ? 'expresso' : 'convencional'
+					tipo += totalKmCalculado.maior_distancia > parseInt(this.configuracao.raio_km_entrega_metropolitana) || totalKmCalculado.maior_distancia > raioKmViagem ? '_metropolitana' : ''
 					let veiculo = this.coleta.tipo_veiculo.toLowerCase() === 'caminhão' ? 'caminhao' : this.coleta.tipo_veiculo.toLowerCase()
-					let totalKm = await this.calcularTotalKm(pontos)
+					let totalKm = totalKmCalculado.total
 					let valorKm = parseInt(this.configuracao['entrega_' + tipo + '_km_minimo'])
 					let valorVeiculo = parseFloat(this.configuracao['entrega_' + tipo + '_km_' + veiculo])
 					let valorRetorno = parseFloat(this.configuracao['entrega_' + tipo + '_retorno_minimo'])
+					console.log('maiorDistancia', totalKmCalculado.maior_distancia)
+					console.log('raioKmViagem', raioKmViagem)
+					console.log('tipo', tipo)
 					console.log('veiculo', veiculo)
 					console.log('totalKm', totalKm)
 					console.log('valorKm', valorKm)
@@ -734,6 +739,11 @@ export default {
 			}
 		}
 		this.buscar()
+	},
+	watch: {
+		$route: function(a) {
+			this.showBool = a.path.indexOf('show') > -1
+		}
 	}
 }
 </script>

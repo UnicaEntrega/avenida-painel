@@ -168,6 +168,12 @@ export default ({app, Vue}) => {
 			validatorRequired(val) {
 				return !this.isBlank(val) || "Este campo é obrigatório."
 			},
+			validatorDate(val) {
+				return val.length === 10 && Vue.moment(val, 'DD/MM/YYYY').isValid() || "Esta data é inválida"
+			},
+			validatorTime(val) {
+				return val.length === 5 && Vue.moment('01/01/2000 '+val, 'DD/MM/YYYY HH:mm').isValid() || "Esta hora é inválida"
+			},
 			validatorBoletim(val) {
 				return val!=='0' || "Este campo é obrigatório."
 			},
@@ -184,6 +190,7 @@ export default ({app, Vue}) => {
 				this.$root.$emit('carregarTelaChat')
 			},
 			calcularTotalKm(pontos) {
+				let self = this
 				return new Promise(resolve=>{
 					this.$gmapApiPromiseLazy().then(()=>{
 						let origens = []
@@ -196,16 +203,25 @@ export default ({app, Vue}) => {
 								destinos.push(pontos[idx])
 							}
 						}
+						destinos.unshift(origens[0])
+						origens.unshift(self.coordsDefault)
 						new google.maps.DistanceMatrixService().getDistanceMatrix({
 							origins: origens,
 							destinations: destinos,
 							travelMode: 'DRIVING'
-						},function(response, status){
-							if (status!=='OK') resolve(0)
+						},function(response,status){
+							if (status!=='OK') resolve({total:0,maior_distancia:0})
 							let total = 0
-							for (let i in origens)
-								total += response.rows[i].elements[i].distance.value
-							resolve(total/1000)
+							let maior_distancia = 0
+							for (let i in origens) {
+								if (i==='0') {
+									for (let item of response.rows[0].elements)
+										if (item.distance.value>maior_distancia)
+											maior_distancia = item.distance.value
+								}
+								else total += response.rows[i].elements[i].distance.value
+							}
+							resolve({total:total/1000,maior_distancia:maior_distancia/1000})
 						})
 					})
 				})

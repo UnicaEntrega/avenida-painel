@@ -21,7 +21,7 @@
 						<q-input v-model="usuario.email" label="E-mail*" :rules="[validatorRequired, validatorEmail]" :readonly="showBool"></q-input>
 					</div>
 					<div class="col-3" v-if="!showBool">
-						<q-input v-model="usuario.password" type="password"  label="Senha*" :rules="[validatorRequired]"></q-input>
+						<q-input v-model="usuario.password" type="password" label="Senha*" :rules="[validatorRequired]"></q-input>
 					</div>
 					<div class="col-3">
 						<q-select v-model="usuario.perfil" label="Perfil" :options="perfilOptions" :rules="[validatorRequired]" map-options emit-value option-label="name" option-value="id" :readonly="showBool"></q-select>
@@ -45,69 +45,67 @@
 </template>
 <script>
 export default {
-	data () {
+	data() {
 		return {
 			perfilOptions: [],
 			showBool: false,
 			usuario: {
 				ativo: true,
-				email: "",
-				nome: "",
-				password: "",
+				email: '',
+				nome: '',
+				password: '',
 				perfil: ''
 			}
 		}
 	},
 	methods: {
 		async onSubmit() {
-			var response = await this.executeMethod({url:'api/Usuarios'+(this.usuario.id ? '/'+this.usuario.id : ''),method:this.usuario.id ? 'put' : 'post',data:this.usuario})
-			if (response.status===200) {
-				this.$router.push("/cadastroUsuarios");
+			var response = await this.executeMethod({ url: 'api/Usuarios' + (this.usuario.id ? '/' + this.usuario.id : ''), method: this.usuario.id ? 'put' : 'post', data: this.usuario })
+			if (response.status === 200) {
+				this.$router.push('/cadastroUsuarios')
 				this.$q.notify({
-					message: "Usuario cadastrado com sucesso.",
-					type: "positive"
+					message: 'Usuario cadastrado com sucesso.',
+					type: 'positive'
 				})
-			}
-			else this.responseError(response)
+			} else this.responseError(response)
 		},
 		onReset() {
-			if(!this.showBool && this.usuario.id) {
-				this.showBool = true;
+			if (!this.showBool && this.usuario.id) {
+				this.showBool = true
 			} else {
-				this.$router.push("/cadastroUsuarios");
+				this.$router.push('/cadastroUsuarios')
 			}
 		},
 		removerUsuario() {
-			this.$q.dialog({title:'Confirmação',message:'Tem certeza que deseja remover este usuário? Esta ação é irreversível.',ok:'Sim',cancel:'Não'}).onOk(async ()=>{
-        var response = await this.executeMethod({url:'api/Usuarios/'+this.usuario.id,method:'delete'})
-				if (response.status===200) {
+			this.$q.dialog({ title: 'Confirmação', message: 'Tem certeza que deseja remover este usuário? Esta ação é irreversível.', ok: 'Sim', cancel: 'Não' }).onOk(async () => {
+				var response = await this.executeMethod({ url: 'api/Usuarios/' + this.usuario.id, method: 'delete' })
+				if (response.status === 200) {
 					this.$q.notify({
-						message: "Usuario removido com sucesso",
-						type: "positive"
+						message: 'Usuario removido com sucesso',
+						type: 'positive'
 					})
-					this.$router.push("/cadastroUsuarios")
+					this.$router.push('/cadastroUsuarios')
 				}
 			})
 		}
 	},
 	async created() {
-		var response = await this.executeMethod({url:'api/Usuarios/perfis',method:'get'})
-		if (response.status===200){
-			this.perfilOptions = response.data.filter( tipoPerfil => tipoPerfil.name != "Usuário")
+		var response = await this.executeMethod({ url: 'api/Usuarios/perfis', method: 'get' })
+		if (response.status === 200) {
+			this.perfilOptions = response.data.filter(tipoPerfil => tipoPerfil.name != 'Usuário')
 		}
 		if (this.$route.params.id) {
-			response = await this.executeMethod({url:`api/Usuarios/show/${this.$route.params.id}`,method:'get'})
-			if (response.status===200) {
-				if (response.data.perfis && response.data.perfis.length>0) response.data.perfil = response.data.perfis[0].id
+			response = await this.executeMethod({ url: `api/Usuarios/show/${this.$route.params.id}`, method: 'get' })
+			if (response.status === 200) {
+				if (response.data.perfis && response.data.perfis.length > 0) response.data.perfil = response.data.perfis[0].id
 				delete response.data.perfis
 				this.usuario = response.data
-			}
-			else {
+			} else {
 				this.$q.notify({
-					message: "Usuario não encontrado",
-					type: "negative"
+					message: 'Usuario não encontrado',
+					type: 'negative'
 				})
-				this.$router.push("/cadastroUsuarios")
+				this.$router.push('/cadastroUsuarios')
 			}
 			this.showBool = this.$route.meta.show
 		}
