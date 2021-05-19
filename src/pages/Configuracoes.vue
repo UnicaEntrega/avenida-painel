@@ -443,6 +443,7 @@ export default {
 		}
 	},
 	async created() {
+		if (this.usuarioPerfil === 'cliente') this.$router.push('/')
 		let response = await this.executeMethod({ url: 'api/Configuracoes', method: 'get' })
 		if (response.status === 200) {
 			for (let item of response.data.datasExcecoes) item.data = this.formatarDataHora(item.data, 'DD/MM/YYYY')

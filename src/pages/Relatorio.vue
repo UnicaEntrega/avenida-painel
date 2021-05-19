@@ -197,6 +197,9 @@ export default {
 		exportar(tipo) {
 			window.open(encodeURI(`${process.env.API_URL}api/Coletas/Relatorio?token=${this.getLogin.token}&export=${tipo}&filter=` + JSON.stringify({ ...this.pesquisa, ...this.pagination })), '_blank')
 		}
+	},
+	created() {
+		if (this.usuarioPerfil === 'cliente') this.$router.push('/')
 	}
 }
 </script>

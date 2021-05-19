@@ -104,6 +104,9 @@ export default {
 		showMotoboy(id) {
 			this.$router.push('cadastroMotoboys/show/' + id)
 		}
+	},
+	created() {
+		if (this.usuarioPerfil === 'cliente') this.$router.push('/')
 	}
 }
 </script>

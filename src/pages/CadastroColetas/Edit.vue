@@ -63,7 +63,6 @@
 						<q-input v-model="coleta.ponto_referencia" label="Ponto de referência" :readonly="showBool"></q-input>
 					</div>
 				</q-card-section>
-
 				<q-card-section>
 					<q-item-label class="col-12 text-h6 text-primary">
 						Endereços de Entrega
@@ -115,7 +114,55 @@
 						</q-item>
 					</q-list>
 				</q-card-section>
-
+				<q-card-section class="row q-col-gutter-sm" v-if="usuarioPerfil === 'cliente'">
+					<q-item-label class="col-12 text-h6 text-primary">
+						Agendar entrega
+					</q-item-label>
+					<div class="col-12">
+						<q-checkbox v-model="coleta.agendar_entrega" label="Desejo agendar um horário para essa entrega" :readonly="showBool" />
+					</div>
+					<div class="col-md-3 col-xs-12" v-if="coleta.agendar_entrega">
+						<q-input v-model="data_entrega" label="Data*" v-mask="'##/##/####'" :rules="[validatorRequired, validatorDate]" @input="verificarAgendamento()">
+							<q-icon slot="prepend" name="event"></q-icon>
+							<q-popup-proxy ref="data_entrega">
+								<q-card>
+									<q-date
+										v-model="data_entrega"
+										mask="DD/MM/YYYY"
+										:options="
+											date =>
+												getMoment()(date).valueOf() >=
+												getMoment()(new Date())
+													.set({ hours: 0, minutes: 0, seconds: 0, milliseconds: 0 })
+													.valueOf()
+										"
+										@input="
+											verificarAgendamento()
+											$refs.data_entrega.hide()
+										"
+									></q-date>
+								</q-card>
+							</q-popup-proxy>
+						</q-input>
+					</div>
+					<div class="col-md-3 col-xs-12" v-if="coleta.agendar_entrega">
+						<q-input v-model="hora_entrega" label="Hora*" v-mask="'##:##'" :rules="[validatorRequired, validatorTime]" class="full-width" color="primary" @input="verificarAgendamento()">
+							<q-icon slot="prepend" name="schedule"></q-icon>
+							<q-popup-proxy ref="hora_entrega">
+								<q-card>
+									<q-time
+										v-model="hora_entrega"
+										format24h
+										@input="
+											verificarAgendamento()
+											$refs.hora_entrega.hide()
+										"
+									></q-time>
+								</q-card>
+							</q-popup-proxy>
+						</q-input>
+					</div>
+				</q-card-section>
 				<q-card-section class="row q-col-gutter-sm">
 					<div class="col-12 q-pb-md">
 						<q-input v-model="coleta.observacao" type="textarea" label="Observações" :readonly="showBool" :autogrow="showBool"></q-input>
@@ -298,8 +345,12 @@ export default {
 				latitude: 0,
 				longitude: 0,
 				cliente_boletim_id: '',
+				agendar_entrega: false,
+				data_hora_entrega: '',
 				enderecosEntregas: []
 			},
+			data_entrega: '',
+			hora_entrega: '',
 			cepLoading: false,
 			showBool: false,
 			clienteOptions: [],
@@ -585,6 +636,11 @@ export default {
 				this.$q.notify({ message: 'Não é possível fazer uma coleta nessa localização neste momento.', type: 'negative' })
 				return
 			}
+			if (!this.verificarAgendamento(false)) {
+				this.$q.notify({ message: 'Agendamento incorreto.', type: 'negative' })
+				return
+			}
+			this.coleta.data_hora_entrega = this.coleta.agendar_entrega ? this.formatarDataHora(this.data_entrega + ' ' + this.hora_entrega, 'DD/MM/YYYY HH:mm', 'YYYY-MM-DD HH:mm') : ''
 			var response = await this.executeMethod({ url: 'api/Coletas' + (this.coleta.id ? '/' + this.coleta.id : ''), method: this.coleta.id ? 'put' : 'post', data: this.coleta })
 			if (response.status === 200) {
 				if (this.usuarioPerfil === 'cliente') this.$router.push('/')
@@ -641,6 +697,10 @@ export default {
 				if (response.status === 200) {
 					if (response.data.cliente) this.clienteOptions = [response.data.cliente]
 					if (response.data.motoboy) this.motoboyOptions = [response.data.motoboy]
+					if (response.data.data_hora_entrega) {
+						this.data_entrega = this.formatarDataHora(response.data.data_hora_entrega, 'DD/MM/YYYY')
+						this.hora_entrega = this.formatarDataHora(response.data.data_hora_entrega, 'HH:mm')
+					}
 					this.coleta = response.data
 					this.selecionarBoletins()
 				} else {
@@ -726,6 +786,98 @@ export default {
 					console.log('total', p3, p5, this.coleta.valor_entrega)
 				}
 			}
+		},
+		verificarAgendamento(mostrarMsg) {
+			let self = this
+			function msg() {
+				self.$q.notify({ message: 'Agendamento incorreto.', type: 'negative' })
+			}
+			if (this.data_entrega && this.hora_entrega) {
+				let m = this.getMoment()
+				let dt = m(this.data_entrega + ' ' + this.hora_entrega, 'DD/MM/YYYY HH:mm')
+				//data/hora menor que hoje
+				if (dt.valueOf() < new Date().getTime()) {
+					if (mostrarMsg !== false) msg()
+					return false
+				}
+				let horarioSemana = false
+				let hora_entrega = this.hora_entrega + ':00'
+				let diaSemanaOpt = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado']
+				let horarios = {}
+				let dti = m(new Date()).startOf('day')
+				let dthi = dti.format('DD/MM/YYYY')
+				let hora = m(new Date()).format('HH:mm') + ':00'
+				while (dti.valueOf() <= dt.valueOf()) {
+					//excecao
+					let horarioExcecao = false
+					let dtfi = dti.format('DD/MM/YYYY')
+					for (let item of this.configuracao.datasExcecoes) {
+						if (m(item.data).format('DD/MM/YYYY') === dtfi) {
+							horarioExcecao = true
+							if (item.hora_inicio !== '00:00:00' && item.hora_termino !== '00:00:00') {
+								let h = { i: item.hora_inicio, f: item.hora_termino }
+								if (dtfi === dthi) {
+									if (item.hora_inicio <= hora && item.hora_termino >= hora) h.i = hora
+									if (item.hora_termino < hora) h = undefined
+								}
+								if (dtfi === this.data_entrega) {
+									if (item.hora_inicio <= hora_entrega && item.hora_termino >= hora_entrega) {
+										h.f = hora_entrega
+										horarioSemana = true
+									}
+									if (item.hora_inicio > hora_entrega) h = undefined
+								}
+								let h1 = horarios[dtfi] || []
+								if (h) h1.push(h)
+								horarios[dtfi] = h1
+							}
+						}
+					}
+					//sem excecao
+					if (!horarioExcecao) {
+						for (let item of this.configuracao.agendamentos) {
+							let diaSemana = diaSemanaOpt[dti.day()]
+							if (item['inicio_' + diaSemana] !== '00:00:00' && item['termino_' + diaSemana] !== '00:00:00') {
+								let h = { i: item['inicio_' + diaSemana], f: item['termino_' + diaSemana] }
+								if (dtfi === dthi) {
+									if (item['inicio_' + diaSemana] <= hora && item['termino_' + diaSemana] >= hora) h.i = hora
+									if (item['termino_' + diaSemana] < hora) h = undefined
+								}
+								if (dtfi === this.data_entrega) {
+									if (item['inicio_' + diaSemana] <= hora_entrega && item['termino_' + diaSemana] >= hora_entrega) {
+										h.f = hora_entrega
+										horarioSemana = true
+									}
+									if (item['inicio_' + diaSemana] > hora_entrega) h = undefined
+								}
+								let h1 = horarios[dtfi] || []
+								if (h) h1.push(h)
+								horarios[dtfi] = h1
+							}
+						}
+					}
+					dti.add(1, 'day')
+				}
+				//horario fora da faixa
+				if (!horarioSemana) {
+					if (mostrarMsg !== false) msg()
+					return false
+				}
+				//testar tempo
+				let tempo = parseInt(this.configuracao.espaco_minimo_agendamento_pedido) * 60
+				let tempoTotal = 0
+				for (let index in horarios) {
+					for (let item of horarios[index]) {
+						tempoTotal += m('01/01/2000 ' + item.f, 'DD/MM/YYYY HH:mm:ss').diff(m('01/01/2000 ' + item.i, 'DD/MM/YYYY HH:mm:ss'), 'minutes')
+						if (tempoTotal > tempo) return true
+					}
+				}
+				if (tempo > tempoTotal) {
+					if (mostrarMsg !== false) msg()
+					return false
+				}
+			}
+			return true
 		}
 	},
 	async created() {
