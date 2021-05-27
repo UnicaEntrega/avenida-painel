@@ -14,8 +14,9 @@ export default ({app, Vue}) => {
 			tipoVeiculoOptions() {return ['Moto','Carro','Van','Caminhão']},
 			coletaStatusOptions() {return ['Aberto','Encaminhado','Em Coleta','Em Entrega','Entregue','Finalizado','Cancelado']},
 			tipoEntregaOptions() {return [{label:'Convencional (em até 30 minutos)',value:'Convencional'},{label:'Expresso (em até 20 minutos)',value:'Expresso'}]},
-			formaPagamentoOptions() {return [{label:'Boletim de Transporte',value:'Boletim de Transporte'},{label:'Pix',value:'Pix'},{label:'Débito (na máquina)',value:'Débito'},{label:'Crédito (na máquina)',value:'Crédito'},{label:'Dinheiro',value:'Dinheiro'},{label:'Depósito',value:'Depósito'}]},
+			formaPagamentoOptions() {return [{label:'Boletim de Transporte',value:'Boletim de Transporte'},{label:'Boleto',value:'Boleto'},{label:'Cartão de Crédito',value:'Cartão de Crédito'},{label:'Crédito (na máquina)',value:'Crédito'},{label:'Débito (na máquina)',value:'Débito'},{label:'Depósito',value:'Depósito'},{label:'Dinheiro',value:'Dinheiro'},{label:'Pix',value:'Pix'}]},
 			simNaoOptions() {return [{label:'Sim',value:'1'},{label:'Não',value:'0'}]},
+			statusPagamentoOptions() {return ['Pendente','Cancelado','Confirmado']},
 			usuarioPerfil() {return this.getUsuario.perfis && this.getUsuario.perfis.length>0 ? this.getUsuario.perfis[0].slug : ''},
 			coordsDefault() {return {lat:-25.3994957,lng:-49.2386427}}
 		},
@@ -210,18 +211,14 @@ export default ({app, Vue}) => {
 							destinations: destinos,
 							travelMode: 'DRIVING'
 						},function(response,status){
-							if (status!=='OK') resolve({total:0,maior_distancia:0})
+							if (status!=='OK') resolve({total:0,distancia_coleta:0})
 							let total = 0
-							let maior_distancia = 0
+							let distancia_coleta = 0
 							for (let i in origens) {
-								if (i==='0') {
-									for (let item of response.rows[0].elements)
-										if (item.distance.value>maior_distancia)
-											maior_distancia = item.distance.value
-								}
+								if (i==='0') distancia_coleta = response.rows[0].elements[0].distance.value
 								else total += response.rows[i].elements[i].distance.value
 							}
-							resolve({total:total/1000,maior_distancia:maior_distancia/1000})
+							resolve({total:total/1000,distancia_coleta:distancia_coleta/1000})
 						})
 					})
 				})
