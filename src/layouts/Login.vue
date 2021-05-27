@@ -1,6 +1,40 @@
 <template>
-	<div class="column justify-center" style="height: 100vh">
-		<div class="col-4 row justify-center">
+	<q-layout>
+		<q-page-container>
+			<q-page class="grid-login">
+				<div class="grid-a align-center bg-primary">
+					<q-img src="images/avenida_web_marca_bco.png" width="150px" no-default-spinner></q-img>
+				</div>
+				<div class="grid-c q-px-xl bg-primary">
+					<q-form @submit="onSubmit" class="q-gutter-y-md">
+						<h1 class="text-center text-h6 text-white">Faça o seu Login</h1>
+						<div class="q-gutter-y-sm">
+							<q-input dark dense standout ref="email" type="email" v-model="form.email" label="E-mail" :rules="[validadorEmail, validadorRequerido]" @keyup.enter="$refs.password.focus()" autofocus></q-input>
+							<q-input dark dense standout ref="password" type="password" v-model="form.password" label="Senha" :rules="[validadorRequerido]"></q-input>
+							<div class="align-center q-mt-none">
+								<q-btn label="Esqueci minha senha" color="white" no-caps flat dense @click="abrirModalEsqueceuSenha()"></q-btn>
+							</div>
+						</div>
+						<div class="row align-center bg-primary">
+							<div class="col-md-10 col-xs-12">
+								<q-btn dark class="full-width q-px-lg" type="submit" label="LOGIN" color="white" text-color="primary" no-caps></q-btn>
+							</div>
+						</div>
+						<div class="row align-center bg-primary">
+							<div class="col-md-10 col-xs-12">
+								<q-btn dark class="full-width q-px-lg" to="/cadastro" label="FAÇA SEU CADASTRO" color="white" no-caps outline></q-btn>
+							</div>
+						</div>
+					</q-form>
+				</div>
+				<div class="grid-b bg-primary">
+					<q-img class="fit" src="images/placeholder-login-bg.jpg">
+						<div class="fit align-center" style="background-color: rgba(0,0,0, 0.6)"></div>
+					</q-img>
+				</div>
+			</q-page>
+		</q-page-container>
+		<!-- <div class="col-4 row justify-center">
 			<div class="col-10 offset-1 text-center text-h6 no-margin" v-if="expirado">O link usado está expirado!<br />Clique em "Esqueci minha senha" se ainda precisar recuperar ou criar sua senha.</div>
 			<q-card class="col-3">
 				<q-card-section class="primary-gradient text-white text-h5 text-center">
@@ -26,7 +60,7 @@
 					</q-item>
 				</q-card-section>
 			</q-card>
-		</div>
+		</div> -->
 		<!-- Modal Esqueceu Senha -->
 		<q-dialog v-model="modalEsqueceuSenha" @show="$refs.esqueceuEmail.focus()">
 			<q-card>
@@ -39,7 +73,7 @@
 				<q-card-section>
 					<p>Informe seu e-mail de cadastro para que possamos lhe enviar uma nova senha.</p>
 					<div class="row q-pa-md">
-						<div class="col-12"><q-input v-model="esqueceu.email" label="Email" bottom-slots :error-message="mostrarMsgErro($v.esqueceu.email)" @blur="$v.esqueceu.email.$touch" :error="$v.esqueceu.email.$error" ref="esqueceuEmail" v-on:keyup.enter="enviarEsqueceuSenha()" /></div>
+						<div class="col-12"><q-input v-model="esqueceu.email" label="Email" bottom-slots :rules="[validadorEmail, validadorRequerido]" ref="esqueceuEmail" @keyup.enter="enviarEsqueceuSenha()" /></div>
 					</div>
 				</q-card-section>
 				<q-separator />
@@ -48,10 +82,10 @@
 				</q-card-actions>
 			</q-card>
 		</q-dialog>
-	</div>
+	</q-layout>
 </template>
 <script>
-import { required, email } from 'vuelidate/lib/validators'
+import { validadorEmail, validadorRequerido } from 'src/services/validador.js'
 export default {
 	name: 'Login',
 	data() {
@@ -67,17 +101,12 @@ export default {
 			expirado: false
 		}
 	},
-	validations: {
-		form: {
-			email: { required, email },
-			password: { required }
-		},
-		esqueceu: { email: { required, email } }
-	},
 	methods: {
-		async doLogin() {
-			this.$v.form.$touch()
-			if (this.$v.form.$error) return
+		validadorEmail,
+		validadorRequerido,
+		async onSubmit() {
+			// this.$v.form.$touch()
+			// if (this.$v.form.$error) return
 			this.$q.loading.show()
 			await this.$store.dispatch('limparStore')
 			var response = await this.executeMethod({ url: 'auth/login', method: 'post', data: this.form })
@@ -95,11 +124,10 @@ export default {
 		abrirModalEsqueceuSenha() {
 			this.modalEsqueceuSenha = true
 			this.esqueceu.email = this.form.email
-			this.$v.esqueceu.$reset()
 		},
 		async enviarEsqueceuSenha() {
-			this.$v.esqueceu.$touch()
-			if (this.$v.esqueceu.$error) return
+			// this.$v.esqueceu.$touch()
+			// if (this.$v.esqueceu.$error) return
 			this.$q.loading.show()
 			var response = await this.executeMethod({ url: 'auth/forgot', method: 'post', data: { email: this.esqueceu.email } })
 			if (response.status === 200) {
@@ -112,12 +140,11 @@ export default {
 			this.$q.loading.hide()
 		}
 	},
-	mounted() {
-		this.$refs.email.focus()
-	},
 	created() {
 		if (!this.isBlank(this.getLogin.token)) this.$router.push('/')
-		else this.expirado = this.$route.query.expirado
+
+		if (this.$route.query.expirado) this.$q.notify({ type: 'negative', message: 'O link utilizado está expirado! Clique em "Esqueci minha senha" se ainda precisar recuperar ou criar sua senha.' })
+		else if (this.$route.query.sucesso) this.$q.notify({ type: 'positive', message: 'Sua senha foi alterada com sucesso' })
 	}
 }
 </script>

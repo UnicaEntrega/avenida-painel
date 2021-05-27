@@ -2,74 +2,85 @@
 	<q-layout view="hHh Lpr lFf">
 		<q-page-container>
 			<transition mode="out-in" enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
-				<q-card>
-					<q-form @submit="onSubmit" @reset="onReset" class="q-gutter-y-md">
-						<q-card-section class="row">
-							<div class="col-3"><q-btn label="Voltar" icon="keyboard_arrow_left" type="reset" color="primary" flat /></div>
-							<div class="col-6 text-center text-h6 text-primary"><q-img src="images/avenida_web_simbolo.png" style="width: 50px" /><br />Cadastro de novo cliente</div>
-							<div class="col-3 text-right"><q-btn :label="step === 1 ? 'Avançar' : 'Concluir'" :icon-right="step === 1 ? 'keyboard_arrow_right' : ''" :icon="step === 1 ? '' : 'save'" type="submit" color="primary"></q-btn></div>
-						</q-card-section>
-						<q-separator></q-separator>
-						<q-card-section class="row q-col-gutter-sm" v-show="step === 1">
-							<div class="col-3">
-								<q-input v-model="cliente.nome" label="Nome*" :rules="[validatorRequired]"></q-input>
-							</div>
-							<div class="col-3">
-								<q-input v-model="cliente.cpf_cnpj" label="CPF/CNPJ*" v-mask="['###.###.###-##', '##.###.###/####-##']" :rules="[validatorRequired, val => (val.length == 14 && testarCpf(val)) || (val.length == 18 && testarCnpj(val)) || 'CPF/CNPJ inválido']"></q-input>
-							</div>
-							<div class="col-3">
-								<q-input v-model="cliente.telefone" label="Telefone*" v-mask="['(##) ####-####', '(##) #####-####']" :rules="[validatorRequired, val => val.length >= 14 || 'Telefone incompleto']"></q-input>
-							</div>
-							<div class="col-3">
-								<q-input v-model="cliente.email" label="E-mail*" :rules="[validatorRequired, validatorEmail]"></q-input>
-							</div>
-						</q-card-section>
-						<q-card-section class="row q-col-gutter-sm" v-show="step === 1">
-							<q-item-label class="col-12 text-h6 text-primary">
-								Endereço
-							</q-item-label>
-							<div class="col-xl-1 col-xs-3">
-								<q-input v-model="cliente.cep" label="CEP*" :loading="cepLoading" v-mask="'##.###-###'" :rules="[validatorRequired, val => val.length >= 10 || 'CEP inválido']" @blur="pesquisarCep"></q-input>
-							</div>
-							<div class="col-xl-3 col-xs-6">
-								<q-input v-model="cliente.endereco" label="Rua*" :loading="cepLoading" :rules="[validatorRequired]"></q-input>
-							</div>
-							<div class="col-xl-1 col-xs-3">
-								<q-input v-model="cliente.endereco_numero" label="Número" :loading="cepLoading" ref="endereco_numero"></q-input>
-							</div>
-							<div class="col-xl-2 col-xs-3">
-								<q-input v-model="cliente.complemento" label="Complemento" :loading="cepLoading"></q-input>
-							</div>
-							<div class="col-xl-2 col-xs-3">
-								<q-input v-model="cliente.bairro" label="Bairro*" :loading="cepLoading" :rules="[validatorRequired]"></q-input>
-							</div>
-							<div class="col-xl-2 col-xs-3">
-								<q-input v-model="cliente.cidade" label="Cidade*" :loading="cepLoading" :rules="[validatorRequired]"></q-input>
-							</div>
-							<div class="col-xl-1 col-xs-3">
-								<q-select v-model="cliente.estado" label="Estado*" :options="ufOptions" :loading="cepLoading" :rules="[validatorRequired]"></q-select>
-							</div>
-						</q-card-section>
-						<q-card-section class="row q-col-gutter-sm" v-if="step === 2">
-							<div class="col-6">
-								<q-input type="password" v-model="password" label="Senha*" :rules="[validatorRequired]"></q-input>
-							</div>
-							<div class="col-6">
-								<q-input
-									type="password"
-									v-model="password2"
-									label="Repita a senha*"
-									:rules="[
-										validatorRequired,
-										val => {
-											return val === password || 'As senhas não são iguais'
-										}
-									]"
-								></q-input>
-							</div>
-						</q-card-section>
-					</q-form>
-				</q-card>
+				<q-page class="row items-start justify-center padding-page bg-primary">
+					<div class="col-12 align-center bg-primary q-ma-md">
+						<q-img src="images/avenida_web_marca_bco.png" width="150px" no-default-spinner></q-img>
+					</div>
+					<q-card class="padding-page">
+						<q-form @submit="onSubmit" @reset="onReset" class="q-gutter-y-md">
+							<h1 class="text-center text-h5 text-primary" v-if="step === 1">Cadastro de novo cliente</h1>
+							<h1 class="text-center text-h5 text-primary" v-else>Cadastro sua senha</h1>
+							<q-card-section class="row q-col-gutter-sm" v-show="step === 1">
+								<q-item-label class="col-12 text-h6 text-primary">
+									<q-icon name="person" size="md" class="q-mr-sm" />
+									Dados Pessoais
+								</q-item-label>
+								<div class="col-12 col-sm-7 col-md-4">
+									<q-input v-model="cliente.nome" label="Nome*" :rules="[validatorRequired]"></q-input>
+								</div>
+								<div class="col-6 col-sm-5 col-md-3">
+									<q-input v-model="cliente.cpf_cnpj" label="CPF/CNPJ*" v-mask="['###.###.###-##', '##.###.###/####-##']" :rules="[validatorRequired, val => (val.length == 14 && testarCpf(val)) || (val.length == 18 && testarCnpj(val)) || 'CPF/CNPJ inválido']"></q-input>
+								</div>
+								<div class="col-6 col-sm-5 col-md-2">
+									<q-input v-model="cliente.telefone" label="Telefone*" v-mask="['(##) ####-####', '(##) #####-####']" :rules="[validatorRequired, val => val.length >= 14 || 'Telefone incompleto']"></q-input>
+								</div>
+								<div class="col-12 col-sm-7 col-md-3">
+									<q-input v-model="cliente.email" label="E-mail*" :rules="[validatorRequired, validatorEmail]"></q-input>
+								</div>
+							</q-card-section>
+							<q-card-section class="row q-col-gutter-sm" v-show="step === 1">
+								<q-item-label class="col-12 text-h6 text-primary">
+									<q-icon name="map" size="md" class="q-mr-sm" />
+									Endereço
+								</q-item-label>
+								<div class="col-12 col-sm-3 col-md-2">
+									<q-input v-model="cliente.cep" label="CEP*" :loading="cepLoading" v-mask="'##.###-###'" :rules="[validatorRequired, val => val.length >= 10 || 'CEP inválido']" @blur="pesquisarCep"></q-input>
+								</div>
+								<div class="col-9 col-sm-9 col-md-8">
+									<q-input v-model="cliente.endereco" label="Rua*" :loading="cepLoading" :rules="[validatorRequired]"></q-input>
+								</div>
+								<div class="col-3 col-sm-3 col-md-2">
+									<q-input v-model="cliente.endereco_numero" label="Número" :loading="cepLoading" ref="endereco_numero"></q-input>
+								</div>
+								<div class="col-12 col-sm-9 col-md-4">
+									<q-input v-model="cliente.complemento" label="Complemento" :loading="cepLoading"></q-input>
+								</div>
+								<div class="col-12 col-sm-5 col-md-3">
+									<q-input v-model="cliente.bairro" label="Bairro*" :loading="cepLoading" :rules="[validatorRequired]"></q-input>
+								</div>
+								<div class="col-8 col-sm-4 col-md-3">
+									<q-input v-model="cliente.cidade" label="Cidade*" :loading="cepLoading" :rules="[validatorRequired]"></q-input>
+								</div>
+								<div class="col-4 col-sm-3 col-md-2">
+									<q-select v-model="cliente.estado" label="Estado*" :options="ufOptions" :loading="cepLoading" :rules="[validatorRequired]"></q-select>
+								</div>
+							</q-card-section>
+							<q-card-section class="row q-col-gutter-sm" v-if="step === 2">
+								<div class="col-12">
+									<q-input type="password" v-model="password" label="Senha*" :rules="[validatorRequired]"></q-input>
+								</div>
+								<div class="col-12">
+									<q-input
+										type="password"
+										v-model="password2"
+										label="Repita a senha*"
+										:rules="[
+											validatorRequired,
+											val => {
+												return val === password || 'As senhas não são iguais'
+											}
+										]"
+									></q-input>
+								</div>
+							</q-card-section>
+							<q-card-actions class="row justify-between">
+								<q-btn label="Voltar" icon="keyboard_arrow_left" type="reset" color="primary" flat />
+								<q-btn label="Avançar" icon-right="keyboard_arrow_right" type="submit" color="primary" v-if="step === 1" />
+								<q-btn label="Concluir" icon="save" type="submit" color="primary" v-else />
+							</q-card-actions>
+						</q-form>
+					</q-card>
+				</q-page>
 			</transition>
 		</q-page-container>
 	</q-layout>

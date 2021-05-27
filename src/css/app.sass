@@ -68,3 +68,40 @@ a
 
 .text-caption
 	line-height: 0.75rem
+
+.grid-a
+	grid-area: a
+.grid-b
+	grid-area: b
+.grid-c
+	grid-area: c
+.grid-d
+	grid-area: d
+.grid-e
+	grid-area: e
+.grid-f
+	grid-area: f
+.grid-g
+	grid-area: g
+
+.grid-login
+	display: grid
+	grid-template-areas: "a b" "c b" "c b"
+	grid-template-rows: 30vh 60vh 10vh
+
+@media only screen and (max-width: 900px)
+	.grid-login
+		grid-template-columns: 1fr 0fr
+	.padding-page
+		padding: 12px
+
+@media only screen and (min-width: 901px)
+	.grid-login
+		grid-template-columns: 4fr 8fr
+	.padding-page
+		padding: 24px
+
+.align-center
+	display: flex
+	justify-content: center
+	align-items: center
