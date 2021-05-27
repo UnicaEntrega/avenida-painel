@@ -119,7 +119,7 @@
 						Agendar entrega
 					</q-item-label>
 					<div class="col-12">
-						<q-checkbox v-model="coleta.agendar_entrega" label="Desejo agendar um horário para essa entrega" :readonly="showBool" />
+						<q-checkbox v-model="coleta.agendar_entrega" label="Desejo agendar um horário para essa entrega" :disable="showBool" @input="carregarDataHora" />
 					</div>
 					<div class="col-md-3 col-xs-12" v-if="coleta.agendar_entrega">
 						<q-input v-model="data_entrega" label="Data*" v-mask="'##/##/####'" :rules="[validatorRequired, validatorDate]" @input="verificarAgendamento()">
@@ -129,13 +129,7 @@
 									<q-date
 										v-model="data_entrega"
 										mask="DD/MM/YYYY"
-										:options="
-											date =>
-												getMoment()(date).valueOf() >=
-												getMoment()(new Date())
-													.set({ hours: 0, minutes: 0, seconds: 0, milliseconds: 0 })
-													.valueOf()
-										"
+										:options="dataEntregaOptions"
 										@input="
 											verificarAgendamento()
 											$refs.data_entrega.hide()
@@ -152,6 +146,7 @@
 								<q-card>
 									<q-time
 										v-model="hora_entrega"
+										:options="selecionarHorario"
 										format24h
 										@input="
 											verificarAgendamento()
@@ -193,6 +188,9 @@
 					</div>
 					<div class="col-3" v-if="usuarioPerfil !== 'cliente'">
 						<q-input v-model="coleta.comissao" label="Porcentagem de Comissão" :rules="[validatorRequired]" :readonly="showBool" mask="#,##" fill-mask="0" reverse-fill-mask suffix="%"></q-input>
+					</div>
+					<div class="col-3" v-if="(usuarioPerfil === 'cliente' && showBool) || usuarioPerfil !== 'cliente'">
+						<q-select v-model="coleta.status_pagamento" :options="statusPagamentoOptions" label="Status de pagamento*" :rules="usuarioPerfil === 'cliente' ? [] : [validatorRequired]" :readonly="showBool"></q-select>
 					</div>
 					<div class="col-12 q-pb-md" v-if="showBool && !isBlank(coleta.observacao_cancelamento)">
 						<q-input v-model="coleta.observacao_cancelamento" type="textarea" label="Observações de cancelamento" :readonly="showBool" :autogrow="showBool"></q-input>
@@ -347,6 +345,7 @@ export default {
 				cliente_boletim_id: '',
 				agendar_entrega: false,
 				data_hora_entrega: '',
+				status_pagamento: 'Pendente',
 				enderecosEntregas: []
 			},
 			data_entrega: '',
@@ -402,7 +401,9 @@ export default {
 			pontoOrigem: this.coordsDefault,
 			pontoDestino: undefined,
 			pontosEntre: [],
-			foraRaioViagem: false
+			foraRaioViagem: false,
+			dataEntregaOptions: [],
+			horarios: {}
 		}
 	},
 	computed: {
@@ -643,8 +644,10 @@ export default {
 			this.coleta.data_hora_entrega = this.coleta.agendar_entrega ? this.formatarDataHora(this.data_entrega + ' ' + this.hora_entrega, 'DD/MM/YYYY HH:mm', 'YYYY-MM-DD HH:mm') : ''
 			var response = await this.executeMethod({ url: 'api/Coletas' + (this.coleta.id ? '/' + this.coleta.id : ''), method: this.coleta.id ? 'put' : 'post', data: this.coleta })
 			if (response.status === 200) {
-				if (this.usuarioPerfil === 'cliente') this.$router.push('/')
-				else this.$router.push('/cadastroColetas')
+				if (this.usuarioPerfil === 'cliente') {
+					if (response.data.url) window.open(response.data.url, '_blank')
+					this.$router.push('/')
+				} else this.$router.push('/cadastroColetas')
 				this.$q.notify({ message: 'Coleta cadastrado com sucesso.', type: 'positive' })
 			} else this.responseError(response)
 		},
@@ -749,7 +752,7 @@ export default {
 
 				let raioKmViagem = parseInt(this.configuracao.raio_km_viagem)
 				let totalKmCalculado = await this.calcularTotalKm(pontos)
-				if (totalKmCalculado.maior_distancia > raioKmViagem) {
+				if (totalKmCalculado.distancia_coleta > raioKmViagem) {
 					this.foraRaioViagem = true
 					this.$q.notify({ message: 'Não é possível fazer uma coleta nessa localização neste momento.', type: 'negative' })
 					return
@@ -763,7 +766,7 @@ export default {
 					let valorKm = parseInt(this.configuracao['entrega_' + tipo + '_km_minimo'])
 					let valorVeiculo = parseFloat(this.configuracao['entrega_' + tipo + '_km_' + veiculo])
 					let valorRetorno = parseFloat(this.configuracao['entrega_' + tipo + '_retorno_minimo'])
-					console.log('maiorDistancia', totalKmCalculado.maior_distancia)
+					console.log('distancia_coleta', totalKmCalculado.distancia_coleta)
 					console.log('raioKmViagem', raioKmViagem)
 					console.log('tipo', tipo)
 					console.log('veiculo', veiculo)
@@ -786,6 +789,72 @@ export default {
 					console.log('total', p3, p5, this.coleta.valor_entrega)
 				}
 			}
+		},
+		carregarDataHora() {
+			let m = this.getMoment()
+			let diaSemanaOpt = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado']
+			this.horarios = {}
+			let dti = m(new Date()).startOf('day')
+			let dtf = m(new Date())
+				.add(6, 'month')
+				.startOf('day')
+			while (dti.valueOf() <= dtf.valueOf()) {
+				//excecao
+				let horarioExcecao = false
+				let dtfi = dti.format('DD/MM/YYYY')
+				for (let item of this.configuracao.datasExcecoes) {
+					if (m(item.data).format('DD/MM/YYYY') === dtfi) {
+						horarioExcecao = true
+						if (item.hora_inicio !== '00:00:00' && item.hora_termino !== '00:00:00') {
+							let i = item.hora_inicio.split(':')
+							let f = item.hora_termino.split(':')
+
+							this.horarios[dtfi] = this.horarios[dtfi] || {}
+							let horas = this.horarios[dtfi].horas || []
+							for (let k = parseInt(i[0]); k <= parseInt(f[0]); k++) horas.push(k)
+							this.horarios[dtfi].horas = horas
+
+							let tempo = this.horarios[dtfi].tempo || {}
+							tempo['i' + parseInt(i[0])] = parseInt(i[1])
+							tempo['f' + parseInt(f[0])] = parseInt(f[1])
+							this.horarios[dtfi].tempo = tempo
+						}
+					}
+				}
+				//sem excecao
+				if (!horarioExcecao) {
+					for (let item of this.configuracao.agendamentos) {
+						let diaSemana = diaSemanaOpt[dti.day()]
+						if (item['inicio_' + diaSemana] !== '00:00:00' && item['termino_' + diaSemana] !== '00:00:00') {
+							let i = item['inicio_' + diaSemana].split(':')
+							let f = item['termino_' + diaSemana].split(':')
+
+							this.horarios[dtfi] = this.horarios[dtfi] || {}
+							let horas = this.horarios[dtfi].horas || []
+							for (let k = parseInt(i[0]); k <= parseInt(f[0]); k++) horas.push(k)
+							this.horarios[dtfi].horas = horas
+
+							let tempo = this.horarios[dtfi].tempo || {}
+							tempo['i' + parseInt(i[0])] = parseInt(i[1])
+							tempo['f' + parseInt(f[0])] = parseInt(f[1])
+							this.horarios[dtfi].tempo = tempo
+						}
+					}
+				}
+				dti.add(1, 'day')
+			}
+			this.dataEntregaOptions = []
+			for (let index in this.horarios) this.dataEntregaOptions.push(m(index, 'DD/MM/YYYY').format('YYYY/MM/DD'))
+		},
+		selecionarHorario(hr, min) {
+			if (!this.data_entrega) return false
+			let item = this.horarios[this.data_entrega]
+			if (!item) return false
+			if (min !== null) {
+				if (item.tempo['i' + hr] !== undefined) return min >= item.tempo['i' + hr]
+				else if (item.tempo['f' + hr] !== undefined) return min <= item.tempo['f' + hr]
+				else return true
+			} else return item.horas.indexOf(hr) > -1
 		},
 		verificarAgendamento(mostrarMsg) {
 			let self = this
@@ -895,6 +964,7 @@ export default {
 	watch: {
 		$route: function(a) {
 			this.showBool = a.path.indexOf('show') > -1
+			window.location.reload(true)
 		}
 	}
 }
