@@ -791,6 +791,12 @@ export default {
 			}
 		},
 		carregarDataHora() {
+			let datasExcecoes = []
+			for (let item of this.configuracao.datasExcecoes) datasExcecoes.push({ ...item })
+			let agendamentos = []
+			for (let item of this.configuracao.agendamentos) agendamentos.push({ ...item })
+			let tempoConfig = parseInt(this.configuracao.espaco_minimo_agendamento_pedido) * 60
+			let tempoTotal = 0
 			let m = this.getMoment()
 			let diaSemanaOpt = ['domingo', 'segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado']
 			this.horarios = {}
@@ -798,46 +804,79 @@ export default {
 			let dtf = m(new Date())
 				.add(6, 'month')
 				.startOf('day')
+			let dthi = dti.format('DD/MM/YYYY')
+			let hora = m(new Date()).format('HH:mm') + ':00'
 			while (dti.valueOf() <= dtf.valueOf()) {
 				//excecao
 				let horarioExcecao = false
 				let dtfi = dti.format('DD/MM/YYYY')
-				for (let item of this.configuracao.datasExcecoes) {
+				for (let item of datasExcecoes) {
 					if (m(item.data).format('DD/MM/YYYY') === dtfi) {
 						horarioExcecao = true
 						if (item.hora_inicio !== '00:00:00' && item.hora_termino !== '00:00:00') {
-							let i = item.hora_inicio.split(':')
-							let f = item.hora_termino.split(':')
+							if (dtfi === dthi) {
+								if (item.hora_inicio <= hora && item.hora_termino >= hora) item.hora_inicio = hora
+								if (item.hora_termino < hora) item.hora_inicio = undefined
+							}
+							if (item.hora_inicio) {
+								if (tempoTotal < tempoConfig) t = m('01/01/2000 ' + item.hora_termino, 'DD/MM/YYYY HH:mm:ss').diff(m('01/01/2000 ' + item.hora_inicio, 'DD/MM/YYYY HH:mm:ss'), 'minutes')
+								if (tempoTotal + t > tempoConfig) {
+									if (t > 0)
+										item.hora_inicio = m('01/01/2000 ' + item.hora_inicio, 'DD/MM/YYYY HH:mm:ss')
+											.add(tempoConfig - tempoTotal, 'minutes')
+											.format('HH:mm:ss')
 
-							this.horarios[dtfi] = this.horarios[dtfi] || {}
-							let horas = this.horarios[dtfi].horas || []
-							for (let k = parseInt(i[0]); k <= parseInt(f[0]); k++) horas.push(k)
-							this.horarios[dtfi].horas = horas
+									let i = item.hora_inicio.split(':')
+									let f = item.hora_termino.split(':')
 
-							let tempo = this.horarios[dtfi].tempo || {}
-							tempo['i' + parseInt(i[0])] = parseInt(i[1])
-							tempo['f' + parseInt(f[0])] = parseInt(f[1])
-							this.horarios[dtfi].tempo = tempo
+									this.horarios[dtfi] = this.horarios[dtfi] || {}
+									let horas = this.horarios[dtfi].horas || []
+									for (let k = parseInt(i[0]); k <= parseInt(f[0]); k++) horas.push(k)
+									this.horarios[dtfi].horas = horas
+
+									let tempo = this.horarios[dtfi].tempo || {}
+									tempo['i' + parseInt(i[0])] = parseInt(i[1])
+									tempo['f' + parseInt(f[0])] = parseInt(f[1])
+									this.horarios[dtfi].tempo = tempo
+								}
+							}
+							tempoTotal += t
 						}
 					}
 				}
 				//sem excecao
 				if (!horarioExcecao) {
-					for (let item of this.configuracao.agendamentos) {
+					for (let item of agendamentos) {
 						let diaSemana = diaSemanaOpt[dti.day()]
 						if (item['inicio_' + diaSemana] !== '00:00:00' && item['termino_' + diaSemana] !== '00:00:00') {
-							let i = item['inicio_' + diaSemana].split(':')
-							let f = item['termino_' + diaSemana].split(':')
+							if (dtfi === dthi) {
+								if (item['inicio_' + diaSemana] <= hora && item['termino_' + diaSemana] >= hora) item['inicio_' + diaSemana] = hora
+								if (item['termino_' + diaSemana] < hora) item['inicio_' + diaSemana] = undefined
+							}
+							let t = 0
+							if (item['inicio_' + diaSemana]) {
+								if (tempoTotal < tempoConfig) t = m('01/01/2000 ' + item['termino_' + diaSemana], 'DD/MM/YYYY HH:mm:ss').diff(m('01/01/2000 ' + item['inicio_' + diaSemana], 'DD/MM/YYYY HH:mm:ss'), 'minutes')
+								if (tempoTotal + t > tempoConfig) {
+									if (t > 0)
+										item['inicio_' + diaSemana] = m('01/01/2000 ' + item['inicio_' + diaSemana], 'DD/MM/YYYY HH:mm:ss')
+											.add(tempoConfig - tempoTotal, 'minutes')
+											.format('HH:mm:ss')
 
-							this.horarios[dtfi] = this.horarios[dtfi] || {}
-							let horas = this.horarios[dtfi].horas || []
-							for (let k = parseInt(i[0]); k <= parseInt(f[0]); k++) horas.push(k)
-							this.horarios[dtfi].horas = horas
+									let i = item['inicio_' + diaSemana].split(':')
+									let f = item['termino_' + diaSemana].split(':')
 
-							let tempo = this.horarios[dtfi].tempo || {}
-							tempo['i' + parseInt(i[0])] = parseInt(i[1])
-							tempo['f' + parseInt(f[0])] = parseInt(f[1])
-							this.horarios[dtfi].tempo = tempo
+									this.horarios[dtfi] = this.horarios[dtfi] || {}
+									let horas = this.horarios[dtfi].horas || []
+									for (let k = parseInt(i[0]); k <= parseInt(f[0]); k++) horas.push(k)
+									this.horarios[dtfi].horas = horas
+
+									let tempo = this.horarios[dtfi].tempo || {}
+									tempo['i' + parseInt(i[0])] = parseInt(i[1])
+									tempo['f' + parseInt(f[0])] = parseInt(f[1])
+									this.horarios[dtfi].tempo = tempo
+								}
+							}
+							tempoTotal += t
 						}
 					}
 				}
@@ -937,6 +976,7 @@ export default {
 				let tempoTotal = 0
 				for (let index in horarios) {
 					for (let item of horarios[index]) {
+						console.log(horarios[index])
 						tempoTotal += m('01/01/2000 ' + item.f, 'DD/MM/YYYY HH:mm:ss').diff(m('01/01/2000 ' + item.i, 'DD/MM/YYYY HH:mm:ss'), 'minutes')
 						if (tempoTotal > tempo) return true
 					}
