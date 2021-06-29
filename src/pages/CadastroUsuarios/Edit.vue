@@ -24,7 +24,7 @@
 						<q-input v-model="usuario.password" type="password" label="Senha*" :rules="[validatorRequired]"></q-input>
 					</div>
 					<div class="col-3">
-						<q-select v-model="usuario.perfil" label="Perfil" :options="perfilOptions" :rules="[validatorRequired]" map-options emit-value option-label="name" option-value="id" :readonly="showBool"></q-select>
+						<q-select v-model="usuario.perfil" label="Perfil" :options="perfilOptions" :rules="[validatorRequired]" map-options emit-value option-label="name" option-value="id" :readonly="showBool || !isBlank(usuario.id)"></q-select>
 					</div>
 					<div class="col-3">
 						<q-checkbox v-model="usuario.ativo" label="Ativo" color="primary" :disable="showBool"></q-checkbox>
@@ -91,9 +91,7 @@ export default {
 	},
 	async created() {
 		var response = await this.executeMethod({ url: 'api/Usuarios/perfis', method: 'get' })
-		if (response.status === 200) {
-			this.perfilOptions = response.data.filter(tipoPerfil => tipoPerfil.name != 'Usuário')
-		}
+		if (response.status === 200) for (let item of response.data) if (this.$route.params.id || item.slug === 'admin') this.perfilOptions.push(item)
 		if (this.$route.params.id) {
 			response = await this.executeMethod({ url: `api/Usuarios/show/${this.$route.params.id}`, method: 'get' })
 			if (response.status === 200) {
@@ -101,10 +99,7 @@ export default {
 				delete response.data.perfis
 				this.usuario = response.data
 			} else {
-				this.$q.notify({
-					message: 'Usuario não encontrado',
-					type: 'negative'
-				})
+				this.$q.notify({ message: 'Usuario não encontrado', type: 'negative' })
 				this.$router.push('/cadastroUsuarios')
 			}
 			this.showBool = this.$route.meta.show
