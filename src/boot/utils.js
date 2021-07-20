@@ -190,6 +190,10 @@ export default ({ app, Vue }) => {
 				}
 				this.$root.$emit('carregarTelaChat')
 			},
+			async emitirSomChat() {
+				let audio = document.getElementById('chat-audio')
+				if (audio) audio.play()
+			},
 			calcularTotalKm(pontos) {
 				let self = this
 				return new Promise(resolve => {

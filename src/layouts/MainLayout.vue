@@ -11,7 +11,8 @@
 						<q-item-label class="text-primary">Olá, {{ getUsuario.nome }}</q-item-label>
 					</q-item-section>
 					<q-item-section side>
-						<q-btn label="sair" icon="exit_to_app" color="primary" flat no-caps stack @click="efetuarLogout"></q-btn>
+						<q-btn label="sair" icon="exit_to_app" color="primary" flat no-caps stack @click="efetuarLogout()" v-if="$q.platform.is.desktop" />
+						<q-btn label="menu" icon="list" color="primary" flat no-caps stack @click="leftDrawerOpen = true" v-else />
 					</q-item-section>
 				</q-item>
 			</q-toolbar>
@@ -50,7 +51,7 @@
 							</q-item-section>
 						</q-item>
 					</router-link>
-					<q-separator></q-separator>
+					<q-separator />
 				</div>
 			</q-list>
 		</q-drawer>
@@ -249,15 +250,31 @@ export default {
 				this.$root.chat.on('message', m => {
 					this.$store.commit('mensagemChat', m)
 					this.$root.$emit('atualizarScroll', m)
+					if (m.mensagem.usuario_id !== this.getUsuario.id) this.emitirSomChat()
+				})
+				this.$root.chat.on('atualizarLista', () => {
+					this.carregarChats()
 				})
 			})
 			this.$root.chat_ws.on('close', () => {
 				this.$root.chat_connect = false
 			})
+			if (!this.$q.platform.is.desktop)
+				this.categorias.push({
+					icon: 'exit_to_app',
+					title: 'Sair',
+					path: '/?logoff=1',
+					tipo: 'Ambos'
+				})
 		}
 	},
 	destroyed() {
 		if (this._interval) clearInterval(this._interval)
+	},
+	watch: {
+		$route: function(a) {
+			if (a.query.logoff !== undefined) this.efetuarLogout()
+		}
 	}
 }
 </script>

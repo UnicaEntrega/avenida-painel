@@ -14,7 +14,6 @@
 							<q-select v-model="status" :options="coletaStatusOptions" label="Status*" @input="buscar()" multiple></q-select>
 						</div>
 					</template>
-
 					<template v-slot:body-cell-actions="props">
 						<q-td>
 							<q-btn icon="edit" color="primary" flat dense @click="editarColeta(props.row.id)">
@@ -28,18 +27,19 @@
 							</q-btn>
 						</q-td>
 					</template>
-
 					<template v-slot:body-cell-cliente="props">
 						<q-td>
 							<q-btn size="12px" dense flat icon="error" color="negative" v-if="props.row.status === 'Aberto' && !props.row.motoboy" />
 							{{ props.row.cliente.nome }}
 						</q-td>
 					</template>
-
 					<template v-slot:body-cell-motoboy="props">
 						<q-td>
 							{{ props.row.motoboy ? props.row.motoboy.nome : '' }}
 						</q-td>
+					</template>
+					<template v-slot:body-cell-faturado="props">
+						<q-td>{{ props.row.cliente && props.row.cliente.boletins.length > 0 ? 'Sim' : 'Não' }}</q-td>
 					</template>
 				</q-table>
 				<q-page-sticky position="bottom-right" :offset="[18, 18]">
@@ -66,7 +66,8 @@ export default {
 				{ name: 'status', label: 'Status', field: 'status', align: 'left' },
 				{ name: 'cliente', label: 'Cliente', field: 'cliente', align: 'left' },
 				{ name: 'motoboy', label: 'Motoboy', field: 'motoboy', align: 'left' },
-				{ name: 'status_pagamento', label: 'Status de pagamento', field: 'status_pagamento', align: 'left' }
+				{ name: 'status_pagamento', label: 'Status de pagamento', field: 'status_pagamento', align: 'left' },
+				{ name: 'faturado', label: 'Faturado', field: 'faturado', align: 'left' }
 			],
 			loading: false,
 			pagination: {

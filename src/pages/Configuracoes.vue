@@ -623,8 +623,7 @@ export default {
 			} else this.responseError(response)
 		},
 		onReset() {
-			if (!this.showBool && this.veiculo.id) this.showBool = true
-			else this.$router.push('/')
+			this.$router.push('/')
 		},
 		adicionarDataExcecao() {
 			this.configuracao.datasExcecoes.push({ data: '', hora_inicio: '00:00', hora_termino: '00:00' })
