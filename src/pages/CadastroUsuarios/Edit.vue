@@ -3,8 +3,8 @@
 		<q-card>
 			<q-form @submit="onSubmit" @reset="onReset" class="q-gutter-y-md">
 				<q-card-section class="row">
-					<div class="col-6 text-h6 text-primary">Cadastro de Usuarios</div>
-					<div class="col-6 row justify-end">
+					<div class="col-md-6 col-xs-12 text-h6 text-primary">Cadastro de Usuarios</div>
+					<div class="col-md-6 col-xs-12 row justify-end">
 						<q-btn v-if="showBool" label="Voltar" icon="keyboard_arrow_left" type="reset" color="primary" flat></q-btn>
 						<q-btn v-if="showBool" label="Remover" icon="delete" color="negative" flat @click="removerUsuario"></q-btn>
 						<q-btn v-if="showBool" label="Editar" icon="edit" color="primary" @click="showBool = false"></q-btn>
@@ -14,27 +14,27 @@
 				</q-card-section>
 				<q-separator></q-separator>
 				<q-card-section class="row q-col-gutter-sm">
-					<div class="col-3">
+					<div class="col-md-3 col-xs-12">
 						<q-input v-model="usuario.nome" label="Nome*" :rules="[validatorRequired]" :readonly="showBool"></q-input>
 					</div>
-					<div class="col-3">
+					<div class="col-md-3 col-xs-12">
 						<q-input v-model="usuario.email" label="E-mail*" :rules="[validatorRequired, validatorEmail]" :readonly="showBool"></q-input>
 					</div>
-					<div class="col-3" v-if="!showBool">
+					<div class="col-md-3 col-xs-12" v-if="!showBool">
 						<q-input v-model="usuario.password" type="password" label="Senha*" :rules="[validatorRequired]"></q-input>
 					</div>
-					<div class="col-3">
+					<div class="col-md-3 col-xs-12">
 						<q-select v-model="usuario.perfil" label="Perfil" :options="perfilOptions" :rules="[validatorRequired]" map-options emit-value option-label="name" option-value="id" :readonly="showBool || !isBlank(usuario.id)"></q-select>
 					</div>
-					<div class="col-3">
+					<div class="col-md-3 col-xs-12">
 						<q-checkbox v-model="usuario.ativo" label="Ativo" color="primary" :disable="showBool"></q-checkbox>
 					</div>
 				</q-card-section>
 				<q-card-section class="q-col-gutter-md row items-center">
-					<div class="col-6 text-grey-6">
+					<div class="col-md-6 col-xs-12 text-grey-6">
 						*Campos obrigatórios
 					</div>
-					<div class="col-6 row justify-end">
+					<div class="col-md-6 col-xs-12 row justify-end">
 						<q-btn v-if="!showBool" label="Cancelar" icon="close" type="reset" color="negative" flat></q-btn>
 						<q-btn v-if="!showBool" label="Salvar" icon="save" type="submit" color="primary"></q-btn>
 					</div>

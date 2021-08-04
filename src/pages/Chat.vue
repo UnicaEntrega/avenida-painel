@@ -9,9 +9,6 @@
 								<q-item-label>
 									{{ item.coleta_id ? 'Coleta ' + item.coleta_id : 'Motoboy ' + (item.motoboy ? item.motoboy.nome : item.nome) }}
 								</q-item-label>
-								<q-item-label caption>
-									Resumo da mensagem
-								</q-item-label>
 							</q-item-section>
 							<q-item-section side>
 								<q-chip v-if="item.naoLida > 0" color="negative" text-color="white">{{ item.naoLida }}</q-chip>
@@ -141,20 +138,32 @@ export default {
 	}
 }
 </script>
-
+<style>
+@media (max-width: 480px) {
+	.grid-chat {
+		grid-template-columns: 2fr 4fr;
+	}
+	.grid-input {
+		grid-template-columns: 2fr 4fr;
+	}
+}
+@media (min-width: 481px) {
+	.grid-chat {
+		grid-template-columns: 1fr 4fr;
+	}
+	.grid-input {
+		grid-template-columns: 1fr 4fr;
+	}
+}
+</style>
 <style lang="sass">
 .grid-chat
 	display: grid
-	grid-template-columns: 1fr 4fr
 	height: 100%
-
 .lista-conversas
 	background: $grey-3
-
 .grid-input
 	display: grid
-	grid-template-columns: 1fr 4fr
-
 .round-input > .q-field__inner > .q-field__control > .q-field__control-container
 	padding: 0 14px
 .round-input > .q-field__inner > .q-field__control

@@ -4,8 +4,8 @@
 			<q-card>
 				<q-form @submit="onSubmit" @reset="onReset" class="q-gutter-y-md">
 					<q-card-section class="row">
-						<div class="col-6 text-h6 text-primary">Configurações</div>
-						<div class="col-6 row justify-end">
+						<div class="col-md-6 col-xs-12 text-h6 text-primary">Configurações</div>
+						<div class="col-md-6 col-xs-12 row justify-end">
 							<q-btn label="Cancelar" icon="close" type="reset" color="negative" flat></q-btn>
 							<q-btn label="Salvar" icon="save" type="submit" color="primary"></q-btn>
 						</div>
@@ -15,71 +15,71 @@
 						<div class="col-12 text-h6 text-center text-primary">Entrega Convencional</div>
 						<q-card class="col-12">
 							<q-card-section class="row q-col-gutter-sm">
-								<div class="col-3">
+								<div class="col-md-3 col-xs-12">
 									Moto
 								</div>
-								<div class="col-9 row q-col-gutter-sm">
-									<div class="col-3">
+								<div class="col-md-9 col-xs-12 row q-col-gutter-sm">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_convencional_km_moto" label="KM" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_convencional_valor_minimo_moto" label="Valor mínimo" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input type="number" v-model="configuracao.entrega_convencional_km_minimo_moto" label="KM mínimo" :rules="[validatorRequired]"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_convencional_retorno_minimo_moto" label="Retorno mínimo" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
 								</div>
-								<div class="col-3">
+								<div class="col-md-3 col-xs-12">
 									Carro
 								</div>
-								<div class="col-9 row q-col-gutter-sm">
-									<div class="col-3">
+								<div class="col-md-9 col-xs-12 row q-col-gutter-sm">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_convencional_km_carro" label="KM" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_convencional_valor_minimo_carro" label="Valor mínimo" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input type="number" v-model="configuracao.entrega_convencional_km_minimo_carro" label="KM mínimo" :rules="[validatorRequired]"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_convencional_retorno_minimo_carro" label="Retorno mínimo" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
 								</div>
-								<div class="col-3">
+								<div class="col-md-3 col-xs-12">
 									Van
 								</div>
-								<div class="col-9 row q-col-gutter-sm">
-									<div class="col-3">
+								<div class="col-md-9 col-xs-12 row q-col-gutter-sm">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_convencional_km_van" label="KM" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_convencional_valor_minimo_van" label="Valor mínimo" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input type="number" v-model="configuracao.entrega_convencional_km_minimo_van" label="KM mínimo" :rules="[validatorRequired]"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_convencional_retorno_minimo_van" label="Retorno mínimo" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
 								</div>
-								<div class="col-3">
+								<div class="col-md-3 col-xs-12">
 									Caminhão
 								</div>
-								<div class="col-9 row q-col-gutter-sm">
-									<div class="col-3">
+								<div class="col-md-9 col-xs-12 row q-col-gutter-sm">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_convencional_km_caminhao" label="KM" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_convencional_valor_minimo_caminhao" label="Valor mínimo" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input type="number" v-model="configuracao.entrega_convencional_km_minimo_caminhao" label="KM mínimo" :rules="[validatorRequired]"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_convencional_retorno_minimo_caminhao" label="Retorno mínimo" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
 								</div>
@@ -88,71 +88,71 @@
 						<div class="col-12 text-h6 text-center text-primary">Entrega Expresso</div>
 						<q-card class="col-12">
 							<q-card-section class="row q-col-gutter-sm">
-								<div class="col-3">
+								<div class="col-md-3 col-xs-12">
 									Moto
 								</div>
-								<div class="col-9 row q-col-gutter-sm">
-									<div class="col-3">
+								<div class="col-md-9 col-xs-12 row q-col-gutter-sm">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_expresso_km_moto" label="KM" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_expresso_valor_minimo_moto" label="Valor mínimo" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input type="number" v-model="configuracao.entrega_expresso_km_minimo_moto" label="KM mínimo" :rules="[validatorRequired]"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_expresso_retorno_minimo_moto" label="Retorno mínimo" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
 								</div>
-								<div class="col-3">
+								<div class="col-md-3 col-xs-12">
 									Carro
 								</div>
-								<div class="col-9 row q-col-gutter-sm">
-									<div class="col-3">
+								<div class="col-md-9 col-xs-12 row q-col-gutter-sm">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_expresso_km_carro" label="KM" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_expresso_valor_minimo_carro" label="Valor mínimo" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input type="number" v-model="configuracao.entrega_expresso_km_minimo_carro" label="KM mínimo" :rules="[validatorRequired]"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_expresso_retorno_minimo_carro" label="Retorno mínimo" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
 								</div>
-								<div class="col-3">
+								<div class="col-md-3 col-xs-12">
 									Van
 								</div>
-								<div class="col-9 row q-col-gutter-sm">
-									<div class="col-3">
+								<div class="col-md-9 col-xs-12 row q-col-gutter-sm">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_expresso_km_van" label="KM" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_expresso_valor_minimo_van" label="Valor mínimo" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input type="number" v-model="configuracao.entrega_expresso_km_minimo_van" label="KM mínimo" :rules="[validatorRequired]"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_expresso_retorno_minimo_van" label="Retorno mínimo" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
 								</div>
-								<div class="col-3">
+								<div class="col-md-3 col-xs-12">
 									Caminhão
 								</div>
-								<div class="col-9 row q-col-gutter-sm">
-									<div class="col-3">
+								<div class="col-md-9 col-xs-12 row q-col-gutter-sm">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_expresso_km_caminhao" label="KM" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_expresso_valor_minimo_caminhao" label="Valor mínimo" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input type="number" v-model="configuracao.entrega_expresso_km_minimo_caminhao" label="KM mínimo" :rules="[validatorRequired]"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_expresso_retorno_minimo_caminhao" label="Retorno mínimo" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
 								</div>
@@ -161,71 +161,71 @@
 						<div class="col-12 text-h6 text-center text-primary">Entrega Convencional Metropolitana</div>
 						<q-card class="col-12">
 							<q-card-section class="row q-col-gutter-sm">
-								<div class="col-3">
+								<div class="col-md-3 col-xs-12">
 									Moto
 								</div>
-								<div class="col-9 row q-col-gutter-sm">
-									<div class="col-3">
+								<div class="col-md-9 col-xs-12 row q-col-gutter-sm">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_convencional_metropolitana_km_moto" label="KM" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_convencional_metropolitana_valor_minimo_moto" label="Valor mínimo" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input type="number" v-model="configuracao.entrega_convencional_metropolitana_km_minimo_moto" label="KM mínimo" :rules="[validatorRequired]"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_convencional_metropolitana_retorno_minimo_moto" label="Retorno mínimo" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
 								</div>
-								<div class="col-3">
+								<div class="col-md-3 col-xs-12">
 									Carro
 								</div>
-								<div class="col-9 row q-col-gutter-sm">
-									<div class="col-3">
+								<div class="col-md-9 col-xs-12 row q-col-gutter-sm">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_convencional_metropolitana_km_carro" label="KM" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_convencional_metropolitana_valor_minimo_carro" label="Valor mínimo" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input type="number" v-model="configuracao.entrega_convencional_metropolitana_km_minimo_carro" label="KM mínimo" :rules="[validatorRequired]"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_convencional_metropolitana_retorno_minimo_carro" label="Retorno mínimo" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
 								</div>
-								<div class="col-3">
+								<div class="col-md-3 col-xs-12">
 									Van
 								</div>
-								<div class="col-9 row q-col-gutter-sm">
-									<div class="col-3">
+								<div class="col-md-9 col-xs-12 row q-col-gutter-sm">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_convencional_metropolitana_km_van" label="KM" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_convencional_valor_minimo_van" label="Valor mínimo" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input type="number" v-model="configuracao.entrega_convencional_km_minimo_van" label="KM mínimo" :rules="[validatorRequired]"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_convencional_retorno_minimo_van" label="Retorno mínimo" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
 								</div>
-								<div class="col-3">
+								<div class="col-md-3 col-xs-12">
 									Caminhão
 								</div>
-								<div class="col-9 row q-col-gutter-sm">
-									<div class="col-3">
+								<div class="col-md-9 col-xs-12 row q-col-gutter-sm">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_convencional_metropolitana_km_caminhao" label="KM" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_convencional_metropolitana_valor_minimo_caminhao" label="Valor mínimo" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input type="number" v-model="configuracao.entrega_convencional_metropolitana_km_minimo_caminhao" label="KM mínimo" :rules="[validatorRequired]"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_convencional_metropolitana_retorno_minimo_caminhao" label="Retorno mínimo" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
 								</div>
@@ -234,71 +234,71 @@
 						<div class="col-12 text-h6 text-center text-primary">Entrega Expresso Metropolitana</div>
 						<q-card class="col-12">
 							<q-card-section class="row q-col-gutter-sm">
-								<div class="col-3">
+								<div class="col-md-3 col-xs-12">
 									Moto
 								</div>
-								<div class="col-9 row q-col-gutter-sm">
-									<div class="col-3">
+								<div class="col-md-9 col-xs-12 row q-col-gutter-sm">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_expresso_metropolitana_km_moto" label="KM" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_expresso_metropolitana_valor_minimo_moto" label="Valor mínimo" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input type="number" v-model="configuracao.entrega_expresso_metropolitana_km_minimo_moto" label="KM mínimo" :rules="[validatorRequired]"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_expresso_metropolitana_retorno_minimo_moto" label="Retorno mínimo" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
 								</div>
-								<div class="col-3">
+								<div class="col-md-3 col-xs-12">
 									Carro
 								</div>
-								<div class="col-9 row q-col-gutter-sm">
-									<div class="col-3">
+								<div class="col-md-9 col-xs-12 row q-col-gutter-sm">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_expresso_metropolitana_km_carro" label="KM" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_expresso_metropolitana_valor_minimo_carro" label="Valor mínimo" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input type="number" v-model="configuracao.entrega_expresso_metropolitana_km_minimo_carro" label="KM mínimo" :rules="[validatorRequired]"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_expresso_metropolitana_retorno_minimo_carro" label="Retorno mínimo" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
 								</div>
-								<div class="col-3">
+								<div class="col-md-3 col-xs-12">
 									Van
 								</div>
-								<div class="col-9 row q-col-gutter-sm">
-									<div class="col-3">
+								<div class="col-md-9 col-xs-12 row q-col-gutter-sm">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_expresso_metropolitana_km_van" label="KM" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_expresso_metropolitana_valor_minimo_van" label="Valor mínimo" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input type="number" v-model="configuracao.entrega_expresso_metropolitana_km_minimo_van" label="KM mínimo" :rules="[validatorRequired]"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_expresso_metropolitana_retorno_minimo_van" label="Retorno mínimo" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
 								</div>
-								<div class="col-3">
+								<div class="col-md-3 col-xs-12">
 									Caminhão
 								</div>
-								<div class="col-9 row q-col-gutter-sm">
-									<div class="col-3">
+								<div class="col-md-9 col-xs-12 row q-col-gutter-sm">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_expresso_metropolitana_km_caminhao" label="KM" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_expresso_metropolitana_valor_minimo_caminhao" label="Valor mínimo" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input type="number" v-model="configuracao.entrega_expresso_metropolitana_km_minimo_caminhao" label="KM mínimo" :rules="[validatorRequired]"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-6">
 										<q-input v-model="configuracao.entrega_expresso_metropolitana_retorno_minimo_caminhao" label="Retorno mínimo" :rules="[validatorRequired]" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 									</div>
 								</div>
@@ -307,13 +307,13 @@
 
 						<q-card class="col-12 q-mt-md">
 							<q-card-section class="row q-col-gutter-sm">
-								<div class="col-4">
+								<div class="col-md-4 col-xs-12">
 									<q-input type="number" v-model="configuracao.raio_km_entrega_metropolitana" label="Raio de KM Entrega Metropolitana" :rules="[validatorRequired]"></q-input>
 								</div>
-								<div class="col-4">
+								<div class="col-md-4 col-xs-12">
 									<q-input type="number" v-model="configuracao.raio_km_viagem" label="Raio de KM Viagem" :rules="[validatorRequired]"></q-input>
 								</div>
-								<div class="col-4">
+								<div class="col-md-4 col-xs-12">
 									<q-input type="number" v-model="configuracao.espaco_minimo_agendamento_pedido" label="Espaço mínimo entre pedido e agendamento (em horas)" :rules="[validatorRequired]"></q-input>
 								</div>
 							</q-card-section>
@@ -321,13 +321,13 @@
 
 						<q-card class="col-12 q-mt-md">
 							<q-card-section class="row">
-								<div class="col-6 text-primary">Horários de Agendamento</div>
-								<div class="col-6 text-right text-primary"><q-btn label="Adicionar horário" icon="add" color="primary" no-caps @click="adicionarAgendamento()"></q-btn></div>
+								<div class="col-md-6 col-xs-12 text-primary">Horários de Agendamento</div>
+								<div class="col-md-6 col-xs-12 text-right text-primary"><q-btn label="Adicionar horário" icon="add" color="primary" no-caps @click="adicionarAgendamento()"></q-btn></div>
 							</q-card-section>
 							<q-card-section class="row items-center q-col-gutter-sm" v-for="(item, index) in configuracao.agendamentos" :key="'horario' + index">
 								<div class="col-12 text-body1 text-primary">Início</div>
-								<div class="col-6 row q-col-gutter-sm">
-									<div class="col-4">
+								<div class="col-md-6 col-xs-12 row q-col-gutter-sm">
+									<div class="col-md-4 col-xs-12">
 										<q-input v-model="item.inicio_domingo" class="full-width" v-mask="'##:##'" :rules="[validatorTime]" label="Domingo" color="primary">
 											<q-icon slot="prepend" name="schedule"></q-icon>
 											<q-popup-proxy :ref="'inicio_domingo' + index">
@@ -337,7 +337,7 @@
 											</q-popup-proxy>
 										</q-input>
 									</div>
-									<div class="col-4">
+									<div class="col-md-4 col-xs-12">
 										<q-input v-model="item.inicio_segunda" class="full-width" v-mask="'##:##'" :rules="[validatorTime]" label="Segunda" color="primary">
 											<q-icon slot="prepend" name="schedule"></q-icon>
 											<q-popup-proxy :ref="'inicio_segunda' + index">
@@ -347,7 +347,7 @@
 											</q-popup-proxy>
 										</q-input>
 									</div>
-									<div class="col-4">
+									<div class="col-md-4 col-xs-12">
 										<q-input v-model="item.inicio_terca" class="full-width" v-mask="'##:##'" :rules="[validatorTime]" label="Terça" color="primary">
 											<q-icon slot="prepend" name="schedule"></q-icon>
 											<q-popup-proxy :ref="'inicio_terca' + index">
@@ -358,8 +358,8 @@
 										</q-input>
 									</div>
 								</div>
-								<div class="col-6 row q-col-gutter-sm">
-									<div class="col-3">
+								<div class="col-md-6 col-xs-12 row q-col-gutter-sm">
+									<div class="col-md-3 col-xs-12">
 										<q-input v-model="item.inicio_quarta" class="full-width" v-mask="'##:##'" :rules="[validatorTime]" label="Quarta" color="primary">
 											<q-icon slot="prepend" name="schedule"></q-icon>
 											<q-popup-proxy :ref="'inicio_quarta' + index">
@@ -369,7 +369,7 @@
 											</q-popup-proxy>
 										</q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-12">
 										<q-input v-model="item.inicio_quinta" class="full-width" v-mask="'##:##'" :rules="[validatorTime]" label="Quinta" color="primary">
 											<q-icon slot="prepend" name="schedule"></q-icon>
 											<q-popup-proxy :ref="'inicio_quinta' + index">
@@ -379,7 +379,7 @@
 											</q-popup-proxy>
 										</q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-12">
 										<q-input v-model="item.inicio_sexta" class="full-width" v-mask="'##:##'" :rules="[validatorTime]" label="Sexta" color="primary">
 											<q-icon slot="prepend" name="schedule"></q-icon>
 											<q-popup-proxy :ref="'inicio_sexta' + index">
@@ -389,7 +389,7 @@
 											</q-popup-proxy>
 										</q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-12">
 										<q-input v-model="item.inicio_sabado" class="full-width" v-mask="'##:##'" :rules="[validatorTime]" label="Sábado" color="primary">
 											<q-icon slot="prepend" name="schedule"></q-icon>
 											<q-popup-proxy :ref="'inicio_sabado' + index">
@@ -401,8 +401,8 @@
 									</div>
 								</div>
 								<div class="col-12 text-body1 text-primary">Término</div>
-								<div class="col-6 row q-col-gutter-sm">
-									<div class="col-4">
+								<div class="col-md-6 col-xs-12 row q-col-gutter-sm">
+									<div class="col-md-4 col-xs-12">
 										<q-input v-model="item.termino_domingo" class="full-width" v-mask="'##:##'" :rules="[validatorTime]" label="Domingo" color="primary">
 											<q-icon slot="prepend" name="schedule"></q-icon>
 											<q-popup-proxy :ref="'termino_domingo' + index">
@@ -412,7 +412,7 @@
 											</q-popup-proxy>
 										</q-input>
 									</div>
-									<div class="col-4">
+									<div class="col-md-4 col-xs-12">
 										<q-input v-model="item.termino_segunda" class="full-width" v-mask="'##:##'" :rules="[validatorTime]" label="Segunda" color="primary">
 											<q-icon slot="prepend" name="schedule"></q-icon>
 											<q-popup-proxy :ref="'termino_segunda' + index">
@@ -422,7 +422,7 @@
 											</q-popup-proxy>
 										</q-input>
 									</div>
-									<div class="col-4">
+									<div class="col-md-4 col-xs-12">
 										<q-input v-model="item.termino_terca" class="full-width" v-mask="'##:##'" :rules="[validatorTime]" label="Terça" color="primary">
 											<q-icon slot="prepend" name="schedule"></q-icon>
 											<q-popup-proxy :ref="'termino_terca' + index">
@@ -433,8 +433,8 @@
 										</q-input>
 									</div>
 								</div>
-								<div class="col-6 row q-col-gutter-sm">
-									<div class="col-3">
+								<div class="col-md-6 col-xs-12 row q-col-gutter-sm">
+									<div class="col-md-3 col-xs-12">
 										<q-input v-model="item.termino_quarta" class="full-width" v-mask="'##:##'" :rules="[validatorTime]" label="Quarta" color="primary">
 											<q-icon slot="prepend" name="schedule"></q-icon>
 											<q-popup-proxy :ref="'termino_quarta' + index">
@@ -444,7 +444,7 @@
 											</q-popup-proxy>
 										</q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-12">
 										<q-input v-model="item.termino_quinta" class="full-width" v-mask="'##:##'" :rules="[validatorTime]" label="Quinta" color="primary">
 											<q-icon slot="prepend" name="schedule"></q-icon>
 											<q-popup-proxy :ref="'termino_quinta' + index">
@@ -454,7 +454,7 @@
 											</q-popup-proxy>
 										</q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-12">
 										<q-input v-model="item.termino_sexta" class="full-width" v-mask="'##:##'" :rules="[validatorTime]" label="Sexta" color="primary">
 											<q-icon slot="prepend" name="schedule"></q-icon>
 											<q-popup-proxy :ref="'termino_sexta' + index">
@@ -464,7 +464,7 @@
 											</q-popup-proxy>
 										</q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-12">
 										<q-input v-model="item.termino_sabado" class="full-width" v-mask="'##:##'" :rules="[validatorTime]" label="Sábado" color="primary">
 											<q-icon slot="prepend" name="schedule"></q-icon>
 											<q-popup-proxy :ref="'termino_sabado' + index">
@@ -481,8 +481,8 @@
 
 						<q-card class="col-12">
 							<q-card-section class="row">
-								<div class="col-6 text-primary">Datas de Exceção de Agendamento</div>
-								<div class="col-6 text-right text-primary"><q-btn label="Adicionar exceção" icon="add" color="primary" no-caps @click="adicionarDataExcecao()"></q-btn></div>
+								<div class="col-md-6 col-xs-12 text-primary">Datas de Exceção de Agendamento</div>
+								<div class="col-md-6 col-xs-12 text-right text-primary"><q-btn label="Adicionar exceção" icon="add" color="primary" no-caps @click="adicionarDataExcecao()"></q-btn></div>
 							</q-card-section>
 							<q-card-section class="row items-center q-col-gutter-sm" v-for="(item, index) in configuracao.datasExcecoes" :key="'datasExcecoes' + index">
 								<div class="col-md-3 col-xs-12">
@@ -524,10 +524,10 @@
 						</q-card>
 					</q-card-section>
 					<q-card-section class="q-col-gutter-md row items-center">
-						<div class="col-6 text-grey-6">
+						<div class="col-md-6 col-xs-12 text-grey-6">
 							*Campos obrigatórios
 						</div>
-						<div class="col-6 row justify-end">
+						<div class="col-md-6 col-xs-12 row justify-end">
 							<q-btn label="Cancelar" icon="close" type="reset" color="negative" flat></q-btn>
 							<q-btn label="Salvar" icon="save" type="submit" color="primary"></q-btn>
 						</div>

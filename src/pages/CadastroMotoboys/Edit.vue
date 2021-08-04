@@ -3,8 +3,8 @@
 		<q-card>
 			<q-form @submit="onSubmit" @reset="onReset" class="q-gutter-y-md">
 				<q-card-section class="row">
-					<div class="col-6 text-h6 text-primary">Cadastro de Motoboys</div>
-					<div class="col-6 row justify-end">
+					<div class="col-md-6 col-xs-12 text-h6 text-primary">Cadastro de Motoboys</div>
+					<div class="col-md-6 col-xs-12 row justify-end">
 						<q-btn v-if="showBool" label="Voltar" icon="keyboard_arrow_left" type="reset" color="primary" flat></q-btn>
 						<q-btn v-if="showBool" label="Remover" icon="delete" color="negative" flat @click="removerMotoboy"></q-btn>
 						<q-btn v-if="showBool" label="Editar" icon="edit" color="primary" @click="showBool = false"></q-btn>
@@ -14,30 +14,30 @@
 				</q-card-section>
 				<q-separator></q-separator>
 				<q-card-section class="row q-col-gutter-sm">
-					<div class="col-3">
+					<div class="col-md-3 col-xs-12">
 						<q-input v-model="motoboy.nome" label="Nome*" :rules="[validatorRequired]" :readonly="showBool"></q-input>
 					</div>
-					<div class="col-3">
+					<div class="col-md-3 col-xs-12">
 						<q-input v-model="motoboy.email" label="E-mail*" :rules="[validatorRequired, validatorEmail]" :readonly="showBool"></q-input>
 					</div>
-					<div class="col-3">
+					<div class="col-md-3 col-xs-12">
 						<q-input v-model="motoboy.password" type="password" :label="'Senha' + (isBlank(motoboy.id) ? '*' : '')" :rules="isBlank(motoboy.id) ? [validatorRequired] : []" :readonly="showBool"></q-input>
 					</div>
-					<div class="col-3">
+					<div class="col-md-3 col-xs-12">
 						<q-input v-model="motoboy.telefone" label="Telefone*" v-mask="['(##) ####-####', '(##) #####-####']" :rules="[validatorRequired]" :readonly="showBool"></q-input>
 					</div>
-					<div class="col-6">
+					<div class="col-md-6 col-xs-12">
 						<q-select v-model="motoboy.veiculo_id" label="Veículo" :options="veiculoOptions" map-options emit-value option-label="placa" option-value="id" clearable :readonly="showBool"></q-select>
 					</div>
-					<div class="col-3">
+					<div class="col-md-3 col-xs-12">
 						<q-input type="number" v-model="motoboy.limite_coleta" label="Limite de coletas*" :rules="[validatorRequired]" :readonly="showBool"></q-input>
 					</div>
 				</q-card-section>
 				<q-card-section class="q-col-gutter-md row items-center">
-					<div class="col-6 text-grey-6">
+					<div class="col-md-6 col-xs-12 text-grey-6">
 						*Campos obrigatórios
 					</div>
-					<div class="col-6 row justify-end">
+					<div class="col-md-6 col-xs-12 row justify-end">
 						<q-btn v-if="!showBool" label="Cancelar" icon="close" type="reset" color="negative" flat></q-btn>
 						<q-btn v-if="!showBool" label="Salvar" icon="save" type="submit" color="primary"></q-btn>
 					</div>

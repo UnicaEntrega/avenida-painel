@@ -1,10 +1,10 @@
 <template>
 	<q-page class="q-pt-md">
-		<div class="row q-col-gutter-y-sm q-mb-md q-px-xl">
+		<div class="row q-col-gutter-y-sm q-mb-md q-px-md">
 			<div class="col-12 text-h6 text-primary q-px-md">Informações sobre a sua coleta</div>
 
 			<div class="col-12 row q-col-gutter-x-sm">
-				<div class="col-4">
+				<div class="col-md-4 col-xs-12">
 					<q-item class="bg-grey-2 rounded-borders">
 						<q-item-section>
 							<q-item-label class="text-primary" caption>Cliente</q-item-label>
@@ -12,7 +12,7 @@
 						</q-item-section>
 					</q-item>
 				</div>
-				<div class="col-4">
+				<div class="col-md-4 col-xs-12">
 					<q-item class="bg-grey-2 rounded-borders">
 						<q-item-section>
 							<q-item-label class="text-primary" caption>Status</q-item-label>
@@ -20,7 +20,7 @@
 						</q-item-section>
 					</q-item>
 				</div>
-				<div class="col-4">
+				<div class="col-md-4 col-xs-12">
 					<q-item class="bg-grey-2 rounded-borders">
 						<q-item-section>
 							<q-item-label class="text-primary" caption>Motoboy</q-item-label>
@@ -31,7 +31,7 @@
 			</div>
 
 			<div class="col-12 row q-col-gutter-x-sm">
-				<div :class="verMais ? 'col-6' : 'col-12'">
+				<div :class="verMais ? 'col-md-6 col-xs-12' : 'col-12'">
 					<q-item class="full-height bg-grey-2 rounded-borders">
 						<q-item-section>
 							<q-item-label class="text-primary" caption>Endereço - Coleta</q-item-label>
@@ -39,7 +39,7 @@
 						</q-item-section>
 					</q-item>
 				</div>
-				<div class="col-3" key="comQuemColeta" v-if="verMais">
+				<div class="col-md-3 col-xs-12" key="comQuemColeta" v-if="verMais">
 					<q-item class="full-height bg-grey-2 rounded-borders">
 						<q-item-section>
 							<q-item-label class="text-primary" caption>Com quem coleta</q-item-label>
@@ -47,7 +47,7 @@
 						</q-item-section>
 					</q-item>
 				</div>
-				<div class="col-3" key="telefoneColeta" v-if="verMais">
+				<div class="col-md-3 col-xs-12" key="telefoneColeta" v-if="verMais">
 					<q-item class="full-height bg-grey-2 rounded-borders">
 						<q-item-section>
 							<q-item-label class="text-primary" caption>Telefone de coleta</q-item-label>
@@ -58,7 +58,7 @@
 			</div>
 
 			<div class="col-12 row q-col-gutter-sm" v-for="(endereco, index) in coleta.enderecosEntregas" :key="'endereco' + index">
-				<div :class="verMais ? 'col-lg-5 col-xs-12' : 'col-12'" v-if="verMais ? true : index == 0">
+				<div :class="verMais ? 'col-md-5 col-xs-12' : 'col-12'" v-if="verMais ? true : index == 0">
 					<q-item class="full-height bg-grey-2 rounded-borders">
 						<q-item-section>
 							<q-item-label class="text-primary" caption>Endereço - Entrega {{ index + 1 }}</q-item-label>
@@ -66,7 +66,7 @@
 						</q-item-section>
 					</q-item>
 				</div>
-				<div class="col-lg-3 col-xs-4" v-if="verMais">
+				<div class="col-md-3 col-xs-12" v-if="verMais">
 					<q-item class="full-height bg-grey-2 rounded-borders">
 						<q-item-section>
 							<q-item-label class="text-primary" caption>Com quem entrega</q-item-label>
@@ -74,7 +74,7 @@
 						</q-item-section>
 					</q-item>
 				</div>
-				<div class="col-xl-3 col-lg-2 col-xs-4" v-if="verMais">
+				<div class="col-md-3 col-xs-12" v-if="verMais">
 					<q-item class="full-height bg-grey-2 rounded-borders">
 						<q-item-section>
 							<q-item-label class="text-primary" caption>Telefone de entrega</q-item-label>
@@ -82,7 +82,7 @@
 						</q-item-section>
 					</q-item>
 				</div>
-				<div class="col-xl-1 col-lg-2 col-xs-4" v-if="verMais">
+				<div class="col-md-1 col-xs-12" v-if="verMais">
 					<q-item class="full-height bg-grey-2 rounded-borders">
 						<q-item-section>
 							<q-item-label class="text-primary" caption>Com retorno?</q-item-label>
@@ -103,7 +103,7 @@
 				</div>
 			</div>
 
-			<div class="col-12 row q-col-gutter-x-sm">
+			<div class="col-12 row q-col-gutter-x-sm items-center">
 				<div class="col-4">
 					<q-btn class="full-width" :label="verMais ? 'Menos informações' : 'Mais informações'" :icon="verMais ? 'remove' : 'add'" color="primary" no-caps @click="toggleVerMais"></q-btn>
 				</div>

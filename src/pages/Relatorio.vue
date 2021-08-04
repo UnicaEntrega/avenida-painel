@@ -2,31 +2,31 @@
 	<q-page class="q-pa-lg bg-grey-4">
 		<transition mode="out-in" enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
 			<q-table :data="coletas" :columns="coletaColumns" align="left" row-key="id" :pagination.sync="pagination" @update:pagination="v => buscar()" :loading="loading" @request="buscar" :rows-per-page-options="[10, 20, 50, 100]" :pagination-label="paginationLabel" binary-state-sort>
-				<template v-slot:top>
-					<div class="col-6 text-h5 text-primary">Relatório</div>
-					<div class="col-3 q-px-xs">
+				<template v-slot:top class="q-gutter-x-md">
+					<div class="col-md-6 col-xs-12 text-h5 text-primary">Relatório</div>
+					<div class="col-md-3 col-xs-12 q-px-xs">
 						<q-select v-model="pesquisa.cliente_id" :options="clienteOptions" option-label="nome" option-value="id" map-options emit-value label="Cliente" use-input @filter="buscarCliente" clearable @input="buscar()" />
 					</div>
-					<div class="col-3 q-px-xs">
+					<div class="col-md-3 col-xs-12 q-px-xs">
 						<q-select v-model="pesquisa.motoboy_id" :options="motoboyOptions" option-label="nome" option-value="id" map-options emit-value label="Motoboy" use-input @filter="buscarMotoboy" clearable @input="buscar()" />
 					</div>
-					<div class="col-6 q-px-xs row items-center justify-around">
+					<div class="col-md-6 col-xs-12 q-px-xs row items-center justify-around">
 						<div class="col-5 q-px-xs"><q-input type="date" v-model="pesquisa.data_solicitacao1" stack-label label="Data da solicitação" clearable @input="buscar()" /></div>
 						<div class="col-1 q-px-xs">até</div>
 						<div class="col-6 q-px-xs"><q-input type="date" v-model="pesquisa.data_solicitacao2" clearable @input="buscar()" /></div>
 					</div>
-					<div class="col-6 q-px-xs row items-center justify-around">
+					<div class="col-md-6 col-xs-12 q-px-xs row items-center justify-around">
 						<div class="col-5 q-px-xs"><q-input type="date" v-model="pesquisa.data_entrega1" stack-label label="Data da entrega" clearable @input="buscar()" /></div>
 						<div class="col-1 q-px-xs">até</div>
 						<div class="col-6 q-px-xs"><q-input type="date" v-model="pesquisa.data_entrega2" clearable @input="buscar()" /></div>
 					</div>
-					<div class="col-3 q-px-xs">
+					<div class="col-md-3 col-xs-12 q-px-xs">
 						<q-select v-model="pesquisa.tipo_entrega" :options="tipoEntregaOptions" label="Tipo de entrega" @input="buscar()" multiple map-options emit-value></q-select>
 					</div>
-					<div class="col-3 q-px-xs">
+					<div class="col-md-3 col-xs-12 q-px-xs">
 						<q-select v-model="pesquisa.forma_pagamento" :options="formaPagamentoOptions" map-options emit-value label="Forma de pagamento" @input="buscar()" multiple></q-select>
 					</div>
-					<div class="col-4 q-px-xs">
+					<div class="col-md-4 col-xs-12 q-px-xs">
 						<q-btn outline icon="import_export" label="CSV" color="primary" @click="exportar('csv')" class="q-mr-xs" />
 						<q-btn outline icon="print" label="PDF" color="primary" @click="exportar('pdf')" class="q-ml-xs" />
 					</div>

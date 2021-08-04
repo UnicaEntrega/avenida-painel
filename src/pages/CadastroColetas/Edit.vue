@@ -3,8 +3,8 @@
 		<q-card>
 			<q-form @submit="onSubmit" @reset="onReset" class="q-gutter-y-md">
 				<q-card-section class="row">
-					<div class="col-6 text-h6 text-primary">Cadastro de Coletas</div>
-					<div class="col-6 row justify-end">
+					<div class="col-md-6 col-xs-12 text-h6 text-primary">Cadastro de Coletas</div>
+					<div class="col-md-6 col-xs-12 row justify-end">
 						<q-btn v-if="showBool && usuarioPerfil !== 'cliente'" label="Status" icon="refresh" color="primary" flat @click="abrirModalStatus"></q-btn>
 						<q-btn v-if="showBool && usuarioPerfil !== 'cliente'" label="Motoboy" icon="refresh" color="primary" flat @click="abrirModalMotoboy"></q-btn>
 						<q-btn v-if="showBool" label="Voltar" icon="keyboard_arrow_left" type="reset" color="primary" flat></q-btn>
@@ -17,12 +17,12 @@
 				</q-card-section>
 				<q-separator></q-separator>
 				<q-card-section class="row q-col-gutter-sm" v-if="usuarioPerfil !== 'cliente'">
-					<div class="col-8">
+					<div class="col-md-8 col-xs-12">
 						<q-select v-model="coleta.cliente_id" :options="clienteOptions" option-label="nome" option-value="id" map-options emit-value label="Cliente*" :rules="[validatorRequired]" :readonly="showBool" use-input filled @filter="buscarCliente" @input="selecionarBoletins">
 							<q-btn slot="after" icon="add" color="primary" @click="abrirModalCliente" v-if="!showBool"></q-btn>
 						</q-select>
 					</div>
-					<div class="col-3">
+					<div class="col-md-3 col-xs-12">
 						<q-select v-model="coleta.status" :options="coletaStatusOptions" label="Status*" :rules="[validatorRequired]" :readonly="showBool"></q-select>
 					</div>
 				</q-card-section>
@@ -31,35 +31,34 @@
 						Endereço de Coleta
 						<q-btn icon="content_copy" color="primary" flat @click="copiarEnderecoColetaCliente" v-if="!showBool"></q-btn>
 					</q-item-label>
-					<div class="col-3">
+					<div class="col-md-3 col-xs-12">
 						<q-input v-model="coleta.quem" label="Com Quem Coleta" :rules="[validatorRequired]" :readonly="showBool"></q-input>
 					</div>
-					<div class="col-3">
+					<div class="col-md-3 col-xs-12">
 						<q-input v-model="coleta.telefone" label="Telefone" v-mask="['(##) ####-####', '(##) #####-####']" :rules="[validatorRequired, val => val.length >= 14 || 'Telefone incompleto']" :readonly="showBool"></q-input>
 					</div>
-					<div class="col-xl-6"></div>
-					<div class="col-xl-1 col-xs-3">
+					<div class="col-xl-1 col-md-3 col-xs-12">
 						<q-input v-model="coleta.cep" label="CEP*" :loading="cepLoading" v-mask="'##.###-###'" :rules="[validatorRequired, val => val.length >= 10 || 'CEP inválido']" @blur="pesquisarCep(coleta)" :readonly="showBool"></q-input>
 					</div>
-					<div class="col-xl-3 col-xs-6">
+					<div class="col-xl-3 col-md-6 col-xs-12">
 						<q-input v-model="coleta.endereco" label="Rua*" :loading="cepLoading" :rules="[validatorRequired]" :readonly="showBool" @input="geocodeEndereco()" :debounce="1000"></q-input>
 					</div>
-					<div class="col-xl-1 col-xs-3">
+					<div class="col-xl-1 col-md-3 col-xs-12">
 						<q-input v-model="coleta.endereco_numero" label="Número" :loading="cepLoading" :readonly="showBool" ref="endereco_numero" @input="geocodeEndereco()" :debounce="1000"></q-input>
 					</div>
-					<div class="col-xl-2 col-xs-3">
+					<div class="col-xl-2 col-md-3 col-xs-12">
 						<q-input v-model="coleta.complemento" label="Complemento" :loading="cepLoading" :readonly="showBool" @input="geocodeEndereco()" :debounce="1000"></q-input>
 					</div>
-					<div class="col-xl-2 col-xs-3">
+					<div class="col-xl-2 col-md-3 col-xs-12">
 						<q-input v-model="coleta.bairro" label="Bairro*" :loading="cepLoading" :rules="[validatorRequired]" :readonly="showBool" @input="geocodeEndereco()" :debounce="1000"></q-input>
 					</div>
-					<div class="col-xl-2 col-xs-3">
+					<div class="col-xl-2 col-md-3 col-xs-12">
 						<q-input v-model="coleta.cidade" label="Cidade*" :loading="cepLoading" :rules="[validatorRequired]" :readonly="showBool" @input="geocodeEndereco()" :debounce="1000"></q-input>
 					</div>
-					<div class="col-xl-1 col-xs-3">
+					<div class="col-xl-1 col-md-3 col-xs-12">
 						<q-select v-model="coleta.estado" label="Estado*" :options="ufOptions" :loading="cepLoading" :rules="[validatorRequired]" :readonly="showBool" @input="geocodeEndereco()"></q-select>
 					</div>
-					<div class="col-xl-2 col-xs-3">
+					<div class="col-xl-2 col-md-3 col-xs-12">
 						<q-input v-model="coleta.ponto_referencia" label="Ponto de referência" :readonly="showBool"></q-input>
 					</div>
 				</q-card-section>
@@ -72,37 +71,37 @@
 						<q-item v-for="(endereco, index) in coleta.enderecosEntregas" :key="'endereco-' + index">
 							<q-item-section>
 								<div class="row q-col-gutter-sm">
-									<div class="col-3 div-input-add">
+									<div class="col-md-3 col-xs-12 div-input-add">
 										<q-select v-model="endereco.quem" label="Pra Quem Entrega" :options="enderecoQuemOptions" input-debounce="0" use-input new-value-mode="add" @new-value="enderecoQuemAdd" :rules="[validatorRequired]" :readonly="showBool"></q-select>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-12">
 										<q-input v-model="endereco.telefone" label="Telefone" v-mask="['(##) ####-####', '(##) #####-####']" :rules="[validatorRequired, val => val.length >= 14 || 'Telefone incompleto']" :readonly="showBool"></q-input>
 									</div>
-									<div class="col-3">
+									<div class="col-md-3 col-xs-12">
 										<q-select v-model="endereco.retorno" :options="simNaoOptions" map-options emit-value label="Com Retorno" :rules="[validatorRequired]" :readonly="showBool" @input="calcularValorColeta()"></q-select>
 									</div>
-									<div class="col-xl-1 col-xs-3">
+									<div class="col-xl-1 col-md-3 col-xs-12">
 										<q-input v-model="endereco.cep" label="CEP*" :loading="cepLoading" v-mask="'##.###-###'" :rules="[validatorRequired, val => val.length >= 10 || 'CEP inválido']" @blur="pesquisarCep(endereco, index)" :readonly="showBool"></q-input>
 									</div>
-									<div class="col-xl-3 col-xs-6">
+									<div class="col-xl-3 col-md-6 col-xs-12">
 										<q-input v-model="endereco.endereco" label="Rua*" :loading="cepLoading" :rules="[validatorRequired]" :readonly="showBool" @input="geocodeEndereco(index)" :debounce="1000"></q-input>
 									</div>
-									<div class="col-xl-1 col-xs-3">
+									<div class="col-xl-1 col-md-3 col-xs-12">
 										<q-input v-model="endereco.endereco_numero" label="Número" :loading="cepLoading" :readonly="showBool" :ref="'endereco_numero' + index" @input="geocodeEndereco(index)" :debounce="1000"></q-input>
 									</div>
-									<div class="col-xl-2 col-xs-3">
+									<div class="col-xl-2 col-md-3 col-xs-12">
 										<q-input v-model="endereco.complemento" label="Complemento" :loading="cepLoading" :readonly="showBool" @input="geocodeEndereco(index)" :debounce="1000"></q-input>
 									</div>
-									<div class="col-xl-2 col-xs-3">
+									<div class="col-xl-2 col-md-3 col-xs-12">
 										<q-input v-model="endereco.bairro" label="Bairro*" :loading="cepLoading" :rules="[validatorRequired]" :readonly="showBool" @input="geocodeEndereco(index)" :debounce="1000"></q-input>
 									</div>
-									<div class="col-xl-2 col-xs-3">
+									<div class="col-xl-2 col-md-3 col-xs-12">
 										<q-input v-model="endereco.cidade" label="Cidade*" :loading="cepLoading" :rules="[validatorRequired]" :readonly="showBool" @input="geocodeEndereco(index)" :debounce="1000"></q-input>
 									</div>
-									<div class="col-xl-1 col-xs-3">
+									<div class="col-xl-1 col-md-3 col-xs-12">
 										<q-select v-model="endereco.estado" label="Estado*" :options="ufOptions" :loading="cepLoading" :rules="[validatorRequired]" :readonly="showBool" @input="geocodeEndereco(index)"></q-select>
 									</div>
-									<div class="col-xl-2 col-xs-3">
+									<div class="col-xl-2 col-md-3 col-xs-12">
 										<q-input v-model="endereco.ponto_referencia" label="Ponto de referência" :readonly="showBool"></q-input>
 									</div>
 								</div>
@@ -162,40 +161,40 @@
 					<div class="col-12 q-pb-md">
 						<q-input v-model="coleta.observacao" type="textarea" label="Observações" :readonly="showBool" :autogrow="showBool"></q-input>
 					</div>
-					<div class="col-3">
+					<div class="col-md-3 col-xs-12">
 						<q-select v-model="coleta.tipo_veiculo" label="Tipo de Veículo*" :options="tipoVeiculoOptions" :rules="[validatorRequired]" :readonly="showBool" @input="calcularValorColeta()"></q-select>
 					</div>
-					<div class="col-3">
+					<div class="col-md-3 col-xs-12">
 						<q-select v-model="coleta.tipo_entrega" :options="tipoEntregaOptions" label="Tipo da Entrega*" map-options emit-value :rules="[validatorRequired]" :readonly="showBool" @input="calcularValorColeta()"></q-select>
 					</div>
-					<div class="col-3">
+					<div class="col-md-3 col-xs-12">
 						<q-input v-model="coleta.total_km" label="Total KM" readonly mask="#,###" fill-mask="0" reverse-fill-mask></q-input>
 					</div>
-					<div class="col-3">
+					<div class="col-md-3 col-xs-12">
 						<q-input v-model="estimativa_tempo" label="Estimativa de tempo" readonly></q-input>
 					</div>
-					<div class="col-3">
+					<div class="col-md-3 col-xs-12">
 						<q-input v-model="coleta.valor_entrega" label="Valor da Entrega*" :rules="[validatorRequired]" :readonly="showBool || usuarioPerfil === 'cliente'" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 					</div>
-					<div class="col-3">
+					<div class="col-md-3 col-xs-12">
 						<q-select v-model="coleta.forma_pagamento" :options="formaPagamentoOptions" label="Forma de Pagamento*" map-options emit-value :rules="[validatorRequired]" :readonly="showBool" @input="selecionarBoletins" hint="O motoboy só leva a máquina quando solicitado (débito ou crédito)."></q-select>
 					</div>
-					<div class="col-3" v-if="coleta.forma_pagamento === 'Dinheiro'">
+					<div class="col-md-3 col-xs-12" v-if="coleta.forma_pagamento === 'Dinheiro'">
 						<q-input v-model="coleta.troco" label="Precisa de troco?*" :rules="[validatorRequired]" :readonly="showBool" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
 					</div>
-					<div class="col-3" v-if="coleta.forma_pagamento === 'Boleto'">
+					<div class="col-md-3 col-xs-12" v-if="coleta.forma_pagamento === 'Boleto'">
 						<q-input v-model="coleta.numero_boleto" label="Número do Boleto*" :rules="[validatorRequired]" :readonly="showBool"></q-input>
 					</div>
-					<div class="col-3" v-if="coleta.forma_pagamento === 'Boletim de Transporte'">
+					<div class="col-md-3 col-xs-12" v-if="coleta.forma_pagamento === 'Boletim de Transporte'">
 						<q-select v-model="coleta.cliente_boletim_id" :options="boletimOptions" map-options emit-value :label="'Número do Boletim' + (usuarioPerfil === 'cliente' ? '' : '*')" :rules="usuarioPerfil === 'cliente' ? [validatorBoletim] : [validatorRequired, validatorBoletim]" :readonly="showBool"></q-select>
 					</div>
-					<div class="col-3" v-if="usuarioPerfil !== 'cliente'">
+					<div class="col-md-3 col-xs-12" v-if="usuarioPerfil !== 'cliente'">
 						<q-select v-model="coleta.motoboy_id" :options="motoboyOptions" option-label="nome" option-value="id" map-options emit-value label="Motoboy" :readonly="showBool" use-input filled @filter="buscarMotoboy" />
 					</div>
-					<div class="col-3" v-if="usuarioPerfil !== 'cliente'">
+					<div class="col-md-3 col-xs-12" v-if="usuarioPerfil !== 'cliente'">
 						<q-input v-model="coleta.comissao" label="Porcentagem de Comissão" :rules="[validatorRequired]" :readonly="showBool" mask="#,##" fill-mask="0" reverse-fill-mask suffix="%"></q-input>
 					</div>
-					<div class="col-3" v-if="(usuarioPerfil === 'cliente' && showBool) || usuarioPerfil !== 'cliente'">
+					<div class="col-md-3 col-xs-12" v-if="(usuarioPerfil === 'cliente' && showBool) || usuarioPerfil !== 'cliente'">
 						<q-select v-model="coleta.status_pagamento" :options="statusPagamentoOptions" label="Status de pagamento*" :rules="usuarioPerfil === 'cliente' ? [] : [validatorRequired]" :readonly="showBool"></q-select>
 					</div>
 					<div class="col-12 q-pb-md" v-if="showBool && !isBlank(coleta.observacao_cancelamento)">
@@ -218,10 +217,10 @@
 					</div>
 				</q-card-section>
 				<q-card-section class="q-col-gutter-md row items-center">
-					<div class="col-6 text-grey-6">
+					<div class="col-md-6 col-xs-12 text-grey-6">
 						{{ showBool ? '' : '*Campos obrigatórios' }}
 					</div>
-					<div class="col-6 row justify-end">
+					<div class="col-md-6 col-xs-12 row justify-end">
 						<q-btn v-if="!showBool" label="Cancelar" icon="close" type="reset" color="negative" flat></q-btn>
 						<q-btn v-if="!showBool" label="Salvar" icon="save" type="submit" color="primary"></q-btn>
 					</div>
@@ -434,16 +433,16 @@ export default {
 		},
 		estimativa_tempo() {
 			let t = this.coleta.estimativa_tempo || 0
-			if (t<60) return t+' segundo'+(t>1 ? 's' : '')
+			if (t < 60) return t + ' segundo' + (t > 1 ? 's' : '')
 			else {
-				let t2 = t/60
+				let t2 = t / 60
 				let t3 = Math.floor(t2)
-				if (t2>t3) t3++
-				if (t3<60) return t3+' minuto'+(t3>1 ? 's' : '')
+				if (t2 > t3) t3++
+				if (t3 < 60) return t3 + ' minuto' + (t3 > 1 ? 's' : '')
 				else {
-					let t4 = Math.floor(t3/60)
-					t3 -= (t4*60)
-					return t4+' hora'+(t4>1 ? 's' : '')+(t3>0 ? ' e '+t3+' minuto'+(t3>1 ? 's' : '') : '')
+					let t4 = Math.floor(t3 / 60)
+					t3 -= t4 * 60
+					return t4 + ' hora' + (t4 > 1 ? 's' : '') + (t3 > 0 ? ' e ' + t3 + ' minuto' + (t3 > 1 ? 's' : '') : '')
 				}
 			}
 		}

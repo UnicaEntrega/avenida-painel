@@ -3,8 +3,8 @@
 		<q-card>
 			<q-form @submit="onSubmit" @reset="onReset" class="q-gutter-y-md">
 				<q-card-section class="row">
-					<div class="col-6 text-h6 text-primary">Cadastro de Clientes</div>
-					<div class="col-6 row justify-end">
+					<div class="col-md-6 col-xs-12 text-h6 text-primary">Cadastro de Clientes</div>
+					<div class="col-md-6 col-xs-12 row justify-end">
 						<q-btn v-if="showBool" label="Registrar Bloco" icon="receipt_long" @click="abrirModalBloco" color="primary" flat></q-btn>
 						<q-btn v-if="showBool" label="Voltar" icon="keyboard_arrow_left" type="reset" color="primary" flat></q-btn>
 						<q-btn v-if="showBool" label="Remover" icon="delete" color="negative" flat @click="removerCliente"></q-btn>
@@ -15,16 +15,16 @@
 				</q-card-section>
 				<q-separator></q-separator>
 				<q-card-section class="row q-col-gutter-sm">
-					<div class="col-3">
+					<div class="col-md-3 col-xs-12">
 						<q-input v-model="cliente.nome" label="Nome*" :rules="[validatorRequired]" :readonly="showBool"></q-input>
 					</div>
-					<div class="col-3">
+					<div class="col-md-3 col-xs-12">
 						<q-input v-model="cliente.cpf_cnpj" label="CPF/CNPJ*" v-mask="['###.###.###-##', '##.###.###/####-##']" :rules="[validatorRequired, val => (val.length == 14 && testarCpf(val)) || (val.length == 18 && testarCnpj(val)) || 'CPF/CNPJ inválido']" :readonly="showBool"></q-input>
 					</div>
-					<div class="col-3">
+					<div class="col-md-3 col-xs-12">
 						<q-input v-model="cliente.telefone" label="Telefone*" v-mask="['(##) ####-####', '(##) #####-####']" :rules="[validatorRequired, val => val.length >= 14 || 'Telefone incompleto']" :readonly="showBool"></q-input>
 					</div>
-					<div class="col-3">
+					<div class="col-md-3 col-xs-12">
 						<q-input v-model="cliente.email" label="E-mail*" :rules="[validatorRequired, validatorEmail]" :readonly="showBool"></q-input>
 					</div>
 					<div class="col-12">
@@ -35,25 +35,25 @@
 					<q-item-label class="col-12 text-h6 text-primary">
 						Endereço
 					</q-item-label>
-					<div class="col-xl-1 col-xs-3">
+					<div class="col-xl-1 col-md-3 col-xs-12">
 						<q-input v-model="cliente.cep" label="CEP*" :loading="cepLoading" v-mask="'##.###-###'" :rules="[validatorRequired, val => val.length >= 10 || 'CEP inválido']" @blur="pesquisarCep" :readonly="showBool"></q-input>
 					</div>
-					<div class="col-xl-3 col-xs-6">
+					<div class="col-xl-3 col-md-6 col-xs-12">
 						<q-input v-model="cliente.endereco" label="Rua*" :loading="cepLoading" :rules="[validatorRequired]" :readonly="showBool"></q-input>
 					</div>
-					<div class="col-xl-1 col-xs-3">
+					<div class="col-xl-1 col-md-3 col-xs-12">
 						<q-input v-model="cliente.endereco_numero" label="Número" :loading="cepLoading" :readonly="showBool" ref="endereco_numero"></q-input>
 					</div>
-					<div class="col-xl-2 col-xs-3">
+					<div class="col-xl-2 col-md-3 col-xs-12">
 						<q-input v-model="cliente.complemento" label="Complemento" :loading="cepLoading" :readonly="showBool"></q-input>
 					</div>
-					<div class="col-xl-2 col-xs-3">
+					<div class="col-xl-2 col-md-3 col-xs-12">
 						<q-input v-model="cliente.bairro" label="Bairro*" :loading="cepLoading" :rules="[validatorRequired]" :readonly="showBool"></q-input>
 					</div>
-					<div class="col-xl-2 col-xs-3">
+					<div class="col-xl-2 col-md-3 col-xs-12">
 						<q-input v-model="cliente.cidade" label="Cidade*" :loading="cepLoading" :rules="[validatorRequired]" :readonly="showBool"></q-input>
 					</div>
-					<div class="col-xl-1 col-xs-3">
+					<div class="col-xl-1 col-md-3 col-xs-12">
 						<q-select v-model="cliente.estado" label="Estado*" :options="ufOptions" :loading="cepLoading" :rules="[validatorRequired]"></q-select>
 					</div>
 				</q-card-section>
@@ -68,13 +68,13 @@
 								<q-item-section side class="text-primary text-h6 text-bold"> {{ index }} - </q-item-section>
 								<q-item-section>
 									<div class="row q-col-gutter-sm">
-										<div class="col-4">
+										<div class="col-md-4 col-xs-12">
 											<q-input v-model="contato.nome" label="Nome*" :rules="[validatorRequired]" :readonly="showBool"></q-input>
 										</div>
-										<div class="col-4">
+										<div class="col-md-4 col-xs-12">
 											<q-input v-model="contato.telefone" label="Telefone*" v-mask="['(##) ####-####', '(##) #####-####']" :rules="[validatorRequired, val => val.length >= 14 || 'Telefone incompleto']" :readonly="showBool"></q-input>
 										</div>
-										<div class="col-4">
+										<div class="col-md-4 col-xs-12">
 											<q-input v-model="contato.email" label="E-mail*" :rules="[validatorRequired, validatorEmail]" :readonly="showBool"></q-input>
 										</div>
 									</div>
@@ -95,10 +95,10 @@
 					</q-table>
 				</q-card-section>
 				<q-card-section class="q-col-gutter-md row items-center">
-					<div class="col-6 text-grey-6">
+					<div class="col-md-6 col-xs-12 text-grey-6">
 						*Campos obrigatórios
 					</div>
-					<div class="col-6 row justify-end">
+					<div class="col-md-6 col-xs-12 row justify-end">
 						<q-btn v-if="!showBool" label="Cancelar" icon="close" type="reset" color="negative" flat></q-btn>
 						<q-btn v-if="!showBool" label="Salvar" icon="save" type="submit" color="primary"></q-btn>
 					</div>
