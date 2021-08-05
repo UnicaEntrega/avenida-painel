@@ -228,7 +228,7 @@ export default ({ app, Vue }) => {
 								}
 								if (response.rows[i].elements[i].distance.value>maior_distancia) maior_distancia = response.rows[i].elements[i].distance.value
 							}
-							resolve({ total: total / 1000, distancia_coleta: distancia_coleta / 1000, tempo: tempo, maior_distancia: maior_distancia })
+							resolve({ total: total / 1000, distancia_coleta: distancia_coleta / 1000, tempo: tempo, maior_distancia: maior_distancia / 1000 })
 						})
 					})
 				})
