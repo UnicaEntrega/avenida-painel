@@ -219,17 +219,28 @@ export default ({ app, Vue }) => {
 							let total = 0
 							let tempo = 0
 							let distancia_coleta = 0
+							let maior_distancia = 0
 							for (let i in origens) {
 								if (i === '0') distancia_coleta = response.rows[0].elements[0].distance.value
 								else {
 									total += response.rows[i].elements[i].distance.value
 									tempo += response.rows[i].elements[i].duration.value
 								}
+								if (response.rows[i].elements[i].distance.value>maior_distancia) maior_distancia = response.rows[i].elements[i].distance.value
 							}
-							resolve({ total: total / 1000, distancia_coleta: distancia_coleta / 1000, tempo: tempo })
+							resolve({ total: total / 1000, distancia_coleta: distancia_coleta / 1000, tempo: tempo, maior_distancia: maior_distancia })
 						})
 					})
 				})
+			},
+			formatarTempo(t) {
+				t = Math.floor(t/60)+1
+				if (t < 60) return t + ' minuto' + (t > 1 ? 's' : '')
+				else {
+					let t2 = Math.floor(t2 / 60)
+					t -= t2 * 60
+					return t2 + ' hora' + (t2 > 1 ? 's' : '') + (t > 0 ? ' e ' + t + ' minuto' + (t > 1 ? 's' : '') : '')
+				}
 			}
 		}
 	})

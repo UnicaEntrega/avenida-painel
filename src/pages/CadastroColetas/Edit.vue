@@ -171,7 +171,7 @@
 						<q-input v-model="coleta.total_km" label="Total KM" readonly mask="#,###" fill-mask="0" reverse-fill-mask></q-input>
 					</div>
 					<div class="col-md-3 col-xs-12">
-						<q-input v-model="estimativa_tempo" label="Estimativa de tempo" readonly></q-input>
+						<q-input v-model="coleta.estimativa_tempo" label="Estimativa de tempo" readonly></q-input>
 					</div>
 					<div class="col-md-3 col-xs-12">
 						<q-input v-model="coleta.valor_entrega" label="Valor da Entrega*" :rules="[validatorRequired]" :readonly="showBool || usuarioPerfil === 'cliente'" mask="#,##" fill-mask="0" reverse-fill-mask prefix="R$"></q-input>
@@ -352,7 +352,7 @@ export default {
 				data_hora_entrega: '',
 				status_pagamento: 'Pendente',
 				total_km: 0,
-				estimativa_tempo: 0,
+				estimativa_tempo: '',
 				enderecosEntregas: []
 			},
 			data_entrega: '',
@@ -430,21 +430,6 @@ export default {
 		},
 		fotoSrc() {
 			return this.coleta && this.isBlank(this.coleta.foto_finalizado) ? '' : `${process.env.API_URL}api/Arquivos/Coleta/download/${this.coleta.foto_finalizado}`
-		},
-		estimativa_tempo() {
-			let t = this.coleta.estimativa_tempo || 0
-			if (t < 60) return t + ' segundo' + (t > 1 ? 's' : '')
-			else {
-				let t2 = t / 60
-				let t3 = Math.floor(t2)
-				if (t2 > t3) t3++
-				if (t3 < 60) return t3 + ' minuto' + (t3 > 1 ? 's' : '')
-				else {
-					let t4 = Math.floor(t3 / 60)
-					t3 -= t4 * 60
-					return t4 + ' hora' + (t4 > 1 ? 's' : '') + (t3 > 0 ? ' e ' + t3 + ' minuto' + (t3 > 1 ? 's' : '') : '')
-				}
-			}
 		}
 	},
 	methods: {
@@ -788,6 +773,7 @@ export default {
 					let valorKm = parseInt(this.configuracao['entrega_' + tipo + '_km_minimo_' + veiculo])
 					let valorVeiculo = parseFloat(this.configuracao['entrega_' + tipo + '_km_' + veiculo])
 					let valorRetorno = parseFloat(this.configuracao['entrega_' + tipo + '_retorno_minimo_' + veiculo])
+					console.log('totalKmCalculado', totalKmCalculado)
 					console.log('distancia_coleta', totalKmCalculado.distancia_coleta)
 					console.log('raioKmViagem', raioKmViagem)
 					console.log('tipo', tipo)
@@ -798,7 +784,21 @@ export default {
 					console.log('valorRetorno', valorRetorno)
 
 					this.coleta.total_km = totalKm
-					this.coleta.estimativa_tempo = totalKmCalculado.tempo
+
+					//curitiba
+					if (totalKmCalculado.maior_distancia <= parseInt(this.configuracao.raio_km_entrega_metropolitana)) {
+						if (this.coleta.tipo_entrega === 'Convencional') this.coleta.estimativa_tempo = '25 a 30 min. + 40 min. de cada entrega'
+						else this.coleta.estimativa_tempo = '20 a 30 min. + 40 min. de cada entrega'
+					}
+					//metropolitana
+					else if (totalKmCalculado.maior_distancia <= raioKmViagem) {
+						if (this.coleta.tipo_entrega === 'Convencional') this.coleta.estimativa_tempo = '25 a 40 min. + 45 min. de cada entrega'
+						else this.coleta.estimativa_tempo = '25 a 30 min. + 40 min. de cada entrega'
+					}
+					//viagem
+					else {
+						this.coleta.estimativa_tempo = '25 a 40 min + ' + this.formatarTempo(totalKmCalculado.tempo) + ' de entrega'
+					}
 
 					let p1 = parseFloat(this.configuracao['entrega_' + tipo + '_valor_minimo_' + veiculo]) * this.coleta.enderecosEntregas.length
 					console.log('p1 valor_minimo*entrega', parseFloat(this.configuracao['entrega_' + tipo + '_valor_minimo_' + veiculo]), this.coleta.enderecosEntregas.length, p1)
