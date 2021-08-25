@@ -1025,6 +1025,10 @@ export default {
 			}
 		}
 		this.buscar()
+		this.$root.$on('atualizarColetas', this.buscar)
+	},
+	destroyed() {
+		this.$root.$off('atualizarColetas', this.buscar)
 	},
 	watch: {
 		$route: function(a) {

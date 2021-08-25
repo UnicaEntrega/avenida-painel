@@ -44,6 +44,7 @@ export default {
 			this.pontos = []
 			let coordsCenter
 			for (let item of this.getMotoboysOnline) {
+				console.log(item.latitude, item.longitude)
 				if (this.isBlank(this.$route.params.id) || item.id.toString() === this.$route.params.id.toString()) {
 					if (!this.isBlank(this.$route.params.id)) this.motoboySelecionado = item
 					coordsCenter = {
@@ -89,7 +90,13 @@ export default {
 	created() {
 		this.coordsCenter = this.coordsDefault
 		if (this.isBlank(this.getLogin.token)) this.$router.push('/login')
-		else this.buscar()
+		else {
+			this.buscar()
+			this.$root.$on('atualizarIndex', this.buscar)
+		}
+	},
+	destroyed() {
+		this.$root.$off('atualizarIndex', this.buscar)
 	},
 	watch: {
 		$route: function(a, b) {

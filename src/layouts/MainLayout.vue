@@ -144,7 +144,6 @@ export default {
 					tipo: 'cliente'
 				}
 			],
-			_interval: null,
 			contadorColeta: 0
 		}
 	},
@@ -188,23 +187,21 @@ export default {
 					break
 				}
 			}
-			var response = await this.executeMethod({ url: 'api/Motoboys/lista', method: 'get' })
-			if (response.status === 200 && response.data.length > 0) {
-				await this.$store.commit('setDados', { key: 'motoboysOnline', value: response.data })
+			if (this.getMotoboysOnline.length > 0) {
 				let motoboys = {
 					icon: 'img:images/avenida_web_motoboysOnline.png',
 					name: 'Motoboys Online',
 					tipo: 'admin',
 					links: []
 				}
-				if (response.data.length > 2)
+				if (this.getMotoboysOnline.length > 2)
 					motoboys.links.push({
 						icon: 'img:images/avenida_web_motoboysOnline.png',
 						title: 'Todos',
 						path: '/',
 						tipo: 'admin'
 					})
-				for (let item of response.data) {
+				for (let item of this.getMotoboysOnline) {
 					motoboys.links.push({
 						icon: 'img:images/avenida_web_motoboysOnline.png',
 						title: `${item.nome} - ${item.veiculo ? item.veiculo.placa : ''}`,
@@ -215,27 +212,19 @@ export default {
 				categorias.push(motoboys)
 			}
 			this.categorias = categorias
-		},
-		async carregarContadorColetasAbertas() {
-			var response = await this.executeMethod({ url: 'api/Coletas/abertas', method: 'post' })
-			if (response.status === 200) this.contadorColeta = parseInt(response.data)
 		}
 	},
 	async created() {
 		if (this.isBlank(this.getLogin.token)) this.$router.push('/login')
 		else {
 			if (this.usuarioPerfil === 'cliente') {
-				this._interval = setInterval(() => {
-					this.carregarColetas()
-				}, 30000)
 				this.carregarColetas()
 			} else {
-				this._interval = setInterval(() => {
-					this.carregarMotoboys()
-					this.carregarContadorColetasAbertas()
-				}, 30000)
+				var response = await this.executeMethod({ url: 'api/Motoboys/lista', method: 'get' })
+				if (response.status === 200) this.$store.commit('setDados', { key: 'motoboysOnline', value: response.data })
 				this.carregarMotoboys()
-				this.carregarContadorColetasAbertas()
+				response = await this.executeMethod({ url: 'api/Coletas/abertas', method: 'post' })
+				if (response.status === 200) this.contadorColeta = parseInt(response.data)
 			}
 			await this.carregarChats()
 			this.$root.chat_connect = false
@@ -255,6 +244,33 @@ export default {
 				this.$root.chat.on('atualizarLista', () => {
 					this.carregarChats()
 				})
+				if (this.usuarioPerfil === 'cliente') {
+					this.$root.chat.on('atualizarClienteColetas', coleta_id => {
+						this.carregarColetas()
+						if (this.$route.path.indexOf('coleta') > -1 && this.$route.params.id == coleta_id) this.$root.$emit('atualizarColetas')
+						if (this.$route.path.indexOf('minhasColetas') > -1 || (this.$route.path.indexOf('cadastroColetas/show') > -1 && this.$route.params.id == coleta_id)) this.$root.$emit('atualizarColetas')
+					})
+				} else {
+					this.$root.chat.on('atualizarMotoboysOnline', m => {
+						this.$store.commit('setDados', { key: 'motoboysOnline', value: m })
+						this.carregarMotoboys()
+					})
+					this.$root.chat.on('atualizarMotoboysPosicao', m => {
+						let mb = JSON.parse(JSON.stringify(this.getMotoboysOnline))
+						for (let index in mb) {
+							if (mb[index].id === m.id) {
+								mb[index] = m
+								this.$store.commit('setDados', { key: 'motoboysOnline', value: mb })
+								this.$root.$emit('atualizarIndex')
+								break
+							}
+						}
+					})
+					this.$root.chat.on('atualizarContadorColeta', c => {
+						this.contadorColeta = c
+						if (this.$route.path.indexOf('cadastroColetas') > -1 && this.$route.path.indexOf('edit') === -1) this.$root.$emit('atualizarColetas')
+					})
+				}
 			})
 			this.$root.chat_ws.on('close', () => {
 				this.$root.chat_connect = false
@@ -267,9 +283,6 @@ export default {
 					tipo: 'Ambos'
 				})
 		}
-	},
-	destroyed() {
-		if (this._interval) clearInterval(this._interval)
 	},
 	watch: {
 		$route: function(a) {

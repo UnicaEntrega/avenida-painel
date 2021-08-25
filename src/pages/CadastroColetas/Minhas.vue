@@ -84,6 +84,12 @@ export default {
 		adicionarColeta() {
 			this.$router.push('cadastroColetas/edit')
 		}
+	},
+	created() {
+		this.$root.$on('atualizarColetas', this.buscar)
+	},
+	destroyed() {
+		this.$root.$off('atualizarColetas', this.buscar)
 	}
 }
 </script>

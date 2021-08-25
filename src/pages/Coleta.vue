@@ -214,6 +214,10 @@ export default {
 	},
 	created() {
 		this.carregar()
+		this.$root.$on('atualizarColetas', this.carregar)
+	},
+	destroyed() {
+		this.$root.$off('atualizarColetas', this.carregar)
 	},
 	watch: {
 		$route: function(a, b) {

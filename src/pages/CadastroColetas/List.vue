@@ -124,6 +124,12 @@ export default {
 		showColeta(id) {
 			this.$router.push('cadastroColetas/show/' + id)
 		}
+	},
+	created() {
+		this.$root.$on('atualizarColetas', this.buscar)
+	},
+	destroyed() {
+		this.$root.$off('atualizarColetas', this.buscar)
 	}
 }
 </script>
